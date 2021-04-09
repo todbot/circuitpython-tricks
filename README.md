@@ -30,6 +30,8 @@
   import board
   touch_pin = touchio.TouchIn(board.GP6)
   # on Pico / RP2040, need 1M pull-down on each input
+  if touch_pin.value: 
+    print("touched!")
   ```
 
 * Read a Rotary Encoder
@@ -98,6 +100,25 @@
   'Adafruit ItsyBitsy M4 Express with samd51g19'
   ```
 
+* Support multiple boards with one `code.py`:
+  ```py
+  import os
+  board_type = os.uname().machine
+  if 'QT Py M0' in board_type:
+    tft_clk  = board.SCK
+    tft_mosi = board.MOSI
+    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
+  elif 'ItsyBitsy M4' in board_type:
+    tft_clk  = board.SCK
+    tft_mosi = board.MOSI
+    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
+  elif 'Pico' in board_type:
+    tft_clk = board.GP10 # must be a SPI CLK
+    tft_mosi= board.GP11 # must be a SPI TX
+    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
+  else:
+    print("supported board", board_type)
+  ```
 
 * Detect if USB is connected or not
   ```py
