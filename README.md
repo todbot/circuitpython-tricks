@@ -42,6 +42,23 @@
   print(encoder.position)  # starts at zero, goes neg or pos
   ```
 
+* Debounce a pin / button   (using `adafruit_debouncer` library)
+
+  ```py
+  import board
+  from digitalio import DigitalInOut, Pull
+  from adafruit_debouncer import Debouncer
+  button_pin = DigitalInOut(board.D3) # defaults to input
+  button_pin.pull = Pull.UP # turn on internal pull-up resistor
+  button = Debouncer(button_pin)
+  while True:
+    button.update()
+    if button.fell:
+      print("press!")
+    if button.rose:
+      print("release!")
+  ```
+
 ### Outputs
 
 * Output HIGH / LOW on a pin (like an LED)
@@ -82,7 +99,29 @@
 
   ```
 
+## Computery Tasks
+
+* Formatting strings
+
+    ```py
+    name = "John"
+    fav_color = 0xff3366
+    body_temp = 98.65
+    print("name:%s color:%6x thermometer:%2.1f" % (name,fav_color,body_temp))
+    # name:John color:ff3366 thermometer:98.6
+    ```
+
 ## More Esoteric Tasks
+
+* Map an input range to an output range:
+```py
+    # simple range mapper, like Arduino map()
+    def map_range(s, a, b):
+      (a1, a2), (b1, b2) = a, b
+      return  b1 + ((s - a1) * (b2 - b1) / (a2 - a1))
+    # map 0-0123 value to 0.0-1.0 value
+    out = map_range( in, (0,1023), (0.0,1.0) )
+```
 
 * Time how long something takes:
   ```py
@@ -136,6 +175,7 @@
     
 * Read keys from USB Serial
   ```py
+
   ```
 
 * RasPI boot.py protection.
