@@ -34,7 +34,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
       * [Time how long something takes:](#time-how-long-something-takes)
       * [Determine which board you're on:](#determine-which-board-youre-on)
       * [Support multiple boards with one code.py:](#support-multiple-boards-with-one-codepy)
-      * [RasPI boot.py Protection](#raspi-bootpy-protection)
+      * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
    * [Hacks](#hacks)
       * [Using the REPL](#using-the-repl)
          * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
@@ -282,7 +282,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   ```
 
 
-### RasPI boot.py Protection
+### Raspberry Pi Pico boot.py Protection
   ```py
   # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
   # from https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
