@@ -127,28 +127,27 @@ my_str = input()  # type and press ENTER or RETURN
 ### Computery Tasks
 
 #### Formatting strings
-
-    ```py
-    name = "John"
-    fav_color = 0xff3366
-    body_temp = 98.65
-    print("name:%s color:%6x thermometer:%2.1f" % (name,fav_color,body_temp))
-    'name:John color:ff3366 thermometer:98.6'
-    ```
+  ```py
+  name = "John"
+  fav_color = 0xff3366
+  body_temp = 98.65
+  print("name:%s color:%6x thermometer:%2.1f" % (name,fav_color,body_temp))
+  name:John color:ff3366 thermometer:98.6
+  ```
 
 ----
 
 ### More Esoteric Tasks
 
 #### Map an input range to an output range:
-```py
-    # simple range mapper, like Arduino map()
-    def map_range(s, a, b):
+  ```py
+  # simple range mapper, like Arduino map()
+  def map_range(s, a, b):
       (a1, a2), (b1, b2) = a, b
       return  b1 + ((s - a1) * (b2 - b1) / (a2 - a1))
-    # map 0-0123 value to 0.0-1.0 value
-    out = map_range( in, (0,1023), (0.0,1.0) )
-```
+  # map 0-0123 value to 0.0-1.0 value
+  out = map_range( in, (0,1023), (0.0,1.0) )
+  ```
 
 #### Time how long something takes:
   ```py
