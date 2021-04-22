@@ -88,7 +88,16 @@ needing when working with CircuitPython
   out1 = pwmio.PWMOut(board.MOSI, frequency=25000, duty_cycle=0)
   out1.out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
   ```
-    
+
+#### Drive Neopixel / WS2812 LEDs
+  ```py
+  import neopixel
+  led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
+  led[0] = 0xff00ff
+  led[0] = (255,0,255)  # equivalent
+
+  ```
+
 ----
 
 ### USB
@@ -132,9 +141,22 @@ needing when working with CircuitPython
   fav_color = 0xff3366
   body_temp = 98.65
   print("name:%s color:%6x thermometer:%2.1f" % (name,fav_color,body_temp))
-  name:John color:ff3366 thermometer:98.6
+  'name:John color:ff3366 thermometer:98.6'
   ```
 
+#### Make and Use a config file
+  ```py
+  # my_config.py
+  config = {
+    "username": "Grogu Djarin",
+    "password": "ig88rules",
+    "secret_key": "3a3d9bfaf05835df69713c470427fe35"
+  }
+  # code.py
+  from my_config import config
+  print("secret:", config['secret_key'])
+  'secret: 3a3d9bfaf05835df69713c470427fe35'
+  ```
 ----
 
 ### More Esoteric Tasks
@@ -204,7 +226,7 @@ needing when working with CircuitPython
 
   ```
 
-#### RasPI boot.py protection.
+#### RasPI boot.py Protection
   ```py
   # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
   # from https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
@@ -233,3 +255,25 @@ needing when working with CircuitPython
     
   ```
 
+----
+
+### Hacks
+
+#### Use REPL fast with copy-paste multi-one-liners:
+
+(yes, semicolons are legal in Python)
+
+```py
+# load most common libraries
+import time; import board; from digitalio import DigitalInOut,Pull; import analogio; import touchio
+
+# print out board pins and objects (like 'I2C' and 'display'
+import board; dir(board)
+
+# print out microcontroller pins (chip pins, not the same as board pins)
+import microcontroller; dir(microcontroller.pin)
+
+# release configured / built-in display
+import displayio; displayio.release_displays()
+
+```
