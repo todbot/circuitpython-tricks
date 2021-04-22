@@ -45,8 +45,8 @@ needing when working with CircuitPython
   print(encoder.position)  # starts at zero, goes neg or pos
   ```
 
-#### Debounce a pin / button   (using `adafruit_debouncer` library)
-
+#### Debounce a pin / button 
+(using `adafruit_debouncer` library)
   ```py
   import board
   from digitalio import DigitalInOut, Pull
