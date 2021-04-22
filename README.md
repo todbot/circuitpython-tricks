@@ -6,7 +6,7 @@
 
 ### Inputs
 
-* Read an digital input as a Button
+#### Read an digital input as a Button
   ```py
   import board
   from digitalio import DigitalInOut, Pull
@@ -15,7 +15,7 @@
   print(button.value)  # False == pressed
   ```
 
-* Read a Potentiometer 
+#### Read a Potentiometer 
   ```py
   import board
   import analogio
@@ -24,7 +24,7 @@
   pos = potknob.value // 256  # make 0-255 range
   ```
 
-* Read a Touch Pin / Capsense
+#### Read a Touch Pin / Capsense
   ```py
   import touchio
   import board
@@ -34,7 +34,7 @@
     print("touched!")
   ```
 
-* Read a Rotary Encoder
+#### Read a Rotary Encoder
   ```py
   import board
   import rotaryio
@@ -42,7 +42,7 @@
   print(encoder.position)  # starts at zero, goes neg or pos
   ```
 
-* Debounce a pin / button   (using `adafruit_debouncer` library)
+#### Debounce a pin / button   (using `adafruit_debouncer` library)
 
   ```py
   import board
@@ -61,7 +61,7 @@
 
 ### Outputs
 
-* Output HIGH / LOW on a pin (like an LED)
+#### Output HIGH / LOW on a pin (like an LED)
   ```py
   import board
   import digitalio
@@ -70,7 +70,7 @@
   ledpin.value = True
   ```
 
-* Output Analog value on a DAC pin
+#### Output Analog value on a DAC pin
   ```py
   import board
   import analogio
@@ -78,7 +78,7 @@
   dac.value = 32768   # mid-point of 0-65535
   ```
 
-* Output a "Analog" value on a PWM pin
+#### Output a "Analog" value on a PWM pin
   ```py
   import board
   import pwmio
@@ -86,34 +86,58 @@
   out1.out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
   ```
     
+----
+
 ### USB
 
-* Print to USB Serial
+#### Print to USB Serial
   ```py
   print("hello there")  # prints a newline
   print("waiting...", end='')   # does not print newline
   ```
 
-* Read user input from USB Serial, non-blocking
+#### Read user input from USB Serial, blocking
   ```py
-
+  while True:
+    print("Type something: ", end='')
+    my_str = input()  # type and press ENTER or RETURN
+    print("You entered: ", my_str)
   ```
 
-## Computery Tasks
+#### Read user input from USB Serial, non-blocking (mostly)
+  ```py
+  import time
+  import supervisor
+  print("Type something when you're ready")
+  last_time = time.monotonic()
+  while True:
+    if supervisor.runtime.serial_bytes_available:
+      my_str = input()
+      print("You entered:", my_str)
+    if time.monotonic() - last_time > 1:  # every second, print
+      last_time = time.monotonic()
+      print(int(last_time),"waiting...")
+  ```
 
-* Formatting strings
+----
+
+### Computery Tasks
+
+#### Formatting strings
 
     ```py
     name = "John"
     fav_color = 0xff3366
     body_temp = 98.65
     print("name:%s color:%6x thermometer:%2.1f" % (name,fav_color,body_temp))
-    # name:John color:ff3366 thermometer:98.6
+    'name:John color:ff3366 thermometer:98.6'
     ```
 
-## More Esoteric Tasks
+----
 
-* Map an input range to an output range:
+### More Esoteric Tasks
+
+#### Map an input range to an output range:
 ```py
     # simple range mapper, like Arduino map()
     def map_range(s, a, b):
@@ -123,7 +147,7 @@
     out = map_range( in, (0,1023), (0.0,1.0) )
 ```
 
-* Time how long something takes:
+#### Time how long something takes:
   ```py
   import time
   start_time = time.monotonic() # fraction seconds uptime
@@ -132,14 +156,14 @@
   print("do_something took %f seconds" % elapsed_time)
   ```
 
-* Determine which board you're on:
+#### Determine which board you're on:
   ```py
   import os
   print(os.uname().machine)
   'Adafruit ItsyBitsy M4 Express with samd51g19'
   ```
 
-* Support multiple boards with one `code.py`:
+#### Support multiple boards with one `code.py`:
   ```py
   import os
   board_type = os.uname().machine
@@ -159,7 +183,7 @@
     print("supported board", board_type)
   ```
 
-* Detect if USB is connected or not
+#### Detect if USB is connected or not
   ```py
   def is_usb_connected():
     import storage
@@ -173,12 +197,12 @@
   print("USB:", is_usb)
   ```
     
-* Read keys from USB Serial
+#### Read keys from USB Serial
   ```py
 
   ```
 
-* RasPI boot.py protection.
+#### RasPI boot.py protection.
   ```py
   # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
   # from https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
