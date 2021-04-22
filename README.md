@@ -267,7 +267,7 @@ needing when working with CircuitPython
 # load most common libraries
 import time; import board; from digitalio import DigitalInOut,Pull; import analogio; import touchio
 
-# print out board pins and objects (like 'I2C' and 'display'
+# print out board pins and objects (like 'I2C' and 'display')
 import board; dir(board)
 
 # print out microcontroller pins (chip pins, not the same as board pins)
@@ -275,5 +275,8 @@ import microcontroller; dir(microcontroller.pin)
 
 # release configured / built-in display
 import displayio; displayio.release_displays()
+
+# make all neopixels purple
+import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=0.2); leds.fill(0xff00ff)
 
 ```
