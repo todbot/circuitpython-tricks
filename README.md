@@ -1,8 +1,43 @@
 
 # circuitpython-tricks
 
-This is a small list of tips and tricks I find myself
-needing when working with CircuitPython
+A small list of tips & tricks I find myself needing when working with CircuitPython
+
+## Table of Contents
+
+   * [Common Tasks](#common-tasks)
+      * [Inputs](#inputs)
+         * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
+         * [Read a Potentiometer](#read-a-potentiometer)
+         * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
+         * [Read a Rotary Encoder](#read-a-rotary-encoder)
+         * [Debounce a pin / button](#debounce-a-pin--button)
+         * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+      * [Outputs](#outputs)
+         * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
+         * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
+         * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
+         * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+   * [USB](#usb)
+      * [USB Connectivity](#usb-connectivity)
+         * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
+      * [USB Serial](#usb-serial)
+      * [Print to USB Serial](#print-to-usb-serial)
+      * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
+      * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
+      * [Read keys from USB Serial](#read-keys-from-usb-serial)
+   * [Computery Tasks](#computery-tasks)
+      * [Formatting strings](#formatting-strings)
+      * [Make and Use a config file](#make-and-use-a-config-file)
+   * [More Esoteric Tasks](#more-esoteric-tasks)
+      * [Map an input range to an output range:](#map-an-input-range-to-an-output-range)
+      * [Time how long something takes:](#time-how-long-something-takes)
+      * [Determine which board you're on:](#determine-which-board-youre-on)
+      * [Support multiple boards with one code.py:](#support-multiple-boards-with-one-codepy)
+      * [RasPI boot.py Protection](#raspi-bootpy-protection)
+   * [Hacks](#hacks)
+      * [Using the REPL](#using-the-repl)
+         * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
 
 
 ## Common Tasks
@@ -46,14 +81,13 @@ needing when working with CircuitPython
   ```
 
 #### Debounce a pin / button 
-(using `adafruit_debouncer` library)
   ```py
   import board
   from digitalio import DigitalInOut, Pull
   from adafruit_debouncer import Debouncer
-  button_pin = DigitalInOut(board.D3) # defaults to input
-  button_pin.pull = Pull.UP # turn on internal pull-up resistor
-  button = Debouncer(button_pin)
+  button_in = DigitalInOut(board.D3) # defaults to input
+  button_in.pull = Pull.UP # turn on internal pull-up resistor
+  button = Debouncer(button_in)
   while True:
     button.update()
     if button.fell:
@@ -62,6 +96,24 @@ needing when working with CircuitPython
       print("release!")
   ```
 
+#### Set up and debounce a list of pins
+  ```py
+  import board
+  from digitalio import DigitalInOut, Pull
+  from adafruit_debouncer import Debouncer
+  pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
+  buttons = []   # will hold list of Debouncer objects
+  for pin in pins:
+    tmp_pin = DigitalInOut(pin) # defaults to input
+    tmp_pin.pull = Pull.UP # turn on internal pull-up resistor
+    buttons.append( Debouncer(tmp_pin) )
+  while True:
+    for i in range(len(buttons)):
+      buttons[i].update()
+      if buttons[i].fell:
+        print("button ",i,"pressed!")
+  ```
+        
 ### Outputs
 
 #### Output HIGH / LOW on a pin (like an LED)
@@ -89,7 +141,7 @@ needing when working with CircuitPython
   out1.out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
   ```
 
-#### Drive Neopixel / WS2812 LEDs
+#### Control Neopixel / WS2812 LEDs
   ```py
   import neopixel
   led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
@@ -98,17 +150,34 @@ needing when working with CircuitPython
 
   ```
 
-----
 
-### USB
+## USB
 
-#### Print to USB Serial
+### USB Connectivity
+
+#### Detect if USB is connected or not
+  ```py
+  def is_usb_connected():
+    import storage
+    try:
+      storage.remount('/', readonly=False)  # attempt to mount readwrite
+      storage.remount('/', readonly=True)  # attempt to mount readonly
+    except RuntimeError as e:
+      return True
+    return False
+  is_usb = "USB" if is_usb_connected() else "NO USB"
+  print("USB:", is_usb)
+  ```
+    
+### USB Serial
+
+### Print to USB Serial
   ```py
   print("hello there")  # prints a newline
   print("waiting...", end='')   # does not print newline
   ```
 
-#### Read user input from USB Serial, blocking
+### Read user input from USB Serial, blocking
   ```py
   while True:
     print("Type something: ", end='')
@@ -116,7 +185,7 @@ needing when working with CircuitPython
     print("You entered: ", my_str)
   ```
 
-#### Read user input from USB Serial, non-blocking (mostly)
+### Read user input from USB Serial, non-blocking (mostly)
   ```py
   import time
   import supervisor
@@ -131,11 +200,16 @@ needing when working with CircuitPython
       print(int(last_time),"waiting...")
   ```
 
-----
+### Read keys from USB Serial
+  ```py
+  [tbd]
 
-### Computery Tasks
+  ```
 
-#### Formatting strings
+
+## Computery Tasks
+
+### Formatting strings
   ```py
   name = "John"
   fav_color = 0xff3366
@@ -144,7 +218,7 @@ needing when working with CircuitPython
   'name:John color:ff3366 thermometer:98.6'
   ```
 
-#### Make and Use a config file
+### Make and Use a config file
   ```py
   # my_config.py
   config = {
@@ -157,11 +231,11 @@ needing when working with CircuitPython
   print("secret:", config['secret_key'])
   'secret: 3a3d9bfaf05835df69713c470427fe35'
   ```
-----
 
-### More Esoteric Tasks
 
-#### Map an input range to an output range:
+## More Esoteric Tasks
+
+### Map an input range to an output range:
   ```py
   # simple range mapper, like Arduino map()
   def map_range(s, a, b):
@@ -171,7 +245,7 @@ needing when working with CircuitPython
   out = map_range( in, (0,1023), (0.0,1.0) )
   ```
 
-#### Time how long something takes:
+### Time how long something takes:
   ```py
   import time
   start_time = time.monotonic() # fraction seconds uptime
@@ -180,14 +254,14 @@ needing when working with CircuitPython
   print("do_something took %f seconds" % elapsed_time)
   ```
 
-#### Determine which board you're on:
+### Determine which board you're on:
   ```py
   import os
   print(os.uname().machine)
   'Adafruit ItsyBitsy M4 Express with samd51g19'
   ```
 
-#### Support multiple boards with one `code.py`:
+### Support multiple boards with one `code.py`:
   ```py
   import os
   board_type = os.uname().machine
@@ -207,26 +281,8 @@ needing when working with CircuitPython
     print("supported board", board_type)
   ```
 
-#### Detect if USB is connected or not
-  ```py
-  def is_usb_connected():
-    import storage
-    try:
-      storage.remount('/', readonly=False)  # attempt to mount readwrite
-      storage.remount('/', readonly=True)  # attempt to mount readonly
-    except RuntimeError as e:
-      return True
-    return False
-  is_usb = "USB" if is_usb_connected() else "NO USB"
-  print("USB:", is_usb)
-  ```
-    
-#### Read keys from USB Serial
-  ```py
 
-  ```
-
-#### RasPI boot.py Protection
+### RasPI boot.py Protection
   ```py
   # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
   # from https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
@@ -255,11 +311,12 @@ needing when working with CircuitPython
     
   ```
 
-----
 
-### Hacks
+## Hacks
 
-#### Use REPL fast with copy-paste multi-one-liners:
+### Using the REPL
+
+#### Use REPL fast with copy-paste multi-one-liners
 
 (yes, semicolons are legal in Python)
 
