@@ -1,6 +1,9 @@
 
 # circuitpython-tricks
 
+This is a small list of tips and tricks I find myself
+needing when working with CircuitPython
+
 
 ## Common Tasks
 
@@ -100,7 +103,7 @@
   ```py
   while True:
     print("Type something: ", end='')
-    my_str = input()  # type and press ENTER or RETURN
+my_str = input()  # type and press ENTER or RETURN
     print("You entered: ", my_str)
   ```
 
