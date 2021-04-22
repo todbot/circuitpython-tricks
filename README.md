@@ -103,7 +103,7 @@ needing when working with CircuitPython
   ```py
   while True:
     print("Type something: ", end='')
-my_str = input()  # type and press ENTER or RETURN
+    my_str = input()  # type and press ENTER or RETURN
     print("You entered: ", my_str)
   ```
 
