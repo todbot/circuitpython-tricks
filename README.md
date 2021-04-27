@@ -4,7 +4,6 @@
 A small list of tips & tricks I find myself needing when working with CircuitPython
 
 ## Table of Contents
-
 * [Inputs](#inputs)
    * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
    * [Read a Potentiometer](#read-a-potentiometer)
@@ -35,6 +34,10 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Determine which board you're on:](#determine-which-board-youre-on)
    * [Support multiple boards with one code.py:](#support-multiple-boards-with-one-codepy)
    * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
+* [Networking](#networking)
+   * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
+   * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
+   * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
 * [Hacks](#hacks)
    * [Using the REPL](#using-the-repl)
       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
@@ -324,6 +327,54 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
     
   ```
 
+## Networking
+
+### Scan for WiFi Networks, sorted by signal strength (ESP32-S2)
+
+```py
+networks = []
+for network in wifi.radio.start_scanning_networks():
+  networks.append(network)
+wifi.radio.stop_scanning_networks()
+networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
+for network in networks:
+  print("ssid:",network.ssid, "rssi:",network.rssi)
+```
+
+### Ping an IP address (ESP32-S2)
+```py
+import time
+import wifi
+import ipaddress
+from secrets import secrets
+ip_to_ping = "1.1.1.1"
+wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+print("my IP addr:", wifi.radio.ipv4_address)
+print("pinging ",ip_to_ping)
+ip1 = ipaddress.ip_address(ip_to_ping)
+while True:
+    print("ping:", wifi.radio.ping(ip1))
+    time.sleep(1)
+```
+
+### Fetch a JSON file (ESP32-S2)
+```py
+import time
+import wifi
+import socketpool
+import ssl
+import adafruit_requests
+from secrets import secrets
+wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+print("my IP addr:", wifi.radio.ipv4_address)
+pool = socketpool.SocketPool(wifi.radio)
+session = adafruit_requests.Session(pool, ssl.create_default_context())
+while True:
+    response = session.get("https://todbot.com/tst/randcolor.php")
+    data = response.json()
+    print("data:",data)
+    time.sleep(5)
+```
 
 ## Hacks
 
