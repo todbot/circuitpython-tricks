@@ -5,46 +5,44 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 
 ## Table of Contents
 
-   * [Common Tasks](#common-tasks)
-      * [Inputs](#inputs)
-         * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
-         * [Read a Potentiometer](#read-a-potentiometer)
-         * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
-         * [Read a Rotary Encoder](#read-a-rotary-encoder)
-         * [Debounce a pin / button](#debounce-a-pin--button)
-         * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
-      * [Outputs](#outputs)
-         * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
-         * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
-         * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
-         * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
-   * [USB](#usb)
-      * [USB Connectivity](#usb-connectivity)
-         * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
-      * [USB Serial](#usb-serial)
-      * [Print to USB Serial](#print-to-usb-serial)
-      * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
-      * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
-      * [Read keys from USB Serial](#read-keys-from-usb-serial)
-   * [Computery Tasks](#computery-tasks)
-      * [Formatting strings](#formatting-strings)
-      * [Make and Use a config file](#make-and-use-a-config-file)
-   * [More Esoteric Tasks](#more-esoteric-tasks)
-      * [Map an input range to an output range:](#map-an-input-range-to-an-output-range)
-      * [Time how long something takes:](#time-how-long-something-takes)
-      * [Determine which board you're on:](#determine-which-board-youre-on)
-      * [Support multiple boards with one code.py:](#support-multiple-boards-with-one-codepy)
-      * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
-   * [Hacks](#hacks)
-      * [Using the REPL](#using-the-repl)
-         * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+* [Inputs](#inputs)
+   * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
+   * [Read a Potentiometer](#read-a-potentiometer)
+   * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
+   * [Read a Rotary Encoder](#read-a-rotary-encoder)
+   * [Debounce a pin / button](#debounce-a-pin--button)
+   * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+* [Outputs](#outputs)
+   * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
+   * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
+   * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
+   * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+* [USB](#usb)
+   * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
+   * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
+   * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
+* [USB Serial](#usb-serial)
+   * [Print to USB Serial](#print-to-usb-serial)
+   * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
+   * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
+   * [Read keys from USB Serial](#read-keys-from-usb-serial)
+* [Computery Tasks](#computery-tasks)
+   * [Formatting strings](#formatting-strings)
+   * [Make and Use a config file](#make-and-use-a-config-file)
+* [More Esoteric Tasks](#more-esoteric-tasks)
+   * [Map an input range to an output range:](#map-an-input-range-to-an-output-range)
+   * [Time how long something takes:](#time-how-long-something-takes)
+   * [Determine which board you're on:](#determine-which-board-youre-on)
+   * [Support multiple boards with one code.py:](#support-multiple-boards-with-one-codepy)
+   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
+* [Hacks](#hacks)
+   * [Using the REPL](#using-the-repl)
+      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
+      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
 
+## Inputs
 
-## Common Tasks
-
-### Inputs
-
-#### Read an digital input as a Button
+### Read an digital input as a Button
   ```py
   import board
   from digitalio import DigitalInOut, Pull
@@ -53,7 +51,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   print(button.value)  # False == pressed
   ```
 
-#### Read a Potentiometer 
+### Read a Potentiometer 
   ```py
   import board
   import analogio
@@ -62,7 +60,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   pos = potknob.value // 256  # make 0-255 range
   ```
 
-#### Read a Touch Pin / Capsense
+### Read a Touch Pin / Capsense
   ```py
   import touchio
   import board
@@ -72,7 +70,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
     print("touched!")
   ```
 
-#### Read a Rotary Encoder
+### Read a Rotary Encoder
   ```py
   import board
   import rotaryio
@@ -80,7 +78,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   print(encoder.position)  # starts at zero, goes neg or pos
   ```
 
-#### Debounce a pin / button 
+### Debounce a pin / button 
   ```py
   import board
   from digitalio import DigitalInOut, Pull
@@ -96,7 +94,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
       print("release!")
   ```
 
-#### Set up and debounce a list of pins
+### Set up and debounce a list of pins
   ```py
   import board
   from digitalio import DigitalInOut, Pull
@@ -111,12 +109,14 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
     for i in range(len(buttons)):
       buttons[i].update()
       if buttons[i].fell:
-        print("button ",i,"pressed!")
+        print("button",i,"pressed!")
+      if buttons[i].rose:
+        print("button",i,"released!")
   ```
         
-### Outputs
+## Outputs
 
-#### Output HIGH / LOW on a pin (like an LED)
+### Output HIGH / LOW on a pin (like an LED)
   ```py
   import board
   import digitalio
@@ -125,7 +125,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   ledpin.value = True
   ```
 
-#### Output Analog value on a DAC pin
+### Output Analog value on a DAC pin
   ```py
   import board
   import analogio
@@ -133,7 +133,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   dac.value = 32768   # mid-point of 0-65535
   ```
 
-#### Output a "Analog" value on a PWM pin
+### Output a "Analog" value on a PWM pin
   ```py
   import board
   import pwmio
@@ -141,7 +141,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   out1.out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
   ```
 
-#### Control Neopixel / WS2812 LEDs
+### Control Neopixel / WS2812 LEDs
   ```py
   import neopixel
   led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
@@ -153,9 +153,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 
 ## USB
 
-### USB Connectivity
-
-#### Detect if USB is connected or not
+### Detect if USB is connected or not
   ```py
   def is_usb_connected():
     import storage
@@ -168,8 +166,23 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   is_usb = "USB" if is_usb_connected() else "NO USB"
   print("USB:", is_usb)
   ```
-    
-### USB Serial
+
+### Get CIRCUITPY disk size and free space
+  ```py
+  import os
+  fs_stat = os.statvfs('/')
+  print("Disk size in MB", fs_stat[0] * fs_stat[2] / 1024 / 1024)
+  print("Free space in MB", fs_stat[0] * fs_stat[3] / 1024 / 1024)
+  ```
+
+### Programmatically reset to UF2 bootloader 
+  ```py
+  import micrcocontroller
+  microcontroller.on_next_reset(microcontroller.RunMode.BOOTLOADER)
+  microcontroller.reset()
+  ```
+
+## USB Serial
 
 ### Print to USB Serial
   ```py
@@ -315,6 +328,20 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 ## Hacks
 
 ### Using the REPL
+
+#### Display built-in modules / libraries
+  ```
+  Adafruit CircuitPython 6.2.0-beta.2 on 2021-02-11; Adafruit Trinket M0 with samd21e18
+  >>> help("modules")
+  __main__          digitalio         pulseio           supervisor
+  analogio          gc                pwmio             sys
+  array             math              random            time
+  board             microcontroller   rotaryio          touchio
+  builtins          micropython       rtc               usb_hid
+  busio             neopixel_write    storage           usb_midi
+  collections       os                struct
+  Plus any modules on the filesystem
+  ```
 
 #### Use REPL fast with copy-paste multi-one-liners
 
