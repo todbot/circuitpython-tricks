@@ -378,9 +378,9 @@ while True:
 ```
 
 ### What the heck is `secrets.py`?
-It's a config file that lives next to your 'code.py' and is used
+It's a config file that lives next to your `code.py` and is used
 (invisibly) by many Adafruit WiFi libraries.
-You can use it too directly (as in the examples above)
+You can use it too (as in the examples above) without those libraries
 
 It looks like this for basic WiFi connectivity:
 ```py
