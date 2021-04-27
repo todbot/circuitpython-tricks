@@ -38,6 +38,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
    * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
    * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
+   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [Hacks](#hacks)
    * [Using the REPL](#using-the-repl)
       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
@@ -374,6 +375,23 @@ while True:
     data = response.json()
     print("data:",data)
     time.sleep(5)
+```
+
+### What the heck is `secrets.py`?
+It's a config file that lives next to your 'code.py' and is used
+(invisibly) by many Adafruit WiFi libraries.
+You can use it too directly (as in the examples above)
+
+It looks like this for basic WiFi connectivity:
+```py
+# secrets.py
+secrets = {
+  "ssid": "Pretty Fly for a WiFi",
+  "password": "donthackme123"
+}
+# code.py
+from secrets import secrets
+print("your WiFi password is:", secrets['password'])
 ```
 
 ## Hacks
