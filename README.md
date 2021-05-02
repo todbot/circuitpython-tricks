@@ -4,6 +4,7 @@
 A small list of tips & tricks I find myself needing when working with CircuitPython
 
 ## Table of Contents
+
 * [Inputs](#inputs)
    * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
    * [Read a Potentiometer](#read-a-potentiometer)
@@ -27,6 +28,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Read keys from USB Serial](#read-keys-from-usb-serial)
 * [Computery Tasks](#computery-tasks)
    * [Formatting strings](#formatting-strings)
+   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
    * [Make and Use a config file](#make-and-use-a-config-file)
 * [More Esoteric Tasks](#more-esoteric-tasks)
    * [Map an input range to an output range:](#map-an-input-range-to-an-output-range)
@@ -43,6 +45,10 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Using the REPL](#using-the-repl)
       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
       * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+   * [Python info](#python-info)
+      * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
+      * [List names of all global variables](#list-names-of-all-global-variables)
+
 
 ## Inputs
 
@@ -51,7 +57,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   import board
   from digitalio import DigitalInOut, Pull
   button = DigitalInOut(board.D3) # defaults to input
-  button.pull = Pull.UP # turn on internal pull-up resistor
+v  button.pull = Pull.UP # turn on internal pull-up resistor
   print(button.value)  # False == pressed
   ```
 
