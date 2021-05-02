@@ -229,11 +229,21 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 ### Formatting strings
   ```py
   name = "John"
-  fav_color = 0xff3366
+  fav_color = 0x003366
   body_temp = 98.65
-  print("name:%s color:%6x thermometer:%2.1f" % (name,fav_color,body_temp))
+  print("name:%s color:%06x thermometer:%2.1f" % (name,fav_color,body_temp))
   'name:John color:ff3366 thermometer:98.6'
   ```
+
+### Formatting strings with f-strings
+```py
+  name = "John"
+  fav_color = 0x003366
+  body_temp = 98.65
+  print(f"name:{name} color:{color:06x} thermometer:{body_temp:2.1f}")
+  'name:John color:ff3366 thermometer:98.6'
+```
+
 
 ### Make and Use a config file
   ```py
@@ -433,3 +443,32 @@ import displayio; displayio.release_displays()
 import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=0.2); leds.fill(0xff00ff)
 
 ```
+
+### Python info
+
+#### Display which (not built-in) libraries have been imported 
+```py
+import sys
+print(sys.modules.keys())
+# 'dict_keys([])'
+import board
+import neopixel
+import adafruit_dotstar
+print(sys.modules.keys())
+prints "dict_keys(['neopixel', 'adafruit_dotstar'])"
+```
+
+#### List names of all global variables
+```py
+a = 123
+b = 'hello there'
+my_globals = sorted(dir)
+print(my_globals)
+# prints "['__name__', 'a', 'b']"
+if 'a' in my_globals:
+  print("you have a variable named 'a'!")
+if 'c' in my_globals:
+  print("you have a variable named 'c'!")
+```
+
+
