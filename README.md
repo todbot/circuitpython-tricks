@@ -4,51 +4,55 @@
 A small list of tips & tricks I find myself needing when working with CircuitPython
 
 ## Table of Contents
-
-* [Inputs](#inputs)
-   * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
-   * [Read a Potentiometer](#read-a-potentiometer)
-   * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
-   * [Read a Rotary Encoder](#read-a-rotary-encoder)
-   * [Debounce a pin / button](#debounce-a-pin--button)
-   * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
-* [Outputs](#outputs)
-   * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
-   * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
-   * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
-   * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
-* [USB](#usb)
-   * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
-   * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
-   * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
-* [USB Serial](#usb-serial)
-   * [Print to USB Serial](#print-to-usb-serial)
-   * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
-   * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
-   * [Read keys from USB Serial](#read-keys-from-usb-serial)
-* [Computery Tasks](#computery-tasks)
-   * [Formatting strings](#formatting-strings)
-   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
-   * [Make and Use a config file](#make-and-use-a-config-file)
-* [More Esoteric Tasks](#more-esoteric-tasks)
-   * [Map an input range to an output range:](#map-an-input-range-to-an-output-range)
-   * [Time how long something takes:](#time-how-long-something-takes)
-   * [Determine which board you're on:](#determine-which-board-youre-on)
-   * [Support multiple boards with one code.py:](#support-multiple-boards-with-one-codepy)
-   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
-* [Networking](#networking)
-   * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
-   * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
-   * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
-   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
-* [Hacks](#hacks)
-   * [Using the REPL](#using-the-repl)
-      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
-      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
-   * [Python info](#python-info)
-      * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
-      * [List names of all global variables](#list-names-of-all-global-variables)
-
+* [Table of Contents](#table-of-contents)
+ * [Inputs](#inputs)
+    * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
+    * [Read a Potentiometer](#read-a-potentiometer)
+    * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
+    * [Read a Rotary Encoder](#read-a-rotary-encoder)
+    * [Debounce a pin / button](#debounce-a-pin--button)
+    * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+ * [Outputs](#outputs)
+    * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
+    * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
+    * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
+    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+ * [USB](#usb)
+    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
+    * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
+    * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
+ * [USB Serial](#usb-serial)
+    * [Print to USB Serial](#print-to-usb-serial)
+    * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
+    * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
+    * [Read keys from USB Serial](#read-keys-from-usb-serial)
+ * [Computery Tasks](#computery-tasks)
+    * [Formatting strings](#formatting-strings)
+    * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
+    * [Make and Use a config file](#make-and-use-a-config-file)
+ * [More Esoteric Tasks](#more-esoteric-tasks)
+    * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
+    * [Time how long something takes](#time-how-long-something-takes)
+    * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
+ * [Networking](#networking)
+    * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
+    * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
+    * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
+    * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
+ * [I2C](#i2c)
+    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
+ * [Board Info](#board-info)
+    * [Display amount of free RAM](#display-amount-of-free-ram)
+    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
+    * [Determine which board you're on](#determine-which-board-youre-on)
+    * [Support multiple boards with one code.py](#support-multiple-boards-with-one-codepy)
+ * [Hacks](#hacks)
+    * [Using the REPL](#using-the-repl)
+       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
+       * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+    * [Python info](#python-info)
+       * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
+       * [List names of all global variables](#list-names-of-all-global-variables)
 
 ## Inputs
 
@@ -268,7 +272,7 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
 
 ## More Esoteric Tasks
 
-### Map an input range to an output range:
+### Map an input range to an output range
   ```py
   # simple range mapper, like Arduino map()
   def map_range(s, a, b):
@@ -278,7 +282,7 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   out = map_range( in, (0,1023), (0.0,1.0) )
   ```
 
-### Time how long something takes:
+### Time how long something takes
   ```py
   import time
   start_time = time.monotonic() # fraction seconds uptime
@@ -286,34 +290,6 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   elapsed_time = time.monotonic() - start_time
   print("do_something took %f seconds" % elapsed_time)
   ```
-
-### Determine which board you're on:
-  ```py
-  import os
-  print(os.uname().machine)
-  'Adafruit ItsyBitsy M4 Express with samd51g19'
-  ```
-
-### Support multiple boards with one `code.py`:
-  ```py
-  import os
-  board_type = os.uname().machine
-  if 'QT Py M0' in board_type:
-    tft_clk  = board.SCK
-    tft_mosi = board.MOSI
-    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
-  elif 'ItsyBitsy M4' in board_type:
-    tft_clk  = board.SCK
-    tft_mosi = board.MOSI
-    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
-  elif 'Pico' in board_type:
-    tft_clk = board.GP10 # must be a SPI CLK
-    tft_mosi= board.GP11 # must be a SPI TX
-    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
-  else:
-    print("supported board", board_type)
-  ```
-
 
 ### Raspberry Pi Pico boot.py Protection
   ```py
@@ -409,6 +385,74 @@ secrets = {
 from secrets import secrets
 print("your WiFi password is:", secrets['password'])
 ```
+
+## I2C
+
+### Scan I2C bus for devices
+from: https://learn.adafruit.com/circuitpython-essentials/circuitpython-i2c#find-your-sensor-2985153-11
+
+```py
+import board
+i2c = board.I2C() # or busio.I2C(pin_scl,pin_sda)
+while not i2c.try_lock():  pass
+print("I2C addresses found:", [hex(device_address)
+    for device_address in i2c.scan()])
+i2c.unlock()
+```
+
+
+## Board Info
+
+### Display amount of free RAM
+
+from: https://learn.adafruit.com/welcome-to-circuitpython/frequently-asked-questions
+```py
+import gc
+print( gc.mem_free() )
+```
+
+### Show microcontroller.pin to board mappings
+from https://gist.github.com/anecdata/1c345cb2d137776d76b97a5d5678dc97
+```py
+
+import microcontroller
+import board
+
+for pin in dir(microcontroller.pin):
+    if isinstance(getattr(microcontroller.pin, pin), microcontroller.Pin):
+        print("".join(("microcontroller.pin.", pin, "\t")), end=" ")
+        for alias in dir(board):
+            if getattr(board, alias) is getattr(microcontroller.pin, pin):
+                print("".join(("", "board.", alias)), end=" ")
+    print()
+```
+### Determine which board you're on
+  ```py
+  import os
+  print(os.uname().machine)
+  'Adafruit ItsyBitsy M4 Express with samd51g19'
+  ```
+
+### Support multiple boards with one `code.py`
+  ```py
+  import os
+  board_type = os.uname().machine
+  if 'QT Py M0' in board_type:
+    tft_clk  = board.SCK
+    tft_mosi = board.MOSI
+    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
+  elif 'ItsyBitsy M4' in board_type:
+    tft_clk  = board.SCK
+    tft_mosi = board.MOSI
+    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
+  elif 'Pico' in board_type:
+    tft_clk = board.GP10 # must be a SPI CLK
+    tft_mosi= board.GP11 # must be a SPI TX
+    spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
+  else:
+    print("supported board", board_type)
+  ```
+
 
 ## Hacks
 
