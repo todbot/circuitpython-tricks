@@ -152,7 +152,7 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   import board
   import pwmio
   out1 = pwmio.PWMOut(board.MOSI, frequency=25000, duty_cycle=0)
-  out1.out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
+  out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
   ```
 
 ### Control Neopixel / WS2812 LEDs
