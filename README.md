@@ -246,6 +246,8 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   ```
 
 ### Formatting strings with f-strings
+(doesn't work on 'small' CircuitPythons like QTPy M0)
+
 ```py
   name = "John"
   fav_color = 0x003366
@@ -292,6 +294,9 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   ```
 
 ### Raspberry Pi Pico boot.py Protection
+
+Also works on other RP2040-based boards like QTPy RP2040
+
   ```py
   # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
   # from https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
