@@ -140,10 +140,11 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   ```
 
 ### Output Analog value on a DAC pin
+Different boards have DAC on different pins
   ```py
   import board
   import analogio
-  dac = analogio.AnalogOut(board.A0)  # aka 'D1'
+  dac = analogio.AnalogOut(board.A0)  # on Trinket M0 & QT Py
   dac.value = 32768   # mid-point of 0-65535
   ```
 
