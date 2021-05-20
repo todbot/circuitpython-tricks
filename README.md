@@ -143,7 +143,7 @@ v  button.pull = Pull.UP # turn on internal pull-up resistor
   ```py
   import board
   import analogio
-  dac = analogio.AnalogOut(board.D1)
+  dac = analogio.AnalogOut(board.A0)  # aka 'D1'
   dac.value = 32768   # mid-point of 0-65535
   ```
 
