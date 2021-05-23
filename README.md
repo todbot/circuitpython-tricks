@@ -316,7 +316,7 @@ import board, neopixel
 leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
 while True:
   try:
-    leds.fill( random.randint(0,2**24) # RGB @ 8-bits each = 24
+    leds.fill( random.randint(0,2**24) ) # RGB @ 8-bits each = 24
     time.sleep(0.1)
   except KeyboardInterrupt:
     print("shutting down nicely...")
