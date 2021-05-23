@@ -32,7 +32,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [More Esoteric Tasks](#more-esoteric-tasks)
    * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
    * [Time how long something takes](#time-how-long-something-takes)
-   * [Preventing Ctrl-C from stopping the script](#preventing-ctrl-c-from-stopping-the-script)
+   * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
    * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
 * [Networking](#networking)
    * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
@@ -294,7 +294,7 @@ Different boards have DAC on different pins
   print("do_something took %f seconds" % elapsed_time)
   ```
 
-### Preventing Ctrl-C from stopping the script
+### Preventing Ctrl-C from stopping the program
 
 Put a `try`/`except KeyboardInterrupt` to catch the Ctrl-C
 on the inside of your main loop.
