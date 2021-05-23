@@ -4,7 +4,6 @@
 A small list of tips & tricks I find myself needing when working with CircuitPython
 
 ## Table of Contents
-* [Table of Contents](#table-of-contents)
  * [Inputs](#inputs)
     * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
     * [Read a Potentiometer](#read-a-potentiometer)
@@ -33,6 +32,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
  * [More Esoteric Tasks](#more-esoteric-tasks)
     * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
     * [Time how long something takes](#time-how-long-something-takes)
+    * [Preventing Ctrl-C from stopping the script](#preventing-ctrl-c-from-stopping-the-script)
     * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
  * [Networking](#networking)
     * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
@@ -293,6 +293,21 @@ Different boards have DAC on different pins
   elapsed_time = time.monotonic() - start_time
   print("do_something took %f seconds" % elapsed_time)
   ```
+
+### Preventing Ctrl-C from stopping the script
+
+Put a `try`/`except KeyboardInterrupt` to catch the Ctrl-C
+on the inside of your main loop
+
+```py
+while True:
+  try:
+    print("Doing something important...")
+    time.sleep(0.1)
+  except KeyboardInterrupt:
+    print("Nice try, human! Not quitting.")
+```
+
 
 ### Raspberry Pi Pico boot.py Protection
 
