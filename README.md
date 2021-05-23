@@ -4,55 +4,55 @@
 A small list of tips & tricks I find myself needing when working with CircuitPython
 
 ## Table of Contents
- * [Inputs](#inputs)
-    * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
-    * [Read a Potentiometer](#read-a-potentiometer)
-    * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
-    * [Read a Rotary Encoder](#read-a-rotary-encoder)
-    * [Debounce a pin / button](#debounce-a-pin--button)
-    * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
- * [Outputs](#outputs)
-    * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
-    * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
-    * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
-    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
- * [USB](#usb)
-    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
-    * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
-    * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
- * [USB Serial](#usb-serial)
-    * [Print to USB Serial](#print-to-usb-serial)
-    * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
-    * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
-    * [Read keys from USB Serial](#read-keys-from-usb-serial)
- * [Computery Tasks](#computery-tasks)
-    * [Formatting strings](#formatting-strings)
-    * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
-    * [Make and Use a config file](#make-and-use-a-config-file)
- * [More Esoteric Tasks](#more-esoteric-tasks)
-    * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
-    * [Time how long something takes](#time-how-long-something-takes)
-    * [Preventing Ctrl-C from stopping the script](#preventing-ctrl-c-from-stopping-the-script)
-    * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
- * [Networking](#networking)
-    * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
-    * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
-    * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
-    * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
- * [I2C](#i2c)
-    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
- * [Board Info](#board-info)
-    * [Display amount of free RAM](#display-amount-of-free-ram)
-    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
-    * [Determine which board you're on](#determine-which-board-youre-on)
-    * [Support multiple boards with one code.py](#support-multiple-boards-with-one-codepy)
- * [Hacks](#hacks)
-    * [Using the REPL](#using-the-repl)
-       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
-       * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
-    * [Python info](#python-info)
-       * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
-       * [List names of all global variables](#list-names-of-all-global-variables)
+* [Inputs](#inputs)
+   * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
+   * [Read a Potentiometer](#read-a-potentiometer)
+   * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
+   * [Read a Rotary Encoder](#read-a-rotary-encoder)
+   * [Debounce a pin / button](#debounce-a-pin--button)
+   * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+* [Outputs](#outputs)
+   * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
+   * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
+   * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
+   * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+* [USB](#usb)
+   * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
+   * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
+   * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
+* [USB Serial](#usb-serial)
+   * [Print to USB Serial](#print-to-usb-serial)
+   * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
+   * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
+   * [Read keys from USB Serial](#read-keys-from-usb-serial)
+* [Computery Tasks](#computery-tasks)
+   * [Formatting strings](#formatting-strings)
+   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
+   * [Make and Use a config file](#make-and-use-a-config-file)
+* [More Esoteric Tasks](#more-esoteric-tasks)
+   * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
+   * [Time how long something takes](#time-how-long-something-takes)
+   * [Preventing Ctrl-C from stopping the script](#preventing-ctrl-c-from-stopping-the-script)
+   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
+* [Networking](#networking)
+   * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
+   * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
+   * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
+   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
+* [I2C](#i2c)
+   * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
+* [Board Info](#board-info)
+   * [Display amount of free RAM](#display-amount-of-free-ram)
+   * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
+   * [Determine which board you're on](#determine-which-board-youre-on)
+   * [Support multiple boards with one code.py](#support-multiple-boards-with-one-codepy)
+* [Hacks](#hacks)
+   * [Using the REPL](#using-the-repl)
+      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
+      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+* [Python info](#python-info)
+   * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
+   * [List names of all global variables](#list-names-of-all-global-variables)
 
 ## Inputs
 
@@ -297,7 +297,7 @@ Different boards have DAC on different pins
 ### Preventing Ctrl-C from stopping the script
 
 Put a `try`/`except KeyboardInterrupt` to catch the Ctrl-C
-on the inside of your main loop
+on the inside of your main loop.
 
 ```py
 while True:
@@ -306,6 +306,22 @@ while True:
     time.sleep(0.1)
   except KeyboardInterrupt:
     print("Nice try, human! Not quitting.")
+```
+
+Also useful for graceful shutdown (turning on neopixels, say) on Ctrl-C.
+
+```py
+import time, random
+import board, neopixel
+leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
+while True:
+  try:
+    leds.fill( random.randint(0,2**24) # RGB @ 8-bits each = 24
+    time.sleep(0.1)
+  except KeyboardInterrupt:
+    print("shutting down nicely...")
+    leds.fill(0)
+    break  # gets us out of the while True
 ```
 
 
@@ -515,9 +531,9 @@ import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=
 
 ```
 
-### Python info
+## Python info
 
-#### Display which (not built-in) libraries have been imported 
+### Display which (not built-in) libraries have been imported 
 ```py
 import sys
 print(sys.modules.keys())
@@ -529,7 +545,7 @@ print(sys.modules.keys())
 prints "dict_keys(['neopixel', 'adafruit_dotstar'])"
 ```
 
-#### List names of all global variables
+### List names of all global variables
 ```py
 a = 123
 b = 'hello there'
