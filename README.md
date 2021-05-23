@@ -308,7 +308,7 @@ while True:
     print("Nice try, human! Not quitting.")
 ```
 
-Also useful for graceful shutdown (turning on neopixels, say) on Ctrl-C.
+Also useful for graceful shutdown (turning off neopixels, say) on Ctrl-C.
 
 ```py
 import time, random
