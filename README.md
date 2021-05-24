@@ -312,12 +312,13 @@ Also useful for graceful shutdown (turning off neopixels, say) on Ctrl-C.
 
 ```py
 import time, random
-import board, neopixel
+import board, neopixel, adafruit_pypixelbuf
 leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
 while True:
   try:
-    leds.fill( random.randint(0,2**24) ) # RGB @ 8-bits each = 24
-    time.sleep(0.1)
+    rgb = adafruit_pypixelbuf.colorwheel(int(time.monotonic()*75) % 255)
+    leds.fill(rgb) 
+    time.sleep(0.05)
   except KeyboardInterrupt:
     print("shutting down nicely...")
     leds.fill(0)
