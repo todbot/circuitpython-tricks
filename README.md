@@ -197,7 +197,7 @@ dim_by = 20  # dim amount, higher = shorter tails
 pos = 0
 while True:
   leds[pos] = my_color
-  leds[0:] = [[max(i-dim_by,0) for i in l] for l in leds] # dim all by (y,y,y)
+  leds[0:] = [[max(i-dim_by,0) for i in l] for l in leds] # dim all by (dim_by,dim_by,dim_by)
   pos = (pos+1) % num_leds  # move to next position
   leds.show()  # only write to LEDs after updating them all
   time.sleep(0.05)
