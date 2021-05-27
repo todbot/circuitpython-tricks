@@ -194,7 +194,6 @@ while True:
 ```py
 import time, random
 import board, neopixel
-import adafruit_pypixelbuf
 num_leds = 16
 leds = neopixel.NeoPixel(board.D2, num_leds, brightness=0.4, auto_write=False )
 my_color = (55,200,230)
