@@ -18,6 +18,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
 * [Neopixels / Dotstars](#neopixels--dotstars)
    * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
+   * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
 * [USB](#usb)
    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
    * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
@@ -187,6 +188,18 @@ while True:
     leds[l] = adafruit_pypixelbuf.colorwheel( int(i*speed + l * delta_hue) % 255  )
   leds.show()  # only write to LEDs after updating them all
   i = (i+1) % 255
+  time.sleep(0.05)
+```
+### Fade all LEDs by amount for chase effects
+```py
+my_color = (55,200,230)
+dim_by = 20  # dim amount, higher = shorter tails
+pos = 0
+while True:
+  leds[pos] = my_color
+  leds[0:] = [[max(i-dim_by,0) for i in l] for l in leds] # dim all by (y,y,y)
+  pos = (pos+1) % num_leds  # move to next position
+  leds.show()  # only write to LEDs after updating them all
   time.sleep(0.05)
 ```
 
