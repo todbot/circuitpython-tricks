@@ -16,6 +16,8 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
    * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+* [Neopixels / Dotstars](#neopixels--dotstars)
+   * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
 * [USB](#usb)
    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
    * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
@@ -164,6 +166,29 @@ Different boards have DAC on different pins
   led[0] = (255,0,255)  # equivalent
 
   ```
+
+## Neopixels / Dotstars
+
+### Make moving rainbow gradient across LED strip
+The built-in `adafruit_pypixelbuf` library contains a `colorwheel()` function
+that returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
+it.  This will also work for `adafruit_dotstar` instead of `neopixel`.
+```py
+import time, random
+import board, neopixel
+import adafruit_pypixelbuf
+num_leds = 16
+leds = neopixel.NeoPixel(board.D2, num_leds, brightness=0.4, auto_write=False )
+delta_hue = 256//num_leds
+speed = 10  # higher numbers = faster rainbow spinning
+i=0
+while True:
+  for l in range(len(leds)):
+    leds[l] = adafruit_pypixelbuf.colorwheel( int(i*speed + l * delta_hue) % 255  )
+  leds.show()  # only write to LEDs after updating them all
+  i = (i+1) % 255
+  time.sleep(0.05)
+```
 
 
 ## USB
