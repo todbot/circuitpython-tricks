@@ -17,6 +17,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
 * [Neopixels / Dotstars](#neopixels--dotstars)
+   * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
    * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
    * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
 * [USB](#usb)
@@ -56,6 +57,10 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [Python info](#python-info)
    * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
    * [List names of all global variables](#list-names-of-all-global-variables)
+* [Host-side tasks](#host-side-tasks)
+   * [Installing CircuitPython libraries](#installing-circuitpython-libraries)
+      * [Installing libraries with circup](#installing-libraries-with-circup)
+      * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
 
 ## Inputs
 
@@ -170,14 +175,29 @@ Different boards have DAC on different pins
 
 ## Neopixels / Dotstars
 
-### Make moving rainbow gradient across LED strip
-The built-in `adafruit_pypixelbuf` library contains a `colorwheel()` function
-that returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
+### Moving rainbow on built-in `board.NEOPIXEL`
+
+Uses built-in `colorwheel()` function part of `_pixelbuf` or `adafruit_pypixelbuf`:
+This function returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
 it.  This will also work for `adafruit_dotstar` instead of `neopixel`.
+
+```py
+import time
+import board
+import neopixel
+led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4)
+while True:
+  led.fill( neopixel._pixelbuf.colorwheel((time.monotonic()*50)%255) )
+  time.sleep(0.05)
+```
+
+### Make moving rainbow gradient across LED strip
+
+See [demo of it in this tweet](https://twitter.com/todbot/status/1397992493833097218).
+
 ```py
 import time, random
 import board, neopixel
-import adafruit_pypixelbuf
 num_leds = 16
 leds = neopixel.NeoPixel(board.D2, num_leds, brightness=0.4, auto_write=False )
 delta_hue = 256//num_leds
@@ -185,11 +205,12 @@ speed = 10  # higher numbers = faster rainbow spinning
 i=0
 while True:
   for l in range(len(leds)):
-    leds[l] = adafruit_pypixelbuf.colorwheel( int(i*speed + l * delta_hue) % 255  )
+    leds[l] = neopixel._pixelbuf.colorwheel( int(i*speed + l * delta_hue) % 255  )
   leds.show()  # only write to LEDs after updating them all
   i = (i+1) % 255
   time.sleep(0.05)
 ```
+
 ### Fade all LEDs by amount for chase effects
 ```py
 import time, random
@@ -600,5 +621,34 @@ if 'a' in my_globals:
 if 'c' in my_globals:
   print("you have a variable named 'c'!")
 ```
+
+
+## Host-side tasks
+
+### Installing CircuitPython libraries
+
+The below examples are for MacOS / Linux.  Similar commands are used for Windows
+
+#### Installing libraries with `circup` 
+
+`circup` can be used to easily install and update modules/
+
+```sh
+$ pip3 install --user circup
+$ circup install adafruit_midi
+```
+
+#### Copying libraries by hand with `cp`
+
+To install libraries by hand from the
+[CircuitPython Library Bundle](https://circuitpython.org/libraries)
+or from the [CircuitPython Community Bundle](https://github.com/adafruit/CircuitPython_Community_Bundle/releases) (which circup doesn't support), get the bundle, unzip it and then use `cp -rX`.
+
+```sh
+cp -rX bundle_folder/lib/adafruit_midi /Volumes/CIRCUITPY/lib
+```
+
+**Note:** on limited-memory boards like Trinkey, Trinket, QTPy, you must use the `-X` option on MacOS
+to save space. You may also need to omit unused parts of some libraries (e.g. `adafruit_midi/system_exclusive` is not needed if just sending MIDI notes)
 
 
