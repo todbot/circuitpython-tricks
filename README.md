@@ -639,12 +639,14 @@ $ circup install adafruit_midi
 ```
 
 Freshly update all modules to latest version (e.g. when going from CP 6 -> CP 7)
+(This is needed because `circup update` doesn't actually seem to work reliably)
 
 ```sh
 circup freeze > mymodules.txt
 rm -rf /Volumes/CIRCUITPY/lib/*
 circup install -r mymodules.txt
 ```
+
 
 And updating circup when a new version of CircuitPython comes out:
 ```sh
