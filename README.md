@@ -638,6 +638,20 @@ $ pip3 install --user circup
 $ circup install adafruit_midi
 ```
 
+Freshly update all modules to latest version (e.g. when going from CP 6 -> CP 7)
+
+```sh
+circup freeze > mymodules.txt
+rm -rf /Volumes/CIRCUITPY/lib/*
+circup install -r mymodules.txt
+```
+
+And updating circup when a new version of CircuitPython comes out:
+```sh
+$ pip3 install --upgrade circup
+```
+
+
 #### Copying libraries by hand with `cp`
 
 To install libraries by hand from the
