@@ -69,7 +69,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
   import board
   from digitalio import DigitalInOut, Pull
   button = DigitalInOut(board.D3) # defaults to input
-v  button.pull = Pull.UP # turn on internal pull-up resistor
+  button.pull = Pull.UP # turn on internal pull-up resistor
   print(button.value)  # False == pressed
   ```
 
@@ -631,11 +631,12 @@ The below examples are for MacOS / Linux.  Similar commands are used for Windows
 
 #### Installing libraries with `circup` 
 
-`circup` can be used to easily install and update modules/
+`circup` can be used to easily install and update modules
 
 ```sh
 $ pip3 install --user circup
 $ circup install adafruit_midi
+$ circup update   # updates all modules
 ```
 
 Freshly update all modules to latest version (e.g. when going from CP 6 -> CP 7)
