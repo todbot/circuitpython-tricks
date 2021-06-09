@@ -20,6 +20,8 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
    * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
    * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
+* [Audio](#audio)
+   * [Audio out using PWM](#audio-out-using-pwm)
 * [USB](#usb)
    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
    * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
@@ -228,6 +230,33 @@ while True:
   time.sleep(0.05)
 ```
 
+## Audio
+
+### Audio out using PWM
+
+This uses the `audiopwmio` library, only available for Raspberry Pi Pico
+(or other RP2040-based boards) and NRF52840-based boards like Adafruit Feather nRF52840 Express.
+See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiopwmio) for details.
+
+```py
+import time,board
+from audiocore import WaveFile
+from audiopwmio import PWMAudioOut as AudioOut
+wave_file = open("laser2.wav", "rb")
+wave = WaveFile(wave_file)
+audio = AudioOut(board.TX)
+while True:
+    print("audio is playing:",audio.playing)
+    if not audio.playing:
+      audio.play(wave)
+      wave.sample_rate = int(wave.sample_rate * 0.90) # play 10% slower each time
+    time.sleep(0.1)
+```
+Note: Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
+so you may have to reset the board to get PWM audio to work again.
+
+Note: WAV file whould be "16-bit Unsigned PCM" format. Sample rate can be up to 44.1 kHz,
+and is parsed by `audiocore.WaveFile`.
 
 ## USB
 
