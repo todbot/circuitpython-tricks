@@ -23,6 +23,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [Audio](#audio)
    * [Audio out using PWM](#audio-out-using-pwm)
 * [USB](#usb)
+   * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
    * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
    * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
@@ -259,6 +260,22 @@ Note: WAV file whould be "16-bit Unsigned PCM" format. Sample rate can be up to 
 and is parsed by `audiocore.WaveFile`.
 
 ## USB
+
+### Rename CIRCUITPY drive to something new
+
+For instance, if you have multiple of the same device.
+The `label` can be up to 11 characters.
+This goes in `boot.py` not `code.py` and you must powercycle board.
+
+```py
+# this goes in boot.py not code.py!
+new_name = "TRINKEYPY0"
+import storage
+storage.remount("/", readonly=False)
+m = storage.getmount("/")
+m.label = new_name
+storage.remount("/", readonly=True)
+```
 
 ### Detect if USB is connected or not
   ```py
