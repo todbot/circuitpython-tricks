@@ -22,6 +22,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
 * [Audio](#audio)
    * [Audio out using PWM](#audio-out-using-pwm)
+   * [Audio out using DAC](#audio-out-using-dac)
 * [USB](#usb)
    * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
@@ -233,10 +234,11 @@ while True:
 
 ## Audio
 
-### Audio out using PWM
+### Audio out using PWM 
 
 This uses the `audiopwmio` library, only available for Raspberry Pi Pico
 (or other RP2040-based boards) and NRF52840-based boards like Adafruit Feather nRF52840 Express.
+On RP2040-based boards, any pin can be PWM Audio pin.
 See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiopwmio) for details.
 
 ```py
@@ -245,7 +247,7 @@ from audiocore import WaveFile
 from audiopwmio import PWMAudioOut as AudioOut
 wave_file = open("laser2.wav", "rb")
 wave = WaveFile(wave_file)
-audio = AudioOut(board.TX)
+audio = AudioOut(board.TX) # must be PWM-capable pin
 while True:
     print("audio is playing:",audio.playing)
     if not audio.playing:
@@ -253,11 +255,35 @@ while True:
       wave.sample_rate = int(wave.sample_rate * 0.90) # play 10% slower each time
     time.sleep(0.1)
 ```
+
 Note: Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
 so you may have to reset the board to get PWM audio to work again.
 
 Note: WAV file whould be "16-bit Unsigned PCM" format. Sample rate can be up to 44.1 kHz,
 and is parsed by `audiocore.WaveFile`.
+
+Note: PWM output must be filtered and converted to line-level to be usable.
+Use an RC to accomplish this, see [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720)
+
+### Audio out using DAC
+
+Some CircuitPython boards have one or more built-in DACs. These are on specific pins.
+The code is the the same as above, with just the import line changing.
+
+```py
+import time,random,board
+from audiocore import WaveFile
+from audioio import AudioOut as AudioOut # only DAC
+wave_file = open("laser20.wav", "rb")
+wave = WaveFile(wave_file)
+audio = AudioOut(board.A0)  # must be DAC-capable pin, A0 on QTPy Haxpress
+while True:
+  print("audio is playing:",audio.playing)
+  if not audio.playing:
+    audio.play(wave)
+    wave.sample_rate = int(wave.sample_rate * 0.90) # play 10% slower each time
+  time.sleep(0.1)
+```
 
 ## USB
 
