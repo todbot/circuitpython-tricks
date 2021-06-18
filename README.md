@@ -49,6 +49,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [I2C](#i2c)
    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
+   * [Speed up I2C bus](#speed-up-i2c-bus)
 * [Board Info](#board-info)
    * [Display amount of free RAM](#display-amount-of-free-ram)
    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
@@ -263,7 +264,7 @@ Note: WAV file whould be "16-bit Unsigned PCM" format. Sample rate can be up to 
 and is parsed by `audiocore.WaveFile`.
 
 Note: PWM output must be filtered and converted to line-level to be usable.
-Use an RC to accomplish this, see [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720)
+Use an RC circuit to accomplish this, see [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
 
 ### Audio out using DAC
 
@@ -573,6 +574,20 @@ print("I2C addresses found:", [hex(device_address)
 i2c.unlock()
 ```
 
+### Speed up I2C bus
+
+CircuitPython defaults to 100 kHz I2C bus speed. This will work for all devices,
+but some devices can go faster. Common faster speeds are 200 kHz and 400 kHz.
+
+```py
+import board
+import busio
+# instead of doing
+# i2c = board.I2C()
+i2c = busio.I2C( board.SCL, board.SDA, frequency=200_000)
+# then do something with 'i2c' object as before, like:
+oled = adafruit_ssd1306.SSD1306_I2C(width=128, height=32, i2c=i2c)
+```
 
 ## Board Info
 
