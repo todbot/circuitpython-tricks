@@ -37,6 +37,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Formatting strings](#formatting-strings)
    * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
    * [Make and Use a config file](#make-and-use-a-config-file)
+   * [Run different code.py on startup](#run-different-codepy-on-startup)
 * [More Esoteric Tasks](#more-esoteric-tasks)
    * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
    * [Time how long something takes](#time-how-long-something-takes)
@@ -408,6 +409,28 @@ storage.remount("/", readonly=True)
   'secret: 3a3d9bfaf05835df69713c470427fe35'
   ```
 
+### Run different `code.py` on startup
+
+Use `microcontroller.nvm` to store persistent state across
+resets or between `boot.py` and `code.py`, and declare that
+the first byte of `nvm` will be the `startup_mode`.
+Now if you create multiple code.py files (say) `code1.py`, `code2.py`, etc.
+you can switch between them based on `startup_mode`.
+
+```py
+import time
+import microcontroller
+startup_mode = microcontroller.nvm[0]
+if startup_mode == 1:
+    import code1      # runs code in `code1.py`
+if startup_mode == 2:
+    import code2      # runs code in `code2.py`
+# otherwise runs 'code.py`
+while True:
+    print("main code.py")
+    time.sleep(1)
+
+```
 
 ## More Esoteric Tasks
 
