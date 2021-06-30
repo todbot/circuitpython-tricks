@@ -36,7 +36,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [Computery Tasks](#computery-tasks)
    * [Formatting strings](#formatting-strings)
    * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
-   * [Make and Use a config file](#make-and-use-a-config-file)
+   * [Make and use a config file](#make-and-use-a-config-file)
    * [Run different code.py on startup](#run-different-codepy-on-startup)
 * [More Esoteric Tasks](#more-esoteric-tasks)
    * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
@@ -395,7 +395,7 @@ storage.remount("/", readonly=True)
 ```
 
 
-### Make and Use a config file
+### Make and use a config file
   ```py
   # my_config.py
   config = {
@@ -522,6 +522,7 @@ Also works on other RP2040-based boards like QTPy RP2040
 ### Scan for WiFi Networks, sorted by signal strength (ESP32-S2)
 
 ```py
+import wifi
 networks = []
 for network in wifi.radio.start_scanning_networks():
   networks.append(network)
