@@ -51,6 +51,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
    * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
    * [Display background bitmap](#display-background-bitmap)
+   * [Dealing with E-Ink "Refresh Too Soon" error](#dealing-with-e-ink-refresh-too-soon-error)
 * [I2C](#i2c)
    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
    * [Speed up I2C bus](#speed-up-i2c-bus)
@@ -632,6 +633,26 @@ time.sleep(2)
 background.fill(1) # change background to dark yellow (mypal[1])
 ```
 
+### Dealing with E-Ink "Refresh Too Soon" error
+
+E-Ink displays are damaged if refreshed too frequently.
+CircuitPython enforces this, but also provides `display.time_to_refresh`,
+the number of seconds you need to wait before the display can be refreshed.
+One solution is to sleep a little longer than that and you'll never get the error.
+(Another would be to wait for `time_to_refresh` to go to zero)
+
+```py
+import time, board, displayio, terminalio
+from adafruit_display_text import label
+mylabel = label.Label(terminalio.FONT, text="demo", x=20,y=20,
+                      background_color=0x000000, color=0xffffff )
+display = board.DISPLAY  # e.g. for MagTag
+display.show(mylabel)
+while True:
+    time.sleep(0.1 + display.time_to_refresh)
+    mylabel.text = str(time.monotonic())
+    display.refresh()
+```
 
 ## I2C
 
