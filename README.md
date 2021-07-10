@@ -48,6 +48,9 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
    * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
    * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
+* [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
+   * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
+   * [Display background bitmap](#display-background-bitmap)
 * [I2C](#i2c)
    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
    * [Speed up I2C bus](#speed-up-i2c-bus)
@@ -583,6 +586,52 @@ secrets = {
 from secrets import secrets
 print("your WiFi password is:", secrets['password'])
 ```
+
+## Displays (LCD / OLED / E-Ink) and displayio
+
+[displayio](https://circuitpython.readthedocs.io/en/latest/shared-bindings/displayio/#)
+is the native system-level driver for displays in CircuitPython. Several CircuitPython boards
+(FunHouse, MagTag, PyGamer, CLUE) have `displayio`-based displays and a
+built-in `board.DISPLAY` object that is preconfigured for that display.
+Or, you can add your own [I2C](https://circuitpython.readthedocs.io/en/latest/shared-bindings/displayio/#displayio.I2CDisplay) or [SPI](https://circuitpython.readthedocs.io/en/latest/shared-bindings/displayio/#displayio.FourWire) display.
+
+### Get default display and change display rotation
+
+Boards like FunHouse, MagTag, PyGamer, CLUE have built-in displays.
+`display.rotation` works with all displays, not just built-in ones.
+
+```py
+import board
+display = board.DISPLAY
+print(display.rotation) # print current rotation
+display.rotation = 0    # valid values 0,90,180,270
+```
+
+### Display background bitmap
+
+Useful for display a solid background color that can be quickly changed.
+
+```py
+import time, board, displayio
+display = board.DISPLAY      # get default display (FunHouse,Pygamer,etc)
+# Create a main group to hold everything and put it on the display
+screen = displayio.Group() 
+display.show(screen)
+# make background bitmap that spans the entire display, with 3 colors
+background = displayio.Bitmap(display.width, display.height, 3)
+# make a 3 color palette to match
+mypal = displayio.Palette(3)
+mypal[0] = 0x000000 # set up those four colors (black)
+mypal[1] = 0x999900 # dark yellow
+mypal[2] = 0x009999 # dark cyan
+# Put background into main group, using palette to map palette ids to colors
+screen.append(displayio.TileGrid(background, pixel_shader=mypal))
+time.sleep(2)
+background.fill(2) # change background to dark cyan (mypal[2])
+time.sleep(2)
+background.fill(1) # change background to dark yellow (mypal[1])
+```
+
 
 ## I2C
 
