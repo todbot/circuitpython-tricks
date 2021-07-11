@@ -1,7 +1,9 @@
 
 # circuitpython-tricks
 
-A small list of tips & tricks I find myself needing when working with CircuitPython
+A small list of tips & tricks I find myself needing when working with CircuitPython.
+
+(Note: most all of these assume CircuitPython 7)
 
 ## Table of Contents
 * [Inputs](#inputs)
@@ -639,7 +641,7 @@ E-Ink displays are damaged if refreshed too frequently.
 CircuitPython enforces this, but also provides `display.time_to_refresh`,
 the number of seconds you need to wait before the display can be refreshed.
 One solution is to sleep a little longer than that and you'll never get the error.
-(Another would be to wait for `time_to_refresh` to go to zero)
+Another would be to wait for `time_to_refresh` to go to zero, as show below.
 
 ```py
 import time, board, displayio, terminalio
@@ -649,9 +651,10 @@ mylabel = label.Label(terminalio.FONT, text="demo", x=20,y=20,
 display = board.DISPLAY  # e.g. for MagTag
 display.show(mylabel)
 while True:
-    time.sleep(0.1 + display.time_to_refresh)
+    if display.time_to_refresh == 0:
+        display.refresh()
     mylabel.text = str(time.monotonic())
-    display.refresh()
+    time.sleep(0.1)
 ```
 
 ## I2C
