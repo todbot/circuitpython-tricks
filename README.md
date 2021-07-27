@@ -54,6 +54,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
    * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
    * [Display background bitmap](#display-background-bitmap)
+   * [Image slideshow](#image-slideshow)
    * [Dealing with E-Ink "Refresh Too Soon" error](#dealing-with-e-ink-refresh-too-soon-error)
 * [I2C](#i2c)
    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
@@ -678,6 +679,52 @@ background.fill(2) # change background to dark cyan (mypal[2])
 time.sleep(2)
 background.fill(1) # change background to dark yellow (mypal[1])
 ```
+
+Can also use `adafruit_display_shapes` to make this easier:
+
+```py
+import time, board, displayio
+from adafruit_display_shapes.rect import Rect
+display = board.DISPLAY  
+screen = displayio.Group()  # a main group that holds everything
+display.show(screen)        # add main group to display
+background = Rect(0,0, display.width, display.height, fill=0x000000 ) # background color
+screen.append(background)
+```
+
+### Image slideshow
+
+```py
+import time, board, displayio
+import adafruit_imageload
+
+display = board.DISPLAY # get display object (built-in on some boards)
+screen = displayio.Group() # main group that holds all on-screen content
+display.show(screen)       # add it to display
+
+file_names = [ '/images/cat1.bmp', '/images/cat2.bmp' ]  # list of filenames
+
+screen.append(displayio.Group())  # placeholder, will be replaced w/ screen[0] below
+while True:
+    for fname in file_names:
+        image, palette = adafruit_imageload.load(fname)
+        screen[0] = displayio.TileGrid(image, pixel_shader=palette)
+        time.sleep(1) 
+```
+
+__Note:__ images must be in palettized BMP3 format.
+If you have [ImageMagick](https://imagemagick.org/index.php) installed,
+you can use its `convert` command to take any image format to proper BMP3 format:
+```
+convert cat1.jpg -type palette -colors 256 BMP3:cat1.bmp
+```
+To make images smaller (and load faster), reduce number of colors from 256.
+If your image is a monochrome (or for use with E-Ink displays like MagTag), use 2 colors.
+Also try adding "+dither":
+```
+convert cat.jpg -type palette -colors 2 +dither BMP3:cat.bmp
+```
+
 
 ### Dealing with E-Ink "Refresh Too Soon" error
 
