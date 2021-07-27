@@ -553,7 +553,7 @@ safe.switch_to_input(Pull.UP)
 
 def reset_on_pin():
     if safe.value is False:
-	    import microcontroller
+        import microcontroller
         microcontroller.on_next_reset(microcontroller.RunMode.SAFE_MODE)
         microcontroller.reset()
 
