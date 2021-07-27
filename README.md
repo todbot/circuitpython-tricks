@@ -44,6 +44,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
    * [Time how long something takes](#time-how-long-something-takes)
    * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
+   * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
    * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
 * [Networking](#networking)
    * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
@@ -84,6 +85,13 @@ from digitalio import DigitalInOut, Pull
 button = DigitalInOut(board.D3) # defaults to input
 button.pull = Pull.UP # turn on internal pull-up resistor
 print(button.value)  # False == pressed
+```
+
+Can also do:
+
+```py
+button = DigitalInOut(board.D3) 
+button.switch_to_input(Pull.UP)
 ```
 
 ### Read a Potentiometer 
@@ -164,6 +172,12 @@ import digitalio
 ledpin = digitalio.DigitalInOut(board.D2)
 ledpin.direction = digitalio.Direction.OUTPUT
 ledpin.value = True
+```
+
+Can also do:
+```py
+ledpin = digitalio.DigitalInOut(board.D2)
+ledpin.switch_to_output(value=True)
 ```
 
 ### Output Analog value on a DAC pin
