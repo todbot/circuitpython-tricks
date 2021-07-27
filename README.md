@@ -720,9 +720,10 @@ convert cat1.jpg -type palette -colors 256 BMP3:cat1.bmp
 ```
 To make images smaller (and load faster), reduce number of colors from 256.
 If your image is a monochrome (or for use with E-Ink displays like MagTag), use 2 colors.
-Also try adding "+dither":
+The ["-dither" options](https://legacy.imagemagick.org/Usage/quantize/#colors)
+are really helpful for monochrome:
 ```
-convert cat.jpg -type palette -colors 2 +dither BMP3:cat.bmp
+convert cat.jpg -dither FloydSteinberg -colors 2 -type palette BMP3:cat.bmp
 ```
 
 
