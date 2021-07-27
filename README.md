@@ -77,113 +77,124 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 ## Inputs
 
 ### Read an digital input as a Button
-  ```py
-  import board
-  from digitalio import DigitalInOut, Pull
-  button = DigitalInOut(board.D3) # defaults to input
-  button.pull = Pull.UP # turn on internal pull-up resistor
-  print(button.value)  # False == pressed
-  ```
+
+```py
+import board
+from digitalio import DigitalInOut, Pull
+button = DigitalInOut(board.D3) # defaults to input
+button.pull = Pull.UP # turn on internal pull-up resistor
+print(button.value)  # False == pressed
+```
 
 ### Read a Potentiometer 
-  ```py
-  import board
-  import analogio
-  potknob = analogio.AnalogIn(board.A1)
-  position = potknob.value  # ranges from 0-65535
-  pos = potknob.value // 256  # make 0-255 range
-  ```
+
+```py
+import board
+import analogio
+potknob = analogio.AnalogIn(board.A1)
+position = potknob.value  # ranges from 0-65535
+pos = potknob.value // 256  # make 0-255 range
+```
 
 ### Read a Touch Pin / Capsense
-  ```py
-  import touchio
-  import board
-  touch_pin = touchio.TouchIn(board.GP6)
-  # on Pico / RP2040, need 1M pull-down on each input
-  if touch_pin.value: 
-    print("touched!")
-  ```
+
+```py
+import touchio
+import board
+touch_pin = touchio.TouchIn(board.GP6)
+# on Pico / RP2040, need 1M pull-down on each input
+if touch_pin.value: 
+print("touched!")
+```
 
 ### Read a Rotary Encoder
-  ```py
-  import board
-  import rotaryio
-  encoder = rotaryio.IncrementalEncoder(board.GP0, board.GP1) # must be consecutive on Pico
-  print(encoder.position)  # starts at zero, goes neg or pos
-  ```
+
+```py
+import board
+import rotaryio
+encoder = rotaryio.IncrementalEncoder(board.GP0, board.GP1) # must be consecutive on Pico
+print(encoder.position)  # starts at zero, goes neg or pos
+```
 
 ### Debounce a pin / button 
-  ```py
-  import board
-  from digitalio import DigitalInOut, Pull
-  from adafruit_debouncer import Debouncer
-  button_in = DigitalInOut(board.D3) # defaults to input
-  button_in.pull = Pull.UP # turn on internal pull-up resistor
-  button = Debouncer(button_in)
-  while True:
+
+```py
+import board
+from digitalio import DigitalInOut, Pull
+from adafruit_debouncer import Debouncer
+button_in = DigitalInOut(board.D3) # defaults to input
+button_in.pull = Pull.UP # turn on internal pull-up resistor
+button = Debouncer(button_in)
+while True:
     button.update()
     if button.fell:
-      print("press!")
+        print("press!")
     if button.rose:
       print("release!")
-  ```
+```
 
 ### Set up and debounce a list of pins
-  ```py
-  import board
-  from digitalio import DigitalInOut, Pull
-  from adafruit_debouncer import Debouncer
-  pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
-  buttons = []   # will hold list of Debouncer objects
-  for pin in pins:
+
+```py
+import board
+from digitalio import DigitalInOut, Pull
+from adafruit_debouncer import Debouncer
+pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
+buttons = []   # will hold list of Debouncer objects
+for pin in pins:   # set up each pin
     tmp_pin = DigitalInOut(pin) # defaults to input
-    tmp_pin.pull = Pull.UP # turn on internal pull-up resistor
+    tmp_pin.pull = Pull.UP      # turn on internal pull-up resistor
     buttons.append( Debouncer(tmp_pin) )
-  while True:
+while True:
     for i in range(len(buttons)):
-      buttons[i].update()
-      if buttons[i].fell:
-        print("button",i,"pressed!")
-      if buttons[i].rose:
-        print("button",i,"released!")
-  ```
+        buttons[i].update()
+        if buttons[i].fell:
+            print("button",i,"pressed!")
+        if buttons[i].rose:
+            print("button",i,"released!")
+```
         
 ## Outputs
 
 ### Output HIGH / LOW on a pin (like an LED)
-  ```py
-  import board
-  import digitalio
-  ledpin = digitalio.DigitalInOut(board.D2)
-  ledpin.direction = digitalio.Direction.OUTPUT
-  ledpin.value = True
-  ```
+
+```py
+import board
+import digitalio
+ledpin = digitalio.DigitalInOut(board.D2)
+ledpin.direction = digitalio.Direction.OUTPUT
+ledpin.value = True
+```
 
 ### Output Analog value on a DAC pin
+
 Different boards have DAC on different pins
-  ```py
-  import board
-  import analogio
-  dac = analogio.AnalogOut(board.A0)  # on Trinket M0 & QT Py
-  dac.value = 32768   # mid-point of 0-65535
-  ```
+
+```py
+import board
+import analogio
+dac = analogio.AnalogOut(board.A0)  # on Trinket M0 & QT Py
+dac.value = 32768   # mid-point of 0-65535
+```
 
 ### Output a "Analog" value on a PWM pin
-  ```py
-  import board
-  import pwmio
-  out1 = pwmio.PWMOut(board.MOSI, frequency=25000, duty_cycle=0)
-  out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
-  ```
+
+```py
+import board
+import pwmio
+out1 = pwmio.PWMOut(board.MOSI, frequency=25000, duty_cycle=0)
+out1.duty_cycle = 32768  # mid-point 0-65535 = 50 % duty-cycle
+```
 
 ### Control Neopixel / WS2812 LEDs
-  ```py
-  import neopixel
-  led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
-  led[0] = 0xff00ff
-  led[0] = (255,0,255)  # equivalent
 
-  ```
+```py
+import neopixel
+leds = neopixel.NeoPixel(board.NEOPIXEL, 16, brightness=0.2)
+leds[0] = 0xff00ff  # first LED of 16 defined
+leds[0] = (255,0,255)  # equivalent
+leds.fill( 0x00ff00 )  # set all to green
+```
 
 ## Neopixels / Dotstars
 
@@ -192,6 +203,8 @@ Different boards have DAC on different pins
 Uses built-in `colorwheel()` function part of `_pixelbuf` or `adafruit_pypixelbuf`:
 This function returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
 it.  This will also work for `adafruit_dotstar` instead of `neopixel`.
+
+Note: In CircuitPython 7, `colorwheel()` is now in the `rainbowio` module.
 
 ```py
 import time
@@ -312,108 +325,109 @@ storage.remount("/", readonly=True)
 ```
 
 ### Detect if USB is connected or not
-  ```py
-  def is_usb_connected():
+
+```py
+def is_usb_connected():
     import storage
     try:
-      storage.remount('/', readonly=False)  # attempt to mount readwrite
-      storage.remount('/', readonly=True)  # attempt to mount readonly
+        storage.remount('/', readonly=False)  # attempt to mount readwrite
+        storage.remount('/', readonly=True)  # attempt to mount readonly
     except RuntimeError as e:
-      return True
+        return True
     return False
-  is_usb = "USB" if is_usb_connected() else "NO USB"
-  print("USB:", is_usb)
-  ```
+is_usb = "USB" if is_usb_connected() else "NO USB"
+print("USB:", is_usb)
+```
 
 ### Get CIRCUITPY disk size and free space
-  ```py
-  import os
-  fs_stat = os.statvfs('/')
-  print("Disk size in MB", fs_stat[0] * fs_stat[2] / 1024 / 1024)
-  print("Free space in MB", fs_stat[0] * fs_stat[3] / 1024 / 1024)
-  ```
+```py
+import os
+fs_stat = os.statvfs('/')
+print("Disk size in MB", fs_stat[0] * fs_stat[2] / 1024 / 1024)
+print("Free space in MB", fs_stat[0] * fs_stat[3] / 1024 / 1024)
+```
 
 ### Programmatically reset to UF2 bootloader 
-  ```py
-  import micrcocontroller
-  microcontroller.on_next_reset(microcontroller.RunMode.BOOTLOADER)
-  microcontroller.reset()
-  ```
+```py
+import micrcocontroller
+microcontroller.on_next_reset(microcontroller.RunMode.BOOTLOADER)
+microcontroller.reset()
+```
 
 ## USB Serial
 
 ### Print to USB Serial
-  ```py
-  print("hello there")  # prints a newline
-  print("waiting...", end='')   # does not print newline
-  ```
+```py
+print("hello there")  # prints a newline
+print("waiting...", end='')   # does not print newline
+```
 
 ### Read user input from USB Serial, blocking
-  ```py
-  while True:
+```py
+while True:
     print("Type something: ", end='')
     my_str = input()  # type and press ENTER or RETURN
     print("You entered: ", my_str)
-  ```
+```
 
 ### Read user input from USB Serial, non-blocking (mostly)
-  ```py
-  import time
-  import supervisor
-  print("Type something when you're ready")
-  last_time = time.monotonic()
-  while True:
+```py
+import time
+import supervisor
+print("Type something when you're ready")
+last_time = time.monotonic()
+while True:
     if supervisor.runtime.serial_bytes_available:
-      my_str = input()
-      print("You entered:", my_str)
+        my_str = input()
+        print("You entered:", my_str)
     if time.monotonic() - last_time > 1:  # every second, print
-      last_time = time.monotonic()
-      print(int(last_time),"waiting...")
-  ```
+        last_time = time.monotonic()
+        print(int(last_time),"waiting...")
+```
 
 ### Read keys from USB Serial
-  ```py
+```py
   [tbd]
-
-  ```
+```
 
 
 ## Computery Tasks
 
 ### Formatting strings
-  ```py
-  name = "John"
-  fav_color = 0x003366
-  body_temp = 98.65
-  print("name:%s color:%06x thermometer:%2.1f" % (name,fav_color,body_temp))
-  'name:John color:ff3366 thermometer:98.6'
-  ```
+```py
+name = "John"
+fav_color = 0x003366
+body_temp = 98.65
+fav_number = 123
+print("name:%s color:%06x temp:%2.1f num:%d" % (name,fav_color,body_temp,fav_number))
+# 'name:John color:ff3366 temp:98.6 num:123'
+```
 
 ### Formatting strings with f-strings
 (doesn't work on 'small' CircuitPythons like QTPy M0)
 
 ```py
-  name = "John"
-  fav_color = 0x003366
-  body_temp = 98.65
-  print(f"name:{name} color:{color:06x} thermometer:{body_temp:2.1f}")
-  'name:John color:ff3366 thermometer:98.6'
+name = "John"
+fav_color = 0x003366
+body_temp = 98.65
+print(f"name:{name} color:{color:06x} temp:{body_temp:2.1f} num:{fav_number:%d}")
+# 'name:John color:ff3366 temp:98.6 num:123'
 ```
 
-
 ### Make and use a config file
-  ```py
-  # my_config.py
-  config = {
+```py
+# my_config.py
+config = {
     "username": "Grogu Djarin",
     "password": "ig88rules",
     "secret_key": "3a3d9bfaf05835df69713c470427fe35"
-  }
-  # code.py
-  from my_config import config
-  print("secret:", config['secret_key'])
-  'secret: 3a3d9bfaf05835df69713c470427fe35'
-  ```
+}
+
+# code.py
+from my_config import config
+print("secret:", config['secret_key'])
+# 'secret: 3a3d9bfaf05835df69713c470427fe35'
+```
 
 ### Run different `code.py` on startup
 
@@ -441,23 +455,25 @@ while True:
 ## More Esoteric Tasks
 
 ### Map an input range to an output range
-  ```py
-  # simple range mapper, like Arduino map()
-  def map_range(s, a, b):
-      (a1, a2), (b1, b2) = a, b
-      return  b1 + ((s - a1) * (b2 - b1) / (a2 - a1))
-  # map 0-0123 value to 0.0-1.0 value
-  out = map_range( in, (0,1023), (0.0,1.0) )
-  ```
+```py
+# simple range mapper, like Arduino map()
+def map_range(s, a1, a2, b1, b2):
+    return  b1 + ((s - a1) * (b2 - b1) / (a2 - a1))
+
+# example: map 0-0123 value to 0.0-1.0 value
+val = 768
+outval = map_range( val, 0,1023, 0.0,1.0 )
+# outval = 0.75
+```
 
 ### Time how long something takes
-  ```py
-  import time
-  start_time = time.monotonic() # fraction seconds uptime
-  do_something()
-  elapsed_time = time.monotonic() - start_time
-  print("do_something took %f seconds" % elapsed_time)
-  ```
+```py
+import time
+start_time = time.monotonic() # fraction seconds uptime
+do_something()
+elapsed_time = time.monotonic() - start_time
+print("do_something took %f seconds" % elapsed_time)
+```
 
 ### Preventing Ctrl-C from stopping the program
 
@@ -490,38 +506,50 @@ while True:
     break  # gets us out of the while True
 ```
 
+### Prevent auto-reload when CIRCUITPY is touched
+
+Normally, CircuitPython restarts anytime the CIRCUITPY drive is written to.
+This is great normally, but is frustrating if you want your code to keep running,
+and you want to control exactly when a restart happens. 
+
+```py
+import supervisor
+supervisor.disable_autoreload()
+```
+
+With this, to trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
 
 ### Raspberry Pi Pico boot.py Protection
 
-Also works on other RP2040-based boards like QTPy RP2040
+Also works on other RP2040-based boards like QTPy RP2040.
+From https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
 
-  ```py
-  # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
-  # from https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
-  # Useful in case Pico locks up (which it's done a few times on me)
-  import board
-  import time
-  from digitalio import DigitalInOut,Pull
-  import time
-  led = DigitalInOut(board.LED)
-  led.switch_to_output()
+```py
+# Copy this as 'boot.py' in your Pico's CIRCUITPY drive
+# Useful in case Pico locks up (which it's done a few times on me)
+import board
+import time
+from digitalio import DigitalInOut,Pull
 
-  safe = DigitalInOut(board.GP14)
-  safe.switch_to_input(Pull.UP)
+led = DigitalInOut(board.LED)
+led.switch_to_output()
 
-  def reset_on_pin():
-	if safe.value is False:
-	import microcontroller
-	microcontroller.on_next_reset(microcontroller.RunMode.SAFE_MODE)
-	microcontroller.reset()
+safe = DigitalInOut(board.GP14)  # <-- choose your button pin
+safe.switch_to_input(Pull.UP)
 
-    led.value = False
-    for x in range(16):
+def reset_on_pin():
+    if safe.value is False:
+	    import microcontroller
+        microcontroller.on_next_reset(microcontroller.RunMode.SAFE_MODE)
+        microcontroller.reset()
+
+led.value = False
+for x in range(16):
 	reset_on_pin()
-	led.value = not led.value
+	led.value = not led.value  # toggle LED on/off as notice
 	time.sleep(0.1)
     
-  ```
+```
 
 ## Networking
 
@@ -531,11 +559,11 @@ Also works on other RP2040-based boards like QTPy RP2040
 import wifi
 networks = []
 for network in wifi.radio.start_scanning_networks():
-  networks.append(network)
+    networks.append(network)
 wifi.radio.stop_scanning_networks()
 networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
 for network in networks:
-  print("ssid:",network.ssid, "rssi:",network.rssi)
+    print("ssid:",network.ssid, "rssi:",network.rssi)
 ```
 
 ### Ping an IP address (ESP32-S2)
@@ -545,7 +573,9 @@ import wifi
 import ipaddress
 from secrets import secrets
 ip_to_ping = "1.1.1.1"
+
 wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+
 print("my IP addr:", wifi.radio.ipv4_address)
 print("pinging ",ip_to_ping)
 ip1 = ipaddress.ip_address(ip_to_ping)
@@ -773,6 +803,9 @@ import microcontroller; dir(microcontroller.pin)
 
 # release configured / built-in display
 import displayio; displayio.release_displays()
+
+# turn off auto-reload when CIRCUITPY drive is touched
+import supervisor; supervisor.disable_autoreload()
 
 # make all neopixels purple
 import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=0.2); leds.fill(0xff00ff)
