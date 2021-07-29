@@ -440,7 +440,7 @@ while True:
     #mystr = usb_reader.read(end_char='\t', echo=False) # trigger on tab, no echo
     if mystr:
         print("got:",mystr)
-    time.sleep(0.01)
+    time.sleep(0.01)  # do something time critical
 ```
 
 
@@ -503,6 +503,17 @@ while True:
     print("main code.py")
     time.sleep(1)
 
+```
+
+**Note:** in CircuitPyton 7+ you can use [`supervisor.set_next_code_file()`](https://circuitpython.readthedocs.io/en/latest/shared-bindings/supervisor/index.html#supervisor.set_next_code_file)
+to change which .py file is run on startup.
+This changes only what happens on reload, not hardware reset or powerup.
+Using it would look like:
+```py
+import supervisor
+supervisor.set_next_code_file('code_awesome.py')
+# and then if you want to run it now, trigger a reload
+supervisor.reload()
 ```
 
 ## More Esoteric Tasks
