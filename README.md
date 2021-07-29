@@ -35,6 +35,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
    * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
    * [Read keys from USB Serial](#read-keys-from-usb-serial)
+   * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
 * [Computery Tasks](#computery-tasks)
    * [Formatting strings](#formatting-strings)
    * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
@@ -402,7 +403,44 @@ while True:
 
 ### Read keys from USB Serial
 ```py
-  [tbd]
+import time, sys, supervisor
+print("type charactcers")
+while True:
+    n = supervisor.runtime.serial_bytes_available
+    if n > 0:  # we read something!
+        s = sys.stdin.read(n)  # actually read it in
+        # print both text & hex version of recv'd chars (see control chars!)
+        print("got:", " ".join("{:s} {:02x}".format(c,ord(c)) for c in s))
+    time.sleep(0.01) # do something else
+```
+
+### Read user input from USB serial, non-blocking
+```py
+class USBSerialReader:
+    """ Read a line from USB Serial (up to end_char), non-blocking, with optional echo """
+    def __init__(self):
+        self.s = ''  
+    def read(self,end_char='\n', echo=True):
+        import sys, supervisor
+        n = supervisor.runtime.serial_bytes_available
+        if n > 0:                    # we got bytes!
+            s = sys.stdin.read(n)    # actually read it in
+            if echo: sys.stdout.write(s)  # echo back to human
+            self.s = self.s + s      # keep building the string up
+            if s.endswith(end_char): # got our end_char!
+                rstr = self.s        # save for return
+                self.s = ''          # reset str to beginning
+                return rstr
+        return None                  # no end_char yet
+
+usb_reader = USBSerialReader()
+print("type something and press the end_char")
+while True:
+    mystr = usb_reader.read()  # read until newline, echo back chars
+    #mystr = usb_reader.read(end_char='\t', echo=False) # trigger on tab, no echo
+    if mystr:
+        print("got:",mystr)
+    time.sleep(0.01)
 ```
 
 
