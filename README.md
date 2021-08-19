@@ -5,7 +5,8 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 
 (Note: most all of these assume CircuitPython 7)
 
-## Table of Contents
+Table of Contents
+=================
 * [Inputs](#inputs)
    * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
    * [Read a Potentiometer](#read-a-potentiometer)
@@ -25,6 +26,8 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 * [Audio](#audio)
    * [Audio out using PWM](#audio-out-using-pwm)
    * [Audio out using DAC](#audio-out-using-dac)
+   * [Audio out using I2C](#audio-out-using-i2c)
+   * [Making simple tones](#making-simple-tones)
 * [USB](#usb)
    * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
    * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
@@ -54,6 +57,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
    * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
+   * [Display an image](#display-an-image)
    * [Display background bitmap](#display-background-bitmap)
    * [Image slideshow](#image-slideshow)
    * [Dealing with E-Ink "Refresh Too Soon" error](#dealing-with-e-ink-refresh-too-soon-error)
@@ -69,6 +73,8 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
    * [Using the REPL](#using-the-repl)
       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
       * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+* [Python tricks](#python-tricks)
+   * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
 * [Python info](#python-info)
    * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
    * [List names of all global variables](#list-names-of-all-global-variables)
@@ -271,6 +277,17 @@ while True:
 
 ## Audio
 
+In CircuitPython, there are three different techniques to output audio:
+
+- DAC using `audioio`
+- PWM using `audiopwmio` - requires RC filter (at least)
+- I2S using `audiobusio` - requires external I2S decoder hardware
+
+CircuitPython's support on particular microcontroller may include support for several of these ways
+(e.g. SAMD51 supports DAC & I2S, just one
+(e.g. ESP32-S2 supports only I2S) or even none
+(e.g. Teensy)
+
 ### Audio out using PWM 
 
 This uses the `audiopwmio` library, only available for Raspberry Pi Pico
@@ -321,6 +338,16 @@ while True:
     wave.sample_rate = int(wave.sample_rate * 0.90) # play 10% slower each time
   time.sleep(0.1)
 ```
+
+### Audio out using I2C
+
+[tbd]
+
+
+### Making simple tones
+
+On ESP32-S2-based boards like FunHouse, you cannot yet play WAV files, but you can make beeps.
+
 
 ## USB
 
@@ -704,7 +731,32 @@ print(display.rotation) # print current rotation
 display.rotation = 0    # valid values 0,90,180,270
 ```
 
-### Display background bitmap
+### Display an image
+
+The `adafruit_imageload` library makes it easier to load images and display them.
+The images should be in paletized BMP3 format.
+
+```py
+import board
+import displayio
+import adafruit_imageload
+
+img_filename = "bg_jp200.bmp"
+display = board.DISPLAY
+img, pal = adafruit_imageload.load(img_filename)
+group = displayio.Group()
+group.append(displayio.TileGrid(img, pixel_shader=pal))
+display.show(group)
+```
+
+CircuitPython's `displayio` library works like:
+- an image `Bitmap` goes inside a `TileGrid`
+- a `TileGrid` goes inside a `Group`
+- a `Group` is shown on a `Display`.
+
+
+
+### Display background bitmap 
 
 Useful for display a solid background color that can be quickly changed.
 
@@ -765,7 +817,7 @@ __Note:__ images must be in palettized BMP3 format.
 If you have [ImageMagick](https://imagemagick.org/index.php) installed,
 you can use its `convert` command to take any image format to proper BMP3 format:
 ```
-convert cat1.jpg -type palette -colors 256 BMP3:cat1.bmp
+convert cat1.jpg -colors 256 -type palette BMP3:cat1.bmp
 ```
 To make images smaller (and load faster), reduce number of colors from 256.
 If your image is a monochrome (or for use with E-Ink displays like MagTag), use 2 colors.
@@ -923,7 +975,21 @@ import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=
 
 ```
 
+## Python tricks
+
+These are general Python tips that may be useful in CircuitPython.
+
+### Create list with elements all the same value
+
+```py
+blank_array = [0] * 50   # creats 50-element list of zeros
+```
+
+
+
 ## Python info
+
+How to get information about Python inside of CircuitPython.
 
 ### Display which (not built-in) libraries have been imported 
 ```py
@@ -952,6 +1018,8 @@ if 'c' in my_globals:
 
 
 ## Host-side tasks
+
+Things you might need to do on your computer when using CircuitPython.
 
 ### Installing CircuitPython libraries
 
