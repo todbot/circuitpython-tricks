@@ -39,17 +39,6 @@ Table of Contents
    * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
    * [Read keys from USB Serial](#read-keys-from-usb-serial)
    * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
-* [Computery Tasks](#computery-tasks)
-   * [Formatting strings](#formatting-strings)
-   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
-   * [Make and use a config file](#make-and-use-a-config-file)
-   * [Run different code.py on startup](#run-different-codepy-on-startup)
-* [More Esoteric Tasks](#more-esoteric-tasks)
-   * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
-   * [Time how long something takes](#time-how-long-something-takes)
-   * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
-   * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
-   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
 * [Networking](#networking)
    * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
    * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
@@ -69,6 +58,18 @@ Table of Contents
    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
    * [Determine which board you're on](#determine-which-board-youre-on)
    * [Support multiple boards with one code.py](#support-multiple-boards-with-one-codepy)
+* [Computery Tasks](#computery-tasks)
+   * [Formatting strings](#formatting-strings)
+   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
+   * [Make and use a config file](#make-and-use-a-config-file)
+   * [Run different code.py on startup](#run-different-codepy-on-startup)
+* [More Esoteric Tasks](#more-esoteric-tasks)
+   * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
+   * [Constrain an input to a min/max](#constrain-an-input-to-a-minmax)
+   * [Time how long something takes](#time-how-long-something-takes)
+   * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
+   * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
+   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
 * [Hacks](#hacks)
    * [Using the REPL](#using-the-repl)
       * [Display built-in modules / libraries](#display-built-in-modules--libraries)
@@ -473,177 +474,6 @@ while True:
 ```
 
 
-## Computery Tasks
-
-### Formatting strings
-```py
-name = "John"
-fav_color = 0x003366
-body_temp = 98.65
-fav_number = 123
-print("name:%s color:%06x temp:%2.1f num:%d" % (name,fav_color,body_temp,fav_number))
-# 'name:John color:ff3366 temp:98.6 num:123'
-```
-
-### Formatting strings with f-strings
-(doesn't work on 'small' CircuitPythons like QTPy M0)
-
-```py
-name = "John"
-fav_color = 0x003366
-body_temp = 98.65
-print(f"name:{name} color:{color:06x} temp:{body_temp:2.1f} num:{fav_number:%d}")
-# 'name:John color:ff3366 temp:98.6 num:123'
-```
-
-### Make and use a config file
-```py
-# my_config.py
-config = {
-    "username": "Grogu Djarin",
-    "password": "ig88rules",
-    "secret_key": "3a3d9bfaf05835df69713c470427fe35"
-}
-
-# code.py
-from my_config import config
-print("secret:", config['secret_key'])
-# 'secret: 3a3d9bfaf05835df69713c470427fe35'
-```
-
-### Run different `code.py` on startup
-
-Use `microcontroller.nvm` to store persistent state across
-resets or between `boot.py` and `code.py`, and declare that
-the first byte of `nvm` will be the `startup_mode`.
-Now if you create multiple code.py files (say) `code1.py`, `code2.py`, etc.
-you can switch between them based on `startup_mode`.
-
-```py
-import time
-import microcontroller
-startup_mode = microcontroller.nvm[0]
-if startup_mode == 1:
-    import code1      # runs code in `code1.py`
-if startup_mode == 2:
-    import code2      # runs code in `code2.py`
-# otherwise runs 'code.py`
-while True:
-    print("main code.py")
-    time.sleep(1)
-
-```
-
-**Note:** in CircuitPyton 7+ you can use [`supervisor.set_next_code_file()`](https://circuitpython.readthedocs.io/en/latest/shared-bindings/supervisor/index.html#supervisor.set_next_code_file)
-to change which .py file is run on startup.
-This changes only what happens on reload, not hardware reset or powerup.
-Using it would look like:
-```py
-import supervisor
-supervisor.set_next_code_file('code_awesome.py')
-# and then if you want to run it now, trigger a reload
-supervisor.reload()
-```
-
-## More Esoteric Tasks
-
-### Map an input range to an output range
-```py
-# simple range mapper, like Arduino map()
-def map_range(s, a1, a2, b1, b2):
-    return  b1 + ((s - a1) * (b2 - b1) / (a2 - a1))
-
-# example: map 0-0123 value to 0.0-1.0 value
-val = 768
-outval = map_range( val, 0,1023, 0.0,1.0 )
-# outval = 0.75
-```
-
-### Time how long something takes
-```py
-import time
-start_time = time.monotonic() # fraction seconds uptime
-do_something()
-elapsed_time = time.monotonic() - start_time
-print("do_something took %f seconds" % elapsed_time)
-```
-
-### Preventing Ctrl-C from stopping the program
-
-Put a `try`/`except KeyboardInterrupt` to catch the Ctrl-C
-on the inside of your main loop.
-
-```py
-while True:
-  try:
-    print("Doing something important...")
-    time.sleep(0.1)
-  except KeyboardInterrupt:
-    print("Nice try, human! Not quitting.")
-```
-
-Also useful for graceful shutdown (turning off neopixels, say) on Ctrl-C.
-
-```py
-import time, random
-import board, neopixel, adafruit_pypixelbuf
-leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
-while True:
-  try:
-    rgb = adafruit_pypixelbuf.colorwheel(int(time.monotonic()*75) % 255)
-    leds.fill(rgb) 
-    time.sleep(0.05)
-  except KeyboardInterrupt:
-    print("shutting down nicely...")
-    leds.fill(0)
-    break  # gets us out of the while True
-```
-
-### Prevent auto-reload when CIRCUITPY is touched
-
-Normally, CircuitPython restarts anytime the CIRCUITPY drive is written to.
-This is great normally, but is frustrating if you want your code to keep running,
-and you want to control exactly when a restart happens. 
-
-```py
-import supervisor
-supervisor.disable_autoreload()
-```
-
-With this, to trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
-
-### Raspberry Pi Pico boot.py Protection
-
-Also works on other RP2040-based boards like QTPy RP2040.
-From https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
-
-```py
-# Copy this as 'boot.py' in your Pico's CIRCUITPY drive
-# Useful in case Pico locks up (which it's done a few times on me)
-import board
-import time
-from digitalio import DigitalInOut,Pull
-
-led = DigitalInOut(board.LED)
-led.switch_to_output()
-
-safe = DigitalInOut(board.GP14)  # <-- choose your button pin
-safe.switch_to_input(Pull.UP)
-
-def reset_on_pin():
-    if safe.value is False:
-        import microcontroller
-        microcontroller.on_next_reset(microcontroller.RunMode.SAFE_MODE)
-        microcontroller.reset()
-
-led.value = False
-for x in range(16):
-	reset_on_pin()
-	led.value = not led.value  # toggle LED on/off as notice
-	time.sleep(0.1)
-    
-```
-
 ## Networking
 
 ### Scan for WiFi Networks, sorted by signal strength (ESP32-S2)
@@ -933,6 +763,190 @@ for pin in dir(microcontroller.pin):
     print("supported board", board_type)
   ```
 
+## Computery Tasks
+
+### Formatting strings
+```py
+name = "John"
+fav_color = 0x003366
+body_temp = 98.65
+fav_number = 123
+print("name:%s color:%06x temp:%2.1f num:%d" % (name,fav_color,body_temp,fav_number))
+# 'name:John color:ff3366 temp:98.6 num:123'
+```
+
+### Formatting strings with f-strings
+(doesn't work on 'small' CircuitPythons like QTPy M0)
+
+```py
+name = "John"
+fav_color = 0x003366
+body_temp = 98.65
+print(f"name:{name} color:{color:06x} temp:{body_temp:2.1f} num:{fav_number:%d}")
+# 'name:John color:ff3366 temp:98.6 num:123'
+```
+
+### Make and use a config file
+```py
+# my_config.py
+config = {
+    "username": "Grogu Djarin",
+    "password": "ig88rules",
+    "secret_key": "3a3d9bfaf05835df69713c470427fe35"
+}
+
+# code.py
+from my_config import config
+print("secret:", config['secret_key'])
+# 'secret: 3a3d9bfaf05835df69713c470427fe35'
+```
+
+### Run different `code.py` on startup
+
+Use `microcontroller.nvm` to store persistent state across
+resets or between `boot.py` and `code.py`, and declare that
+the first byte of `nvm` will be the `startup_mode`.
+Now if you create multiple code.py files (say) `code1.py`, `code2.py`, etc.
+you can switch between them based on `startup_mode`.
+
+```py
+import time
+import microcontroller
+startup_mode = microcontroller.nvm[0]
+if startup_mode == 1:
+    import code1      # runs code in `code1.py`
+if startup_mode == 2:
+    import code2      # runs code in `code2.py`
+# otherwise runs 'code.py`
+while True:
+    print("main code.py")
+    time.sleep(1)
+
+```
+
+**Note:** in CircuitPyton 7+ you can use [`supervisor.set_next_code_file()`](https://circuitpython.readthedocs.io/en/latest/shared-bindings/supervisor/index.html#supervisor.set_next_code_file)
+to change which .py file is run on startup.
+This changes only what happens on reload, not hardware reset or powerup.
+Using it would look like:
+```py
+import supervisor
+supervisor.set_next_code_file('code_awesome.py')
+# and then if you want to run it now, trigger a reload
+supervisor.reload()
+```
+
+## More Esoteric Tasks
+
+### Map an input range to an output range
+
+```py
+# simple range mapper, like Arduino map()
+def map_range(s, a1, a2, b1, b2):
+    return  b1 + ((s - a1) * (b2 - b1) / (a2 - a1))
+
+# example: map 0-0123 value to 0.0-1.0 value
+val = 768
+outval = map_range( val, 0,1023, 0.0,1.0 )
+# outval = 0.75
+```
+
+### Constrain an input to a min/max
+The Python built-in `min()` and `max()` functions can be used together
+to make something like Arduino's `constrain()`.
+
+```py
+# constrain a value to be 0-255
+outval = min(max(val, 0), 255)
+# constrain a value to be 0-255 integer
+outval = int(min(max(val, 0), 255))
+# constrain a value to be -1 to +1
+outval = min(max(val, -1), 1)
+```
+
+### Time how long something takes
+```py
+import time
+start_time = time.monotonic() # fraction seconds uptime
+do_something()
+elapsed_time = time.monotonic() - start_time
+print("do_something took %f seconds" % elapsed_time)
+```
+
+### Preventing Ctrl-C from stopping the program
+
+Put a `try`/`except KeyboardInterrupt` to catch the Ctrl-C
+on the inside of your main loop.
+
+```py
+while True:
+  try:
+    print("Doing something important...")
+    time.sleep(0.1)
+  except KeyboardInterrupt:
+    print("Nice try, human! Not quitting.")
+```
+
+Also useful for graceful shutdown (turning off neopixels, say) on Ctrl-C.
+
+```py
+import time, random
+import board, neopixel, adafruit_pypixelbuf
+leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
+while True:
+  try:
+    rgb = adafruit_pypixelbuf.colorwheel(int(time.monotonic()*75) % 255)
+    leds.fill(rgb) 
+    time.sleep(0.05)
+  except KeyboardInterrupt:
+    print("shutting down nicely...")
+    leds.fill(0)
+    break  # gets us out of the while True
+```
+
+### Prevent auto-reload when CIRCUITPY is touched
+
+Normally, CircuitPython restarts anytime the CIRCUITPY drive is written to.
+This is great normally, but is frustrating if you want your code to keep running,
+and you want to control exactly when a restart happens. 
+
+```py
+import supervisor
+supervisor.disable_autoreload()
+```
+
+With this, to trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
+
+### Raspberry Pi Pico boot.py Protection
+
+Also works on other RP2040-based boards like QTPy RP2040.
+From https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
+
+```py
+# Copy this as 'boot.py' in your Pico's CIRCUITPY drive
+# Useful in case Pico locks up (which it's done a few times on me)
+import board
+import time
+from digitalio import DigitalInOut,Pull
+
+led = DigitalInOut(board.LED)
+led.switch_to_output()
+
+safe = DigitalInOut(board.GP14)  # <-- choose your button pin
+safe.switch_to_input(Pull.UP)
+
+def reset_on_pin():
+    if safe.value is False:
+        import microcontroller
+        microcontroller.on_next_reset(microcontroller.RunMode.SAFE_MODE)
+        microcontroller.reset()
+
+led.value = False
+for x in range(16):
+	reset_on_pin()
+	led.value = not led.value  # toggle LED on/off as notice
+	time.sleep(0.1)
+    
+```
 
 ## Hacks
 
