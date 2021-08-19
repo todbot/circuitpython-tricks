@@ -346,8 +346,10 @@ while True:
 
 ### Making simple tones
 
-On ESP32-S2-based boards like FunHouse, you cannot yet play WAV files, but you can make beeps.
+[tbd]
 
+On ESP32-S2-based boards like FunHouse, you cannot yet play WAV files, but you can make beeps.
+An example is this gist: https://gist.github.com/todbot/f35bb5ceed013a277688b2ca333244d5
 
 ## USB
 
