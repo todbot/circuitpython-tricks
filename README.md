@@ -19,6 +19,7 @@ Table of Contents
    * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
    * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+   * [Control a servo, with animation list](#control-a-servo-with-animation-list)
 * [Neopixels / Dotstars](#neopixels--dotstars)
    * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
    * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
@@ -218,6 +219,36 @@ leds[0] = 0xff00ff  # first LED of 16 defined
 leds[0] = (255,0,255)  # equivalent
 leds.fill( 0x00ff00 )  # set all to green
 ```
+
+### Control a servo, with animation list
+
+```py
+# servo_animation_code.py -- show simple servo animation list
+import time, random, board
+from pwmio import PWMOut
+from adafruit_motor import servo
+
+# your servo will likely have different min_pulse & max_pulse settings
+servoA = servo.Servo(PWMOut(board.RX, frequency=50), min_pulse=500, max_pulse=2250)
+
+# the animation to play
+animation = (
+    # (angle, time to stay at that angle)
+    (0, 2.0),
+    (90, 2.0),
+    (120, 2.0),
+    (180, 2.0)
+)
+ani_pos = 0 # where in list to start our animation
+
+while True:
+    angle, secs = animation[ ani_pos ]
+    print("servo moving to", angle, secs)
+    servoA.angle = angle
+    time.sleep( secs )
+    ani_pos = (ani_pos + 1) % len(animation) # go to next, loop if at end
+```
+
 
 ## Neopixels / Dotstars
 
