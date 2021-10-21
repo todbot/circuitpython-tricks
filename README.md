@@ -254,13 +254,33 @@ while True:
 
 ### Moving rainbow on built-in `board.NEOPIXEL`
 
-Uses built-in `colorwheel()` function part of `_pixelbuf` or `adafruit_pypixelbuf`:
-This function returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
+In CircuitPython 7, the `rainbowio` module has a `colorwheel()` function.
+Unfortunately, the `rainbowio` module is not available in all builds.
+In CircuitPython 6, `colorwheel()` is a built-in function part of `_pixelbuf` or `adafruit_pypixelbuf`.
+
+The `colorwheel()` function returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
 it.  This will also work for `adafruit_dotstar` instead of `neopixel`.
 
-Note: In CircuitPython 7, `colorwheel()` is now in the `rainbowio` module.
+```py
+# CircuitPython 7 with or without rainbowio module
+import time, board, neopixel
+try:
+    from rainbowio import colorwheel
+except:
+    def colorwheel(pos):
+        if pos < 0 or pos > 255:  return (0, 0, 0)
+        if pos < 85: return (255 - pos * 3, pos * 3, 0)
+        if pos < 170: pos -= 85; return (0, 255 - pos * 3, pos * 3)
+        pos -= 170; return (pos * 3, 0, 255 - pos * 3)
+
+led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4)
+while True:
+    led.fill( colorwheel((time.monotonic()*50)%255) )
+    time.sleep(0.05)
+```
 
 ```py
+# CircuitPython 6
 import time
 import board
 import neopixel
@@ -276,7 +296,7 @@ See [demo of it in this tweet](https://twitter.com/todbot/status/139799249383309
 
 ```py
 import time, random
-import board, neopixel
+import board, neopixel, rainbowio
 num_leds = 16
 leds = neopixel.NeoPixel(board.D2, num_leds, brightness=0.4, auto_write=False )
 delta_hue = 256//num_leds
@@ -284,7 +304,7 @@ speed = 10  # higher numbers = faster rainbow spinning
 i=0
 while True:
   for l in range(len(leds)):
-    leds[l] = neopixel._pixelbuf.colorwheel( int(i*speed + l * delta_hue) % 255  )
+    leds[l] = rainbowio.colorwheel( int(i*speed + l * delta_hue) % 255  )
   leds.show()  # only write to LEDs after updating them all
   i = (i+1) % 255
   time.sleep(0.05)
@@ -921,11 +941,11 @@ Also useful for graceful shutdown (turning off neopixels, say) on Ctrl-C.
 
 ```py
 import time, random
-import board, neopixel, adafruit_pypixelbuf
+import board, neopixel, rainbowio
 leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
 while True:
   try:
-    rgb = adafruit_pypixelbuf.colorwheel(int(time.monotonic()*75) % 255)
+    rgb = rainbowio.colorwheel(int(time.monotonic()*75) % 255)
     leds.fill(rgb) 
     time.sleep(0.05)
   except KeyboardInterrupt:
