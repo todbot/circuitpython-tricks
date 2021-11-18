@@ -258,8 +258,11 @@ In CircuitPython 7, the `rainbowio` module has a `colorwheel()` function.
 Unfortunately, the `rainbowio` module is not available in all builds.
 In CircuitPython 6, `colorwheel()` is a built-in function part of `_pixelbuf` or `adafruit_pypixelbuf`.
 
-The `colorwheel()` function returns an `(R,G,B)` tuple given a single 0-255 hue. Here's one way to use
-it.  This will also work for `adafruit_dotstar` instead of `neopixel`.
+The `colorwheel()` function takes a single value 0-255 hue and returns an `(R,G,B)` tuple
+given a single 0-255 hue.  It's not a full HSV_to_RGB() function but often all you need
+is "hue to RGB", wher you assume saturation=255 and value=255.
+It can be used with `neopixel`, `adafruit_dotstar`, or any place you need a (R,G,B) 3-byte tuple.
+Here's one way to use it.
 
 ```py
 # CircuitPython 7 with or without rainbowio module
