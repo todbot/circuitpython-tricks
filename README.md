@@ -54,6 +54,9 @@ Table of Contents
 * [I2C](#i2c)
    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
    * [Speed up I2C bus](#speed-up-i2c-bus)
+* [Timing](#timing)
+   * [Measure how long something takes](#measure-how-long-something-takes)
+   * [More accurate timing with `ticks_ms()`, like Arduino `millis()`](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
 * [Board Info](#board-info)
    * [Display amount of free RAM](#display-amount-of-free-ram)
    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
@@ -84,6 +87,8 @@ Table of Contents
    * [Installing CircuitPython libraries](#installing-circuitpython-libraries)
       * [Installing libraries with circup](#installing-libraries-with-circup)
       * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
+
+
 
 ## Inputs
 
@@ -764,6 +769,40 @@ i2c = busio.I2C( board.SCL, board.SDA, frequency=200_000)
 # then do something with 'i2c' object as before, like:
 oled = adafruit_ssd1306.SSD1306_I2C(width=128, height=32, i2c=i2c)
 ```
+
+## Timing
+
+### Measure how long something takes
+
+Generally use `time.monotonic()` to get the current "uptime" of a board in fractional seconds.
+So to measure the duration it takes CircuitPython to do something like:
+
+```py
+import time
+start_time = time.monotonic()
+# put thing you want to measure here, like:
+import neopixel
+stop_time = time.monotonic()
+print("elapsed time = ", stop_time - start_time)
+```
+
+Note that on the "small" versions of CircuitPython in the QT Py M0, Trinket M0, etc.,
+the floating point value of seconds will become less accurate as uptime increases.
+
+### More accurate timing with `ticks_ms()`, like Arduino `millis()`
+
+If you want something more like Arduino's `millis()` function, the `supervisor.ticks_ms()`
+function returns an integer, not a floating point value. It is more useful for sub-second
+timing tasks and you can still convert it to floating-point seconds for human consumption.
+
+```py
+import supervisor
+start_msecs = supervisor.ticks_ms()
+import neopixel
+stop_msecs = supervisor.ticks_ms()
+print("elapsed time = ", (stop_msecs - start_msecs)/1000)
+```
+
 
 ## Board Info
 
