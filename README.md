@@ -454,7 +454,7 @@ print("Free space in MB", fs_stat[0] * fs_stat[3] / 1024 / 1024)
 
 ### Programmatically reset to UF2 bootloader 
 ```py
-import micrcocontroller
+import microcontroller
 microcontroller.on_next_reset(microcontroller.RunMode.BOOTLOADER)
 microcontroller.reset()
 ```
@@ -462,10 +462,14 @@ microcontroller.reset()
 ## USB Serial
 
 ### Print to USB Serial
+
 ```py
 print("hello there")  # prints a newline
 print("waiting...", end='')   # does not print newline
+for i in range(256):  print(i, end=', ')   # comma-separated numbers
 ```
+
+
 
 ### Read user input from USB Serial, blocking
 ```py
