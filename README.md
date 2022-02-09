@@ -411,6 +411,19 @@ while True:
 On ESP32-S2-based boards like FunHouse, you cannot yet play WAV files, but you can make beeps.
 An example is this gist: https://gist.github.com/todbot/f35bb5ceed013a277688b2ca333244d5
 
+### Preparing WAV files for CircuitPython
+
+Convert files to appropriate WAV format (mono, 22050 Hz, 16-bit signed seem best):
+
+```sh 
+sox loop.mp3 -b 16 -c 1 -r 22050 loop.wav
+```
+
+To get `sox` on various platforms:
+- Linux: `sudo apt install sox libsox-fmt-mp3`
+- macOS: `brew install sox`
+- Windows: Use installer at http://sox.sourceforge.net/
+
 ## USB
 
 ### Rename CIRCUITPY drive to something new
