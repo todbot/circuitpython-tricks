@@ -445,6 +445,16 @@ storage.remount("/", readonly=True)
 ### Detect if USB is connected or not
 
 ```py
+import supervisor
+if supervisor.runtime.usb_connected:
+  led.value = True   # USB
+else:
+  led.value = False  # no USB
+```
+
+An older way that tries to mount CIRCUITPY read-write and if it fails, USB connected:
+
+```py
 def is_usb_connected():
     import storage
     try:
