@@ -4,6 +4,9 @@
 #
 # Part of circuitpython-tricks: https://github.com/todbot/circuitpython-tricks
 #
+# For wiring diagram, see:
+# https://github.com/todbot/circuitpython-tricks/larger-tricks/docs/breakbeat_sampleplayer_wiring.png
+#
 # Convert samples for use with SoX, like:
 #  sox loop.mp3 -b 16 -c 1 -r 22050 loop.wav
 #
