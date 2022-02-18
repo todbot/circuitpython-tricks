@@ -856,12 +856,22 @@ for pin in dir(microcontroller.pin):
                 print("".join(("", "board.", alias)), end=" ")
     print()
 ```
+
 ### Determine which board you're on
-  ```py
-  import os
-  print(os.uname().machine)
-  'Adafruit ItsyBitsy M4 Express with samd51g19'
-  ```
+
+```py
+import os
+print(os.uname().machine)
+'Adafruit ItsyBitsy M4 Express with samd51g19'
+```
+
+To get the chip family
+
+```py
+import os
+print(os.uname().sysname)
+'ESP32S2'
+```
 
 ### Support multiple boards with one `code.py`
   ```py
