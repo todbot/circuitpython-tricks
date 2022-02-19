@@ -1,6 +1,18 @@
-
-
-print("hello world")
+# beatfader.py -- fade between different drum loops
+# 18 Feb 2022 - @todbot / Tod Kurt
+#
+# Tested on Raspberry Pi Pico
+#
+# Copy this file to CIRCUITPY/code.py
+# Copy the beatfader_wavs files to CIRCUITPY/wav
+#
+# Note: CircuitPython will hang or freeze sometimes with audiopwmio
+#       especially if USB access is happening (e.g. saving files)
+#       To minimize this, stop the program (Ctrl-C in REPL) before
+#       saving.
+#
+# Circuit as in ./docs/breakbeat_sampleplayer.fzz
+#
 
 import time
 import math
@@ -9,7 +21,6 @@ import analogio
 import audiocore
 import audiomixer
 from audiopwmio import PWMAudioOut as AudioOut
-
 
 wav_files = (
     # filename,           loop?
@@ -50,29 +61,3 @@ while True:
         mixer.voice[i].level = l
     print()
     time.sleep(0.05)
-
-
-
-wav_cnt = len(wav_files)
-knob_offset = 65535 // wav_cnt
-
-while True:
-    knobval = potknob.value
-    # this is not right as I want to be able to "solo" a loop
-    for i in range(wav_cnt):
-        l = (knobval + (i * knob_offset)) % 65536
-        print(int(l), end=", ")
-        #mixer.voice[i].level = (l / 65535)
-    print()
-    time.sleep(0.05)
-    
-    # l0v = knobval
-    # l1v = (knobval + 1 * (65535/3)) % 65536
-    # l2v = (knobval + 2 * (65535/3)) % 65536
-    
-    # print("levels: %.2f %.2f %.2f" % (l0v, l1v, l2v) )
-    # mixer.voice[0].level = l0v / 65535
-    # mixer.voice[1].level = l1v / 65535
-    # mixer.voice[2].level = l2v / 65535
-    # time.sleep(0.05)
-    
