@@ -15,7 +15,6 @@
 #
 
 import time
-import math
 import board
 import analogio
 import audiocore
@@ -37,27 +36,24 @@ time.sleep(3)
 audio = AudioOut(board.GP1)
 mixer = audiomixer.Mixer(voice_count=len(wav_files), sample_rate=22050, channel_count=1,
                          bits_per_sample=16, samples_signed=True)
-# attach mixer to audio playback
-audio.play(mixer)
+audio.play(mixer)  # attach mixer to audio playback
 
 for i in range(len(wav_files)):
-    (wav_file,loopit) = wav_files[i]
+    (wav_file, loopit) = wav_files[i]
     wave = audiocore.WaveFile(open(wav_file,"rb"))
-    mixer.voice[i].level = 0.0
-    mixer.voice[i].play(wave, loop=loopit)
+    mixer.voice[i].level = 0.0             # start quiet
+    mixer.voice[i].play(wave, loop=loopit) # start playing
 
-top = 65535
 cnt = len(wav_files)
 n = cnt * 0.8  # amount of overlap
-m  = 1/(cnt-1)
+m  = 1/(cnt-1) # size of slice 
 
 while True:
     potval = potknob.value
-    f = potknob.value / 65535
-    print("%5d: %0.2f" % (potval,f), end='  ')
+    frac = potknob.value / 65535
     for i in range(cnt):
-        l = min(max( 1 - (n * (f - m*i))**2, 0), 1)
-        print("%1.2f" % l, end=" ")
+        l = min(max( 1 - (n * (frac - m*i))**2, 0), 1)
         mixer.voice[i].level = l
-    print()
+        print("%1.2f" % l, end=" ")
+    print("%0.2f", frac)
     time.sleep(0.05)
