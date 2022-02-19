@@ -31,7 +31,7 @@ wav_files = (
 
 potknob = analogio.AnalogIn(board.A2)
 
-time.sleep(3)
+time.sleep(3)  # helps prevent CirPy from crashing from USB + audio
 
 audio = AudioOut(board.GP1)
 mixer = audiomixer.Mixer(voice_count=len(wav_files), sample_rate=22050, channel_count=1,
