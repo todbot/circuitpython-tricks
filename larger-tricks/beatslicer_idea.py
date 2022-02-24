@@ -20,15 +20,6 @@ loop_files = (
 )
 bpm = 160.00
 
-# loop files must be tempo-sync'd!
-# loop_files_old = (
-#     "wav/drumsacuff_22k_s16.wav", # mono, bpm 137.72 (matches amen break)
-#     "wav/drumsacuff_22k_s16.wav", # mono, bpm 137.72 (matches amen break)
-#     "wav/drumsacuff_22k_s16.wav", # mono, bpm 137.72 (matches amen break)
-#     "wav/snowpeaks_22k_s16.wav"
-# )
-# bpm_old = 137.72
-
 num_loops = len(loop_files)
 num_slices = 8
 
@@ -37,7 +28,6 @@ millis_per_measure = millis_per_beat * num_slices
 
 trellis = adafruit_trellism4.TrellisM4Express(rotation=0)
 
-# audio pin is almost any pin on RP2040, let's do A0 (RP2040 GPIO226) or RX (pin 1) (RP2040 GPIO1)
 # audio pin is A0 and A1 on SAMD51 (Trelllis M4, Itsy M4, etc)
 audio = AudioOut(board.A0)
 #audio = AudioOut(left_channel=board.A1, right_channel=board.A0)
