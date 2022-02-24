@@ -45,7 +45,7 @@ def millis(): return time.monotonic()*1000 # I like millis
 
 loop_slices = [[False] * num_loops for i in range(num_slices)]  # four loops with 8 sections
 beat_pos = 0
-last_led_millis = 0
+last_beat_millis = 0
 current_press = set()
 
 while True:
@@ -62,8 +62,8 @@ while True:
     current_press = pressed
         
     now = millis()
-    if now - last_led_millis >= millis_per_beat :
-        last_led_millis = now
+    if now - last_beat_millis >= millis_per_beat :
+        last_beat_millis = now
         print("beat:", beat_pos)
 
         # update mixer volumes
