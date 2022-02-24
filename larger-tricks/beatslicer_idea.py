@@ -26,6 +26,13 @@ num_slices = 8
 millis_per_beat = 60_000 / bpm
 millis_per_measure = millis_per_beat * num_slices
 
+# 
+loop_slices = [[False] * num_loops for i in range(num_slices)]
+
+beat_pos = 0
+last_beat_millis = 0
+current_press = set()
+
 trellis = adafruit_trellism4.TrellisM4Express(rotation=0)
 
 # audio pin is A0 and A1 on SAMD51 (Trelllis M4, Itsy M4, etc)
@@ -35,18 +42,14 @@ mixer = audiomixer.Mixer(voice_count=num_loops, sample_rate=22050, channel_count
                          bits_per_sample=16, samples_signed=True)
 audio.play(mixer) # attach mixer to audio playback
 
-# start drum loop playing, but silently
-for i in range(num_loops):
-    wave = audiocore.WaveFile(open(loop_files[i],"rb"))
-    mixer.voice[i].play( wave, loop=True )
-    mixer.voice[i].level = 0.0
+def start_loops():
+    # start drum loop playing, but silently
+    for i in range(num_loops):
+        wave = audiocore.WaveFile(open(loop_files[i],"rb"))
+        mixer.voice[i].play( wave, loop=True )
+        mixer.voice[i].level = 0.0
 
 def millis(): return time.monotonic()*1000 # I like millis
-
-loop_slices = [[False] * num_loops for i in range(num_slices)]  # four loops with 8 sections
-beat_pos = 0
-last_beat_millis = 0
-current_press = set()
 
 while True:
     # handle keypresses
@@ -65,6 +68,10 @@ while True:
     if now - last_beat_millis >= millis_per_beat :
         last_beat_millis = now
         print("beat:", beat_pos)
+        
+        # if we're at the top, restart all loops so we stay in sync
+        if beat_pos == 0:
+            start_loops()            
 
         # update mixer volumes
         for i in range(num_loops):    # rows
@@ -87,5 +94,6 @@ while True:
 
         # go to next slice
         beat_pos = (beat_pos+1) % num_slices
-    
+        
+
 
