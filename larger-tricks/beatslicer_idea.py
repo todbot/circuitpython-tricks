@@ -54,7 +54,7 @@ def millis(): return time.monotonic()*1000 # I like millis
 while True:
     # handle keypresses
     pressed = set(trellis.pressed_keys)
-    for press in pressed - current_press:  # this is dumb
+    for press in pressed - current_press:  # I think I understand this now
         x, y = press
         if not loop_slices[x][y]:
             loop_slices[x][y] = True
