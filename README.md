@@ -1260,8 +1260,8 @@ convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myim
 
 #### Command-line: using GraphicsMagick
 
-[GraphicsMagick](http://www.graphicsmagick.org/i) is a slimmer, lower-requirement clone of ImageMagick.
-All GraphicsMagick commands are accessed via the `gm` CLI command.
+[GraphicsMagick](http://www.graphicsmagick.org/GraphicsMagick.html) is a slimmer, lower-requirement
+clone of ImageMagick. All GraphicsMagick commands are accessed via the `gm` CLI command.
 
 ```sh
 gm convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpy.bmp
