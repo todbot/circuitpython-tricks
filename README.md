@@ -1260,7 +1260,7 @@ convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myim
 
 #### Command-line: using GraphicsMagick
 
-[GraphicsMagick](http://www.graphicsmagick.org/GraphicsMagick.html) is a slimmer, lower-requirement
+[GraphicsMagick](http://www.graphicsmagick.org/) is a slimmer, lower-requirement
 clone of ImageMagick. All GraphicsMagick commands are accessed via the `gm` CLI command.
 
 ```sh
