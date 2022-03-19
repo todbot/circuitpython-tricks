@@ -88,8 +88,11 @@ Table of Contents
    * [Installing CircuitPython libraries](#installing-circuitpython-libraries)
       * [Installing libraries with circup](#installing-libraries-with-circup)
       * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
-
-
+   * [Converting images for CircuitPython use](#converting-images-for-circuitpython-use)
+      * [Command-line: using ImageMagick](#command-line-using-imagemagick)
+      * [Command-line: using GraphicsMagick](#command-line-using-graphicsmagick)
+      * [NodeJs: using gm](#nodejs-using-gm)
+      * [Python: using PIL / pillow](#python-using-pil--pillow)
 
 ## Inputs
 
@@ -1229,4 +1232,70 @@ cp -rX bundle_folder/lib/adafruit_midi /Volumes/CIRCUITPY/lib
 **Note:** on limited-memory boards like Trinkey, Trinket, QTPy, you must use the `-X` option on MacOS
 to save space. You may also need to omit unused parts of some libraries (e.g. `adafruit_midi/system_exclusive` is not needed if just sending MIDI notes)
 
+
+### Converting images for CircuitPython use
+
+CircuitPython requires "indexed" (aka "palette") BMP3 images.
+If using `adafruit_imageload` the images can have RLE compression, but if using
+`displayio.OnDiskBitmap()`, then make sure no compression is used.
+
+To make images load faster, you can reduce the number of colors in the image.
+The maximum number of colors is 256, but try reducing colors to 64 or even 2 if
+it's a black-n-white image.
+
+Some existing Learn Guides:
+- https://learn.adafruit.com/creating-your-first-tilemap-game-with-circuitpython/indexed-bmp-graphics
+- https://learn.adafruit.com/preparing-graphics-for-e-ink-displays
+
+And here's some ways to do the conversions.
+
+#### Command-line: using ImageMagick
+
+[ImageMagick](https://imagemagick.org/) is a command-line image manipulation tool. With it,
+you can convert any image format to BMP3 format. The main ImageMagick CLI command is `convert`. 
+
+```sh
+convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpyk.bmp
+```
+
+#### Command-line: using GraphicsMagick
+
+[GraphicsMagick](http://www.graphicsmagick.org/i) is a slimmer, lower-requirement clone of ImageMagick.
+All GraphicsMagick commands are accessed via the `gm` CLI command.
+
+```sh
+gm convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpyk.bmp
+```
+
+#### NodeJs: using gm
+
+There is a nice wrapper around GraphicsMagick / Imagemagick with the [`gm library`](https://github.com/aheckmann/gm).
+A small NodeJs program to convert images could look like this:
+
+```js
+var gm = require('gm');
+gm('myimage.jpg')
+    .resize(240, 240)
+    .colors(64)
+    .type("palette")
+    .compress("None")
+    .write('myimage_for_cirpy.bmp', function (err) {
+        if (!err) console.log('done1');
+    });
+```
+
+#### Python: using PIL / pillow
+
+The [Python Image Library (PIL) fork `pillow`](https://pillow.readthedocs.io/en/stable/index.html)
+seems to work the best.  It's unclear how to toggle compression.
+
+```py
+from PIL import Image
+size = (240, 240)
+num_colors = 64
+img = Image.open('myimage.jpg')
+img = img.resize(size)
+newimg = img.convert(mode='P', colors=num_colors)
+newimg.save('myimage_for_cirpy.bmp')
+```
 
