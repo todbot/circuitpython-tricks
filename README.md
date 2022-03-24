@@ -71,7 +71,6 @@ Table of Contents
 * [More Esoteric Tasks](#more-esoteric-tasks)
   * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
   * [Constrain an input to a min/max](#constrain-an-input-to-a-minmax)
-  * [Time how long something takes](#time-how-long-something-takes)
   * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
   * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
@@ -406,9 +405,26 @@ audio = audiobusio.IS2Out(bit_clock=[pin], word_clock=[pin], data=[pin])
 ### Play multiple sounds with audiomixer
 
 ```py
+import time, board, audiocore, audiomixer
+from audiopwmio import PWMAudioOut as AudioOut
 
+wav_files = ('loop1.wav', 'loop2.wav', 'loop3.wav')
+
+audio = AudioOut(board.GP1)  # RP2040 example
+mixer = audiomixer.Mixer(voice_count=len(wav_files), sample_rate=22050, channel_count=1,
+                         bits_per_sample=16, samples_signed=True)
+audio.play(mixer)  # attach mixer to audio playback
+
+for i in range(len(wav_files)):
+  mixer.voice[i].play( wav_files[i], loop=True) # start each one playing
+
+while True:
+   print("doing something else while all loops play")
+   time.sleep(1)
 
 ```
+
+Also see the many examples in [larger-tricks](./larger-tricks/).
 
 
 ### Making simple tones
@@ -777,7 +793,8 @@ while True:
 ## I2C
 
 ### Scan I2C bus for devices
-from: https://learn.adafruit.com/circuitpython-essentials/circuitpython-i2c#find-your-sensor-2985153-11
+from:
+[CircuitPython I2C Guide: Find Your Sensor](https://learn.adafruit.com/circuitpython-essentials/circuitpython-i2c#find-your-sensor-2985153-11)
 
 ```py
 import board
@@ -997,15 +1014,6 @@ outval = min(max(val, 0), 255)
 outval = int(min(max(val, 0), 255))
 # constrain a value to be -1 to +1
 outval = min(max(val, -1), 1)
-```
-
-### Time how long something takes
-```py
-import time
-start_time = time.monotonic() # fraction seconds uptime
-do_something()
-elapsed_time = time.monotonic() - start_time
-print("do_something took %f seconds" % elapsed_time)
 ```
 
 ### Preventing Ctrl-C from stopping the program
