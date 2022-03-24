@@ -8,91 +8,94 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 Table of Contents
 =================
 * [Inputs](#inputs)
-   * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
-   * [Read a Potentiometer](#read-a-potentiometer)
-   * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
-   * [Read a Rotary Encoder](#read-a-rotary-encoder)
-   * [Debounce a pin / button](#debounce-a-pin--button)
-   * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+  * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
+  * [Read a Potentiometer](#read-a-potentiometer)
+  * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
+  * [Read a Rotary Encoder](#read-a-rotary-encoder)
+  * [Debounce a pin / button](#debounce-a-pin--button)
+  * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
 * [Outputs](#outputs)
-   * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
-   * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
-   * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
-   * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
-   * [Control a servo, with animation list](#control-a-servo-with-animation-list)
+  * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
+  * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
+  * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
+  * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
+  * [Control a servo, with animation list](#control-a-servo-with-animation-list)
 * [Neopixels / Dotstars](#neopixels--dotstars)
-   * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
-   * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
-   * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
+  * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
+  * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
+  * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
 * [Audio](#audio)
-   * [Audio out using PWM](#audio-out-using-pwm)
-   * [Audio out using DAC](#audio-out-using-dac)
-   * [Audio out using I2C](#audio-out-using-i2c)
-   * [Making simple tones](#making-simple-tones)
+  * [Audio out using PWM](#audio-out-using-pwm)
+  * [Audio out using DAC](#audio-out-using-dac)
+  * [Audio out using I2C](#audio-out-using-i2c)
+  * [Play multiple sounds with audiomixer](#play-multiple-sounds-with-audiomixer)
+  * [Making simple tones](#making-simple-tones)
 * [USB](#usb)
-   * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
-   * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
-   * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
-   * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
+  * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
+  * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
+  * [Get CIRCUITPY disk size and free space](#get-circuitpy-disk-size-and-free-space)
+  * [Programmatically reset to UF2 bootloader](#programmatically-reset-to-uf2-bootloader)
 * [USB Serial](#usb-serial)
-   * [Print to USB Serial](#print-to-usb-serial)
-   * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
-   * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
-   * [Read keys from USB Serial](#read-keys-from-usb-serial)
-   * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
+  * [Print to USB Serial](#print-to-usb-serial)
+  * [Read user input from USB Serial, blocking](#read-user-input-from-usb-serial-blocking)
+  * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
+  * [Read keys from USB Serial](#read-keys-from-usb-serial)
+  * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
 * [Networking](#networking)
-   * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
-   * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
-   * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
-   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
+  * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
+  * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
+  * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
+  * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
-   * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
-   * [Display an image](#display-an-image)
-   * [Display background bitmap](#display-background-bitmap)
-   * [Image slideshow](#image-slideshow)
-   * [Dealing with E-Ink "Refresh Too Soon" error](#dealing-with-e-ink-refresh-too-soon-error)
+  * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
+  * [Display an image](#display-an-image)
+  * [Display background bitmap](#display-background-bitmap)
+  * [Image slideshow](#image-slideshow)
+  * [Dealing with E-Ink "Refresh Too Soon" error](#dealing-with-e-ink-refresh-too-soon-error)
 * [I2C](#i2c)
-   * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
-   * [Speed up I2C bus](#speed-up-i2c-bus)
+  * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
+  * [Speed up I2C bus](#speed-up-i2c-bus)
 * [Timing](#timing)
-   * [Measure how long something takes](#measure-how-long-something-takes)
-   * [More accurate timing with `ticks_ms()`, like Arduino `millis()`](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
+  * [Measure how long something takes](#measure-how-long-something-takes)
+  * [More accurate timing with ticks_ms(), like Arduino millis()](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
 * [Board Info](#board-info)
-   * [Display amount of free RAM](#display-amount-of-free-ram)
-   * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
-   * [Determine which board you're on](#determine-which-board-youre-on)
-   * [Support multiple boards with one code.py](#support-multiple-boards-with-one-codepy)
+  * [Display amount of free RAM](#display-amount-of-free-ram)
+  * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
+  * [Determine which board you're on](#determine-which-board-youre-on)
+  * [Support multiple boards with one code.py](#support-multiple-boards-with-one-codepy)
 * [Computery Tasks](#computery-tasks)
-   * [Formatting strings](#formatting-strings)
-   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
-   * [Make and use a config file](#make-and-use-a-config-file)
-   * [Run different code.py on startup](#run-different-codepy-on-startup)
+  * [Formatting strings](#formatting-strings)
+  * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
+  * [Make and use a config file](#make-and-use-a-config-file)
+  * [Run different code.py on startup](#run-different-codepy-on-startup)
 * [More Esoteric Tasks](#more-esoteric-tasks)
-   * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
-   * [Constrain an input to a min/max](#constrain-an-input-to-a-minmax)
-   * [Time how long something takes](#time-how-long-something-takes)
-   * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
-   * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
-   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
+  * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
+  * [Constrain an input to a min/max](#constrain-an-input-to-a-minmax)
+  * [Time how long something takes](#time-how-long-something-takes)
+  * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
+  * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
+  * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
 * [Hacks](#hacks)
-   * [Using the REPL](#using-the-repl)
-      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
-      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+  * [Using the REPL](#using-the-repl)
+     * [Display built-in modules / libraries](#display-built-in-modules--libraries)
+     * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
 * [Python tricks](#python-tricks)
-   * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
+  * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
 * [Python info](#python-info)
-   * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
-   * [List names of all global variables](#list-names-of-all-global-variables)
-   * [Display the running CircuitPython release](#display-the-running-circuitpython-release)
+  * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
+  * [List names of all global variables](#list-names-of-all-global-variables)
+  * [Display the running CircuitPython release](#display-the-running-circuitpython-release)
 * [Host-side tasks](#host-side-tasks)
-   * [Installing CircuitPython libraries](#installing-circuitpython-libraries)
-      * [Installing libraries with circup](#installing-libraries-with-circup)
-      * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
-   * [Converting images for CircuitPython use](#converting-images-for-circuitpython-use)
-      * [Command-line: using ImageMagick](#command-line-using-imagemagick)
-      * [Command-line: using GraphicsMagick](#command-line-using-graphicsmagick)
-      * [NodeJs: using gm](#nodejs-using-gm)
-      * [Python: using PIL / pillow](#python-using-pil--pillow)
+  * [Installing CircuitPython libraries](#installing-circuitpython-libraries)
+     * [Installing libraries with circup](#installing-libraries-with-circup)
+     * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
+  * [Preparing images for CircuitPython](#preparing-images-for-circuitpython)
+     * [Command-line: using ImageMagick](#command-line-using-imagemagick)
+     * [Command-line: using GraphicsMagick](#command-line-using-graphicsmagick)
+     * [Making images smaller or for E-Ink displays](#making-images-smaller-or-for-e-ink-displays)
+     * [NodeJs: using gm](#nodejs-using-gm)
+     * [Python: using PIL / pillow](#python-using-pil--pillow)
+  * [Preparing audio files for CircuitPython](#preparing-audio-files-for-circuitpython)
 
 ## Inputs
 
@@ -109,11 +112,11 @@ print(button.value)  # False == pressed
 Can also do:
 
 ```py
-button = DigitalInOut(board.D3) 
+button = DigitalInOut(board.D3)
 button.switch_to_input(Pull.UP)
 ```
 
-### Read a Potentiometer 
+### Read a Potentiometer
 
 ```py
 import board
@@ -130,7 +133,7 @@ import touchio
 import board
 touch_pin = touchio.TouchIn(board.GP6)
 # on Pico / RP2040, need 1M pull-down on each input
-if touch_pin.value: 
+if touch_pin.value:
 print("touched!")
 ```
 
@@ -143,7 +146,7 @@ encoder = rotaryio.IncrementalEncoder(board.GP0, board.GP1) # must be consecutiv
 print(encoder.position)  # starts at zero, goes neg or pos
 ```
 
-### Debounce a pin / button 
+### Debounce a pin / button
 
 ```py
 import board
@@ -180,7 +183,7 @@ while True:
         if buttons[i].rose:
             print("button",i,"released!")
 ```
-        
+
 ## Outputs
 
 ### Output HIGH / LOW on a pin (like an LED)
@@ -291,17 +294,6 @@ while True:
     time.sleep(0.05)
 ```
 
-```py
-# CircuitPython 6
-import time
-import board
-import neopixel
-led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4)
-while True:
-  led.fill( neopixel._pixelbuf.colorwheel((time.monotonic()*50)%255) )
-  time.sleep(0.05)
-```
-
 ### Make moving rainbow gradient across LED strip
 
 See [demo of it in this tweet](https://twitter.com/todbot/status/1397992493833097218).
@@ -343,16 +335,18 @@ while True:
 
 In CircuitPython, there are three different techniques to output audio:
 
-- DAC using `audioio`
-- PWM using `audiopwmio` - requires RC filter (at least)
-- I2S using `audiobusio` - requires external I2S decoder hardware
+- `audioio` -- uses built-in DAC
+- `audiopwmio` -- uses PWM like arduino `analogWrite()`, requires RC filter to convert to analog
+- `audiobusio` -- output I2S data stream, requires external I2S decoder hardware
 
-CircuitPython's support on particular microcontroller may include support for several of these ways
-(e.g. SAMD51 supports DAC & I2S, just one
-(e.g. ESP32-S2 supports only I2S) or even none
-(e.g. Teensy)
+CircuitPython's support on particular microcontroller may include support for more than one of the above:
+- e.g. SAMD51 (Feather M4) supports DAC and I2S, RP2040 (Pico) supports PWM and I2S
 
-### Audio out using PWM 
+CircuitPython can play WAV files well, but they must be formatted correctly.
+
+See [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuitpython)
+
+### Audio out using PWM
 
 This uses the `audiopwmio` library, only available for Raspberry Pi Pico
 (or other RP2040-based boards) and NRF52840-based boards like Adafruit Feather nRF52840 Express.
@@ -377,9 +371,6 @@ while True:
 Note: Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
 so you may have to reset the board to get PWM audio to work again.
 
-Note: WAV file whould be "16-bit Unsigned PCM" format. Sample rate can be up to 44.1 kHz,
-and is parsed by `audiocore.WaveFile`.
-
 Note: PWM output must be filtered and converted to line-level to be usable.
 Use an RC circuit to accomplish this, see [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
 
@@ -392,7 +383,7 @@ The code is the the same as above, with just the import line changing.
 import time,random,board
 from audiocore import WaveFile
 from audioio import AudioOut as AudioOut # only DAC
-wave_file = open("laser20.wav", "rb")
+wave_file = open("laser2.wav", "rb")
 wave = WaveFile(wave_file)
 audio = AudioOut(board.A0)  # must be DAC-capable pin, A0 on QTPy Haxpress
 while True:
@@ -405,7 +396,19 @@ while True:
 
 ### Audio out using I2C
 
-[tbd]
+TBD, but the same as above, but use
+
+```py
+audio = audiobusio.IS2Out(bit_clock=[pin], word_clock=[pin], data=[pin])
+```
+
+
+### Play multiple sounds with audiomixer
+
+```py
+
+
+```
 
 
 ### Making simple tones
@@ -415,20 +418,9 @@ while True:
 On ESP32-S2-based boards like FunHouse, you cannot yet play WAV files, but you can make beeps.
 An example is this gist: https://gist.github.com/todbot/f35bb5ceed013a277688b2ca333244d5
 
-### Preparing WAV files for CircuitPython
-
-Convert files to appropriate WAV format (mono, 22050 Hz, 16-bit signed seem best):
-
-```sh 
-sox loop.mp3 -b 16 -c 1 -r 22050 loop.wav
-```
-
-To get `sox` on various platforms:
-- Linux: `sudo apt install sox libsox-fmt-mp3`
-- macOS: `brew install sox`
-- Windows: Use installer at http://sox.sourceforge.net/
 
 ## USB
+
 
 ### Rename CIRCUITPY drive to something new
 
@@ -479,7 +471,7 @@ print("Disk size in MB", fs_stat[0] * fs_stat[2] / 1024 / 1024)
 print("Free space in MB", fs_stat[0] * fs_stat[3] / 1024 / 1024)
 ```
 
-### Programmatically reset to UF2 bootloader 
+### Programmatically reset to UF2 bootloader
 ```py
 import microcontroller
 microcontroller.on_next_reset(microcontroller.RunMode.BOOTLOADER)
@@ -678,41 +670,61 @@ CircuitPython's `displayio` library works like:
 
 
 
-### Display background bitmap 
+### Display background bitmap
 
 Useful for display a solid background color that can be quickly changed.
 
 ```py
 import time, board, displayio
-display = board.DISPLAY      # get default display (FunHouse,Pygamer,etc)
-# Create a main group to hold everything and put it on the display
-screen = displayio.Group() 
-display.show(screen)
-# make background bitmap that spans the entire display, with 3 colors
+display = board.DISPLAY       # get default display (FunHouse,Pygamer,etc)
+maingroup = displayio.Group() # Create a main group to hold everything
+display.show(maingroup)       # put it on the display
+
+# make bitmap that spans entire display, with 3 colors
 background = displayio.Bitmap(display.width, display.height, 3)
+
 # make a 3 color palette to match
 mypal = displayio.Palette(3)
-mypal[0] = 0x000000 # set up those four colors (black)
+mypal[0] = 0x000000 # set colors (black)
 mypal[1] = 0x999900 # dark yellow
 mypal[2] = 0x009999 # dark cyan
+
 # Put background into main group, using palette to map palette ids to colors
-screen.append(displayio.TileGrid(background, pixel_shader=mypal))
+maingroup.append(displayio.TileGrid(background, pixel_shader=mypal))
+
 time.sleep(2)
-background.fill(2) # change background to dark cyan (mypal[2])
+background.fill(2)  # change background to dark cyan (mypal[2])
 time.sleep(2)
-background.fill(1) # change background to dark yellow (mypal[1])
+background.fill(1)  # change background to dark yellow (mypal[1])
 ```
 
-Can also use `adafruit_display_shapes` to make this easier:
+Another way is to use
+[`vectorio`](https://docs.circuitpython.org/en/latest/shared-bindings/vectorio/index.html):
 
 ```py
-import time, board, displayio
+import board, displayio, vectorio
+
+display = board.DISPLAY  # built-in display
+maingroup = displayio.Group()  # a main group that holds everything
+display.show(maingroup)
+
+background = vectorio.Rectangle(pixel_shader=mypal, width=display.width, height=display.height, 0,0)
+maingroup.append(background)
+```
+
+Or can also use
+[`adafruit_display_shapes`](https://docs.circuitpython.org/projects/display-shapes/en/latest/index.html):
+
+```py
+import board, displayio
 from adafruit_display_shapes.rect import Rect
-display = board.DISPLAY  
-screen = displayio.Group()  # a main group that holds everything
-display.show(screen)        # add main group to display
+
+display = board.DISPLAY
+maingroup = displayio.Group()  # a main group that holds everything
+display.show(maingroup)        # add main group to display
+
 background = Rect(0,0, display.width, display.height, fill=0x000000 ) # background color
-screen.append(background)
+maingroup.append(background)
 ```
 
 ### Image slideshow
@@ -732,22 +744,11 @@ while True:
     for fname in file_names:
         image, palette = adafruit_imageload.load(fname)
         screen[0] = displayio.TileGrid(image, pixel_shader=palette)
-        time.sleep(1) 
+        time.sleep(1)
 ```
 
-__Note:__ images must be in palettized BMP3 format.
-If you have [ImageMagick](https://imagemagick.org/index.php) installed,
-you can use its `convert` command to take any image format to proper BMP3 format:
-```
-convert cat1.jpg -colors 256 -type palette BMP3:cat1.bmp
-```
-To make images smaller (and load faster), reduce number of colors from 256.
-If your image is a monochrome (or for use with E-Ink displays like MagTag), use 2 colors.
-The ["-dither" options](https://legacy.imagemagick.org/Usage/quantize/#colors)
-are really helpful for monochrome:
-```
-convert cat.jpg -dither FloydSteinberg -colors 2 -type palette BMP3:cat.bmp
-```
+__Note:__ Images must be in palettized BMP3 format.
+For more details, see [Preparing images for CircuitPython](#preparing-images-for-circuitpython)
 
 
 ### Dealing with E-Ink "Refresh Too Soon" error
@@ -771,6 +772,7 @@ while True:
     mylabel.text = str(time.monotonic())
     time.sleep(0.1)
 ```
+
 
 ## I2C
 
@@ -1029,7 +1031,7 @@ leds = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.4 )
 while True:
   try:
     rgb = rainbowio.colorwheel(int(time.monotonic()*75) % 255)
-    leds.fill(rgb) 
+    leds.fill(rgb)
     time.sleep(0.05)
   except KeyboardInterrupt:
     print("shutting down nicely...")
@@ -1041,14 +1043,14 @@ while True:
 
 Normally, CircuitPython restarts anytime the CIRCUITPY drive is written to.
 This is great normally, but is frustrating if you want your code to keep running,
-and you want to control exactly when a restart happens. 
+and you want to control exactly when a restart happens.
 
 ```py
 import supervisor
 supervisor.disable_autoreload()
 ```
 
-With this, to trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
+To trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
 
 ### Raspberry Pi Pico boot.py Protection
 
@@ -1079,7 +1081,7 @@ for x in range(16):
 	reset_on_pin()
 	led.value = not led.value  # toggle LED on/off as notice
 	time.sleep(0.1)
-    
+
 ```
 
 ## Hacks
@@ -1141,7 +1143,7 @@ blank_array = [0] * 50   # creats 50-element list of zeros
 
 How to get information about Python inside of CircuitPython.
 
-### Display which (not built-in) libraries have been imported 
+### Display which (not built-in) libraries have been imported
 ```py
 import sys
 print(sys.modules.keys())
@@ -1175,7 +1177,7 @@ Adafruit CircuitPython 7.1.1 on 2022-01-14; S2Pico with ESP32S2-S2FN4R2
 >>>
 ```
 
-Without connection or code running, check the `boot_out.txt` file in your CIRCUITPY drive. 
+Without connection or code running, check the `boot_out.txt` file in your CIRCUITPY drive.
 
 ```py
 import os
@@ -1193,7 +1195,7 @@ Things you might need to do on your computer when using CircuitPython.
 
 The below examples are for MacOS / Linux.  Similar commands are used for Windows
 
-#### Installing libraries with `circup` 
+#### Installing libraries with `circup`
 
 `circup` can be used to easily install and update modules
 
@@ -1233,7 +1235,7 @@ cp -rX bundle_folder/lib/adafruit_midi /Volumes/CIRCUITPY/lib
 to save space. You may also need to omit unused parts of some libraries (e.g. `adafruit_midi/system_exclusive` is not needed if just sending MIDI notes)
 
 
-### Converting images for CircuitPython use
+### Preparing images for CircuitPython
 
 CircuitPython requires "indexed" (aka "palette") BMP3 images.
 If using `adafruit_imageload` the images can have RLE compression, but if using
@@ -1252,7 +1254,7 @@ And here's some ways to do the conversions.
 #### Command-line: using ImageMagick
 
 [ImageMagick](https://imagemagick.org/) is a command-line image manipulation tool. With it,
-you can convert any image format to BMP3 format. The main ImageMagick CLI command is `convert`. 
+you can convert any image format to BMP3 format. The main ImageMagick CLI command is `convert`.
 
 ```sh
 convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpy.bmp
@@ -1266,6 +1268,17 @@ clone of ImageMagick. All GraphicsMagick commands are accessed via the `gm` CLI 
 ```sh
 gm convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpy.bmp
 ```
+
+#### Making images smaller or for E-Ink displays
+
+To make images smaller (and load faster), reduce number of colors from 256.
+If your image is a monochrome (or for use with E-Ink displays like MagTag), use 2 colors.
+The ["-dither" options](https://legacy.imagemagick.org/Usage/quantize/#colors)
+are really helpful for monochrome:
+```
+convert cat.jpg -dither FloydSteinberg -colors 2 -type palette BMP3:cat.bmp
+```
+
 
 #### NodeJs: using gm
 
@@ -1299,3 +1312,28 @@ newimg = img.convert(mode='P', colors=num_colors)
 newimg.save('myimage_for_cirpy.bmp')
 ```
 
+### Preparing audio files for CircuitPython
+
+CircuitPython can play WAV files great, but it prefers the WAV files to be
+in a specific format. I've found the best trade-off in quality / flash-space / compatibility to be:
+
+- PCM 16-bit signed PCM
+- Mono (but stereo will work if using I2S or SAMD51)
+- 22050 Hz sample rate
+
+
+To convert WAVs for CircuitPython, I like to use Audacity or the `sox` command-line tool.
+Sox can convert just about any audio to the correct WAV format:
+
+```sh
+sox loop.mp3 -b 16 -c 1 -r 22050 loop.wav
+```
+
+To get `sox` on various platforms:
+- Linux: `sudo apt install sox libsox-fmt-mp3`
+- macOS: `brew install sox`
+- Windows: Use installer at http://sox.sourceforge.net/
+
+Some audio Learn Guide links:
+- https://learn.adafruit.com/circuitpython-essentials/circuitpython-audio-out#play-a-wave-file-2994862-6
+- https://learn.adafruit.com/adafruit-wave-shield-audio-shield-for-arduino/convert-files
