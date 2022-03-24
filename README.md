@@ -3,8 +3,6 @@
 
 A small list of tips & tricks I find myself needing when working with CircuitPython.
 
-(Note: most all of these assume CircuitPython 7)
-
 Table of Contents
 =================
 * [Inputs](#inputs)
@@ -80,6 +78,7 @@ Table of Contents
      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
 * [Python tricks](#python-tricks)
   * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
+  * [Storing multiple values per list entry](#storing-multiple-values-per-list-entry)
 * [Python info](#python-info)
   * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
   * [List names of all global variables](#list-names-of-all-global-variables)
@@ -1145,6 +1144,22 @@ These are general Python tips that may be useful in CircuitPython.
 blank_array = [0] * 50   # creats 50-element list of zeros
 ```
 
+### Storing multiple values per list entry
+
+Create simple data structures as config to control your program.
+Unlike Arduino, you can store multiple values per list/array entry.
+
+```py
+mycolors = (
+    # color val, name
+    (0x0000FF, "blue"),
+    (0x00FFFF, "cyan"),
+    (0xFF00FF, "purple"),
+)
+for i in range(len(mycolors)):
+    (val, name) = mycolors[i]
+    print("my color ", name, "has the value", val)
+```
 
 
 ## Python info
