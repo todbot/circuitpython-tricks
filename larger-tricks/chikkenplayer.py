@@ -1,6 +1,5 @@
 # chikkenplayer.py - StreetChicken Remixer by todbot
 # 21 Mar 2021 - @todbot / Tod Kurt, from @jedgarpark idea
-
 #
 import time
 import board
@@ -41,23 +40,25 @@ for i in range(len(wav_files)):
 
 print("chikkenplayer ready")
 
-voice_num = None  # which loop level to change if any
-in_pickup = False  # in knob pickup mode or not
+edit_voices = [False] * len(wav_files)
+pickup_voices = [False] * len(wav_files)
 
 while True:
   event = keys.events.get()
   if event:
+    voice_num = event.key_number
     if event.pressed:
-      voice_num = event.key_number
+      edit_voices[voice_num] = True
     if event.released:
-      voice_num = None
-      in_pickup = False
+      edit_voices[voice_num] = False
+      pickup_voices[voice_num] = False
 
-  if voice_num is not None:
+  for i in range(len(wav_files)):
     new_val = knob.value
-    if in_pickup:  # if in knob pickup mode, knob controls level
-      mixer.voice[voice_num].level = new_val / 65535 # convert to 0-1.0
-    else:
-      old_val = int(mixer.voice[voice_num].level * 65535) # convert 0-1 to 0-65535
-      if abs(new_val - old_val) < 100: # if we get close to old value,
-        in_pickup = True               # flip the pickup switch until key release
+    if edit_voices[i]:  # only edit voices with pressed buttons
+      if pickup_voices[i]:  # have we crossed old value?
+        mixer.voice[i].level = new_val / 65535 # convert to 0-1.0
+      else:
+        old_val = int(mixer.voice[i].level * 65535) # convert 0-1 to 0-65535
+        if abs(new_val - old_val) < 100: # if we get close to old value,
+          pickup_voices[i] = True        # flip the pickup switch until key release

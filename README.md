@@ -723,7 +723,9 @@ display = board.DISPLAY  # built-in display
 maingroup = displayio.Group()  # a main group that holds everything
 display.show(maingroup)
 
-background = vectorio.Rectangle(pixel_shader=mypal, width=display.width, height=display.height, 0,0)
+mypal = displayio.Palette(1)
+mypal[0] = 0x999900
+background = vectorio.Rectangle(pixel_shader=mypal, width=display.width, height=display.height, x=0, y=0)
 maingroup.append(background)
 ```
 
