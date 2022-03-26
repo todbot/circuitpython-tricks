@@ -1,6 +1,7 @@
 # dvdlogo_vectorio_code.py - Bouncing DVD logo in CircuitPython vectorio
 # 25 Mar 2022 - @todbot / Tod Kurt
 # a vectorio rethink of https://github.com/todbot/circuitpython_screensaver
+# video in action: https://twitter.com/todbot/status/1507516909528358916?s=21
 import time
 import board
 import displayio
