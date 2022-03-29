@@ -1282,7 +1282,7 @@ And here's some ways to do the conversions.
 you can convert any image format to BMP3 format. The main ImageMagick CLI command is `convert`.
 
 ```sh
-convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpy.bmp
+convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None BMP3:myimage_for_cirpy.bmp
 ```
 
 #### Command-line: using GraphicsMagick
@@ -1291,7 +1291,7 @@ convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myim
 clone of ImageMagick. All GraphicsMagick commands are accessed via the `gm` CLI command.
 
 ```sh
-gm convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None myimage_for_cirpy.bmp
+gm convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None BMP3:myimage_for_cirpy.bmp
 ```
 
 #### Making images smaller or for E-Ink displays
