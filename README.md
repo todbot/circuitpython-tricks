@@ -292,13 +292,13 @@ while True:
     time.sleep(0.05)
 ```
 
+
 ### Make moving rainbow gradient across LED strip
 
 See [demo of it in this tweet](https://twitter.com/todbot/status/1397992493833097218).
 
 ```py
-import time, random
-import board, neopixel, rainbowio
+import time, board, neopixel, rainbowio
 num_leds = 16
 leds = neopixel.NeoPixel(board.D2, num_leds, brightness=0.4, auto_write=False )
 delta_hue = 256//num_leds
@@ -312,9 +312,23 @@ while True:
   time.sleep(0.05)
 ```
 
+A shorter version using a Python list comprehension. The `leds[:]` trick is a way to assign
+a new list of colors to all the LEDs at once.
+
+```py
+import supervisor, board, neopixel, rainbowio
+num_leds = 16
+speed = 10  # lower is faster, higher is slower
+leds = neopixel.NeoPixel(board.D2, 16, brightness=0.4)
+while True:
+  t = supervisor.ticks_ms() / speed
+  leds[:] = [rainbowio.colorwheel( t + i*(255/len(leds)) ) for i in range(len(leds))]
+
+```
+
 ### Fade all LEDs by amount for chase effects
 ```py
-import time, random
+import time
 import board, neopixel
 num_leds = 16
 leds = neopixel.NeoPixel(board.D2, num_leds, brightness=0.4, auto_write=False )
@@ -323,7 +337,7 @@ dim_by = 20  # dim amount, higher = shorter tails
 pos = 0
 while True:
   leds[pos] = my_color
-  leds[0:] = [[max(i-dim_by,0) for i in l] for l in leds] # dim all by (dim_by,dim_by,dim_by)
+  leds[:] = [[max(i-dim_by,0) for i in l] for l in leds] # dim all by (dim_by,dim_by,dim_by)
   pos = (pos+1) % num_leds  # move to next position
   leds.show()  # only write to LEDs after updating them all
   time.sleep(0.05)
