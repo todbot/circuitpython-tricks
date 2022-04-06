@@ -3,6 +3,8 @@
 
 A small list of tips & tricks I find myself needing when working with CircuitPython.
 
+This is now a [Learn Guide on Adafruit](https://learn.adafruit.com/todbot-circuitpython-tricks?view=all) too!
+
 Table of Contents
 =================
 * [Inputs](#inputs)
