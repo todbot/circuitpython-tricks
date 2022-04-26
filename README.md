@@ -505,9 +505,19 @@ print("Free space in MB", fs_stat[0] * fs_stat[3] / 1024 / 1024)
 ### Programmatically reset to UF2 bootloader
 ```py
 import microcontroller
+microcontroller.on_next_reset(microcontroller.RunMode.UF2)
+microcontroller.reset()
+```
+
+Note: in older CircuitPython use `RunMode.BOOTLOADER` and for boards with multiple
+bootloaders (like ESP32-S2): 
+
+```py
+import microcontroller
 microcontroller.on_next_reset(microcontroller.RunMode.BOOTLOADER)
 microcontroller.reset()
 ```
+
 
 ## USB Serial
 
