@@ -510,7 +510,7 @@ microcontroller.reset()
 ```
 
 Note: in older CircuitPython use `RunMode.BOOTLOADER` and for boards with multiple
-bootloaders (like ESP32-S2): 
+bootloaders (like ESP32-S2):
 
 ```py
 import microcontroller
@@ -688,24 +688,43 @@ display.rotation = 0    # valid values 0,90,180,270
 
 ### Display an image
 
-The `adafruit_imageload` library makes it easier to load images and display them.
+__Using `displayio.OnDiskBitmap`__
+
+CircuitPython has a built-in BMP parser called `displayio.OnDiskBitmap`:
+The images should be in non-compressed, paletized BMP3 format.
+
+```py
+import board, displayio
+display = board.DISPLAY
+
+maingroup = displayio.Group() # everything goes in maingroup
+display.show(maingroup) # show main group (clears the screen)
+
+bitmap = displayio.OnDiskBitmap(open("my_image.bmp", "rb"))
+image = displayio.TileGrid(bitmap, pixel_shader=bitmap.pixel_shader)
+maingroup.append(image) # shows the image
+```
+
+__Using `adafruit_imageload`__
+
+You can also use the `adafruit_imageload` library that supports slightly more kinds of BMP files
 The images should be in paletized BMP3 format.
 
 ```py
-import board
-import displayio
+import board, displayio
 import adafruit_imageload
-
-img_filename = "bg_jp200.bmp"
 display = board.DISPLAY
-img, pal = adafruit_imageload.load(img_filename)
-group = displayio.Group()
-group.append(displayio.TileGrid(img, pixel_shader=pal))
-display.show(group)
+maingroup = displayio.Group() # everything goes in maingroup
+display.show(maingroup) # show main group (clears the screen)
+bitmap, palette = adafruit_imageload.load("my_image.bmp")
+image = displayio.TileGrid(img, pixel_shader=palette))
+maingroup.append(image) # shows the image
 ```
 
+__How `displayio` is structured__
+
 CircuitPython's `displayio` library works like:
-- an image `Bitmap` goes inside a `TileGrid`
+- an image `Bitmap` (and its `Palette`) goes inside a `TileGrid`
 - a `TileGrid` goes inside a `Group`
 - a `Group` is shown on a `Display`.
 
