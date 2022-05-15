@@ -1321,6 +1321,14 @@ Some existing Learn Guides:
 
 And here's some ways to do the conversions.
 
+
+#### Online
+
+Most online image to BMP converters do not create BMPs in the proper format: BMP3, non-compressed, up to 256 colors in an 8-bit palette.
+
+However @Neradoc pointed out that https://online-converting.com/image/convert2bmp/ will work when set to "Color:" mode is set to "8 (Indexed)". Some initial tests show this works! But since I don't entirely trust this, so I'd recommend also trying out one of the following techniques too.
+
+
 #### Command-line: using ImageMagick
 
 [ImageMagick](https://imagemagick.org/) is a command-line image manipulation tool. With it,
