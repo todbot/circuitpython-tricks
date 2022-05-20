@@ -27,7 +27,7 @@ Table of Contents
 * [Audio](#audio)
   * [Audio out using PWM](#audio-out-using-pwm)
   * [Audio out using DAC](#audio-out-using-dac)
-  * [Audio out using I2C](#audio-out-using-i2c)
+  * [Audio out using I2S](#audio-out-using-i2s)
   * [Play multiple sounds with audiomixer](#play-multiple-sounds-with-audiomixer)
   * [Making simple tones](#making-simple-tones)
 * [USB](#usb)
@@ -408,7 +408,7 @@ while True:
   time.sleep(0.1)
 ```
 
-### Audio out using I2C
+### Audio out using I2S
 
 TBD, but the same as above, but use
 
