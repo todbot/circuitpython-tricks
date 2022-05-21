@@ -368,7 +368,7 @@ On RP2040-based boards, any pin can be PWM Audio pin.
 See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiopwmio) for details.
 
 ```py
-import time,board
+import time, board
 from audiocore import WaveFile
 from audiopwmio import PWMAudioOut as AudioOut
 wave_file = open("laser2.wav", "rb")
@@ -394,12 +394,11 @@ Some CircuitPython boards have one or more built-in DACs. These are on specific 
 The code is the the same as above, with just the import line changing.
 
 ```py
-import time,random,board
-from audiocore import WaveFile
-from audioio import AudioOut as AudioOut # only DAC
+import time, board
+import audiocore, audioio # DAC
 wave_file = open("laser2.wav", "rb")
-wave = WaveFile(wave_file)
-audio = AudioOut(board.A0)  # must be DAC-capable pin, A0 on QTPy Haxpress
+wave = audiocore.WaveFile(wave_file)
+audio = audioio.AudioOut(board.A0)  # must be DAC-capable pin, A0 on QTPy Haxpress
 while True:
   print("audio is playing:",audio.playing)
   if not audio.playing:
@@ -410,10 +409,13 @@ while True:
 
 ### Audio out using I2S
 
-TBD, but the same as above, but use
+Once you get an `audio` object from `audiobusio.I2SOut`, it's the same as above.
 
 ```py
-audio = audiobusio.IS2Out(bit_clock=[pin], word_clock=[pin], data=[pin])
+# for e.g. Pico RP2040 pins bit_clock & word_select pins must be adjacent
+import board, audiobusio, audiocore
+audio = audiobusio.I2SOut(bit_clock=board.GP0, word_select=board.GP1, data=board.GP2)
+audio.play( audiocore.WaveFile("laser2.wav"), "rb")
 ```
 
 
