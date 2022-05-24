@@ -45,6 +45,7 @@ Table of Contents
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
   * [Ping an IP address](#ping-an-ip-address)
   * [Fetch a JSON file](#fetch-a-json-file)
+  * [Set RTC time from NTP](#set-rtc-time-from-ntp)
   * [Set RTC time from time service](#set-rtc-time-from-time-service)
   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
@@ -659,13 +660,38 @@ while True:
     print("data:",data)
     time.sleep(5)
 ```
+### Set RTC time from NTP
+
+Note: this is for boards with native WiFi (ESP32)
+
+```py
+# copied from:
+# https://docs.circuitpython.org/projects/ntp/en/latest/examples.html
+import time, rtc
+import socketpool, wifi
+import adafruit_ntp
+
+from secrets import secrets
+
+wifi.radio.connect(secrets["ssid"], secrets["password"])
+print("Connected, getting NTP time")
+pool = socketpool.SocketPool(wifi.radio)
+ntp = adafruit_ntp.NTP(pool, tz_offset=0)
+
+rtc.RTC().datetime = ntp.datetime
+
+while True:
+    print("current datetime:", time.localtime())
+    time.sleep(5)
+```
 
 ### Set RTC time from time service
 
 Note: this is for boards with native WiFi (ESP32)
 
 This uses the awesome and free [WorldTimeAPI.org site](http://worldtimeapi.org/pages/examples),
-and this example will fetch the current local time based on the geolocated IP address of your device.
+and this example will fetch the current local time (including timezone and UTC offset)
+based on the geolocated IP address of your device.
 
 ```py
 import time, rtc
@@ -673,8 +699,8 @@ import wifi, ssl, socketpool
 import adafruit_requests
 from secrets import secrets
 
-clock = rtc.RTC()
 wifi.radio.connect(secrets["ssid"], secrets["password"])
+print("Connected, getting WorldTimeAPI time")
 pool = socketpool.SocketPool(wifi.radio)
 request = adafruit_requests.Session(pool, ssl.create_default_context())
 
@@ -685,7 +711,7 @@ unixtime = int(time_data['unixtime']) + int(time_data['raw_offset'])
 
 print("URL time: ", response.headers['date'])
 
-clock.datetime = time.localtime( unixtime ) # create time struct and set RTC with it
+rtc.RTC().datetime = time.localtime( unixtime ) # create time struct and set RTC with it
 
 while True:
   print("current datetime: ", time.localtime()) # time.* now reflects current local time
