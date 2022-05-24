@@ -41,10 +41,11 @@ Table of Contents
   * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
   * [Read keys from USB Serial](#read-keys-from-usb-serial)
   * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
-* [Networking](#networking)
-  * [Scan for WiFi Networks, sorted by signal strength (ESP32-S2)](#scan-for-wifi-networks-sorted-by-signal-strength-esp32-s2)
-  * [Ping an IP address (ESP32-S2)](#ping-an-ip-address-esp32-s2)
-  * [Fetch a JSON file (ESP32-S2)](#fetch-a-json-file-esp32-s2)
+* [WiFi / Networking](#wifi--networking)
+  * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
+  * [Ping an IP address](#ping-an-ip-address)
+  * [Fetch a JSON file](#fetch-a-json-file)
+  * [Set RTC time from time service](#set-rtc-time-from-time-service)
   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
   * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
@@ -599,9 +600,11 @@ while True:
 ```
 
 
-## Networking
+## WiFi / Networking
 
-### Scan for WiFi Networks, sorted by signal strength (ESP32-S2)
+### Scan for WiFi Networks, sorted by signal strength
+
+Note: this is for boards with native WiFi (ESP32)
 
 ```py
 import wifi
@@ -614,7 +617,10 @@ for network in networks:
     print("ssid:",network.ssid, "rssi:",network.rssi)
 ```
 
-### Ping an IP address (ESP32-S2)
+### Ping an IP address
+
+Note: this is for boards with native WiFi (ESP32)
+
 ```py
 import time
 import wifi
@@ -632,7 +638,10 @@ while True:
     time.sleep(1)
 ```
 
-### Fetch a JSON file (ESP32-S2)
+### Fetch a JSON file
+
+Note: this is for boards with native WiFi (ESP32)
+
 ```py
 import time
 import wifi
@@ -651,12 +660,45 @@ while True:
     time.sleep(5)
 ```
 
+### Set RTC time from time service
+
+Note: this is for boards with native WiFi (ESP32)
+
+This uses the awesome and free [WorldTimeAPI.org site](http://worldtimeapi.org/pages/examples),
+and this example will fetch the current local time based on the geolocated IP address of your device.
+
+```py
+import time, rtc
+import wifi, ssl, socketpool
+import adafruit_requests
+from secrets import secrets
+
+clock = rtc.RTC()
+wifi.radio.connect(secrets["ssid"], secrets["password"])
+pool = socketpool.SocketPool(wifi.radio)
+request = adafruit_requests.Session(pool, ssl.create_default_context())
+
+print("Getting current time:")
+response = request.get("http://worldtimeapi.org/api/ip")
+time_data = response.json()
+unixtime = int(time_data['unixtime']) + int(time_data['raw_offset'])
+
+print("URL time: ", response.headers['date'])
+
+clock.datetime = time.localtime( unixtime ) # create time struct and set RTC with it
+
+while True:
+  print("current datetime: ", time.localtime()) # time.* now reflects current local time
+  time.sleep(5)
+```
+
 ### What the heck is `secrets.py`?
 It's a config file that lives next to your `code.py` and is used
 (invisibly) by many Adafruit WiFi libraries.
 You can use it too (as in the examples above) without those libraries
 
 It looks like this for basic WiFi connectivity:
+
 ```py
 # secrets.py
 secrets = {
