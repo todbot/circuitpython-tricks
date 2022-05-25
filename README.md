@@ -664,6 +664,8 @@ while True:
 
 Note: this is for boards with native WiFi (ESP32)
 
+Note: You need to set `my_tz_offset` to match your region
+
 ```py
 # copied from:
 # https://docs.circuitpython.org/projects/ntp/en/latest/examples.html
@@ -673,10 +675,12 @@ import adafruit_ntp
 
 from secrets import secrets
 
+my_tz_offset = -7 # PDT
+
 wifi.radio.connect(secrets["ssid"], secrets["password"])
 print("Connected, getting NTP time")
 pool = socketpool.SocketPool(wifi.radio)
-ntp = adafruit_ntp.NTP(pool, tz_offset=0)
+ntp = adafruit_ntp.NTP(pool, tz_offset=my_tz_offset)
 
 rtc.RTC().datetime = ntp.datetime
 
