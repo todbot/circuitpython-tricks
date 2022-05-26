@@ -128,6 +128,12 @@ position = potknob.value  # ranges from 0-65535
 pos = potknob.value // 256  # make 0-255 range
 ```
 
+Note: While `AnalogIn.value` is 16-bit (0-65535) corresponding to 0 V to 3.3V,
+the MCU ADCs can have limitations in resolution and voltage range.
+This reduces what CircuitPython sees.
+For example, the ESP32 ADCs are 12-bit w/ approx 0.1 V to 2.5 V range
+(e.g. `value` goes from around 200 to 50,000, in steps of 16)
+
 ### Read a Touch Pin / Capsense
 
 ```py
