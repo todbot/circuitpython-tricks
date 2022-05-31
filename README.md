@@ -931,6 +931,12 @@ print("I2C addresses found:", [hex(device_address)
 i2c.unlock()
 ```
 
+One liner to copy-n-paste into REPL for quicky I2C scan:
+
+```py
+import board; i2c=board.I2C(); i2c.try_lock(); [hex(a) for a in i2c.scan()]; i2c.unlock()
+```
+
 ### Speed up I2C bus
 
 CircuitPython defaults to 100 kHz I2C bus speed. This will work for all devices,
@@ -1242,7 +1248,7 @@ for x in range(16):
 
 ```py
 # load most common libraries
-import time; import board; from digitalio import DigitalInOut,Pull; import analogio; import touchio
+import time, board, analogio, touchio; from digitalio import DigitalInOut,Pull
 
 # print out board pins and objects (like 'I2C' and 'display')
 import board; dir(board)
@@ -1258,6 +1264,9 @@ import supervisor; supervisor.disable_autoreload()
 
 # make all neopixels purple
 import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=0.2); leds.fill(0xff00ff)
+
+# scan I2C bus
+import board; i2c=board.I2C(); i2c.try_lock(); [hex(a) for a in i2c.scan()]; i2c.unlock()
 
 ```
 
