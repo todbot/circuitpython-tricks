@@ -5,6 +5,7 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 
 This is now a [Learn Guide on Adafruit](https://learn.adafruit.com/todbot-circuitpython-tricks?view=all) too!
 
+
 Table of Contents
 =================
 * [Inputs](#inputs)
@@ -98,6 +99,7 @@ Table of Contents
      * [NodeJs: using gm](#nodejs-using-gm)
      * [Python: using PIL / pillow](#python-using-pil--pillow)
   * [Preparing audio files for CircuitPython](#preparing-audio-files-for-circuitpython)
+* [About this guide](#about-this-guide)
 
 ## Inputs
 
@@ -1504,3 +1506,17 @@ To get `sox` on various platforms:
 Some audio Learn Guide links:
 - https://learn.adafruit.com/circuitpython-essentials/circuitpython-audio-out#play-a-wave-file-2994862-6
 - https://learn.adafruit.com/adafruit-wave-shield-audio-shield-for-arduino/convert-files
+
+
+## About this guide
+
+* Many of the code snippets are not considered "well-formatted"
+by some Python linters. This guide favors brevity over strict style adherence.
+
+* The precursor to this guide is [QTPy Tricks](https://github.com/todbot/qtpy-tricks),
+which has similar but different (and still valid) fun things to do in CircuitPython.
+
+* This guide is the result of trying to learn Python via CircuitPython and
+from very enlightening discussions with John Edgar Park.  I have a good background in
+other languages, but mostly C/C++, and have [taught classes in Arduino](https://todbot.com/blog/bionicarduino/) for several years.
+This informs how I've been thinking about things in this guide.
