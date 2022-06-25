@@ -81,6 +81,7 @@ Table of Contents
   * [Using the REPL](#using-the-repl)
      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+     * [Turn off built-in display to speed up REPL](#turn-off-built-in-display-to-speed-up-repl-printing)
 * [Python tricks](#python-tricks)
   * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
   * [Storing multiple values per list entry](#storing-multiple-values-per-list-entry)
@@ -1270,6 +1271,19 @@ import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=
 # scan I2C bus
 import board; i2c=board.I2C(); i2c.try_lock(); [hex(a) for a in i2c.scan()]; i2c.unlock()
 
+```
+
+#### Turn off built-in display to speed up REPL printing
+
+By default CircuitPython will echo the REPL to the display of those boards with built-in displays.
+This can slow down the REPL. So one way to speed the REPL up is to hide the `displayio.Group` that
+contains all the REPL output. (From user @argonblue in the CircuitPython Discord chat)
+
+```py
+import board
+board.DISPLAY.root_group.hidden = True
+# and to turn it back on
+board.DISPLAY.root_group.hidden = False
 ```
 
 ## Python tricks
