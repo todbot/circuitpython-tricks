@@ -1281,9 +1281,16 @@ contains all the REPL output. (From user @argonblue in the CircuitPython Discord
 
 ```py
 import board
-board.DISPLAY.root_group.hidden = True
+display = board.DISPLAY
+display.root_group.hidden = True
 # and to turn it back on
-board.DISPLAY.root_group.hidden = False
+display.root_group.hidden = False
+```
+
+You can also turn back on the REPL after using the display for your own graphics with:
+
+```py
+display.show(None)
 ```
 
 ## Python tricks
