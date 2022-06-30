@@ -2,6 +2,9 @@
 # 25 Mar 2022 - @todbot / Tod Kurt
 # a vectorio rethink of https://github.com/todbot/circuitpython_screensaver
 # video in action: https://twitter.com/todbot/status/1507516909528358916?s=21
+# use https://shinao.github.io/PathToPoints/ to get a list of points
+# then https://gist.github.com/todbot/05d8e64ba8c6a7a584c1956c817a8779 to normalize those points (see below)
+
 import time
 import board
 import displayio
