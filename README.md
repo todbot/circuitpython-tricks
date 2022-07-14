@@ -8,8 +8,9 @@ This is now a [Learn Guide on Adafruit](https://learn.adafruit.com/todbot-circui
 
 Table of Contents
 =================
+
 * [Inputs](#inputs)
-  * [Read an digital input as a Button](#read-an-digital-input-as-a-button)
+  * [Read a digital input as a Button](#read-a-digital-input-as-a-button)
   * [Read a Potentiometer](#read-a-potentiometer)
   * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
   * [Read a Rotary Encoder](#read-a-rotary-encoder)
@@ -30,6 +31,7 @@ Table of Contents
   * [Audio out using DAC](#audio-out-using-dac)
   * [Audio out using I2S](#audio-out-using-i2s)
   * [Play multiple sounds with audiomixer](#play-multiple-sounds-with-audiomixer)
+  * [Playing MP3 files](#playing-mp3-files)
   * [Making simple tones](#making-simple-tones)
 * [USB](#usb)
   * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
@@ -71,17 +73,20 @@ Table of Contents
   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
   * [Make and use a config file](#make-and-use-a-config-file)
   * [Run different code.py on startup](#run-different-codepy-on-startup)
-* [More Esoteric Tasks](#more-esoteric-tasks)
+* [Coding Techniques](#coding-techniques)
   * [Map an input range to an output range](#map-an-input-range-to-an-output-range)
   * [Constrain an input to a min/max](#constrain-an-input-to-a-minmax)
+  * [Turn a momentary value into a toggle](#turn-a-momentary-value-into-a-toggle)
+  * [Do something every N seconds without sleep()](#do-something-every-n-seconds-without-sleep)
+* [System error handling](#system-error-handling)
   * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
   * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
   * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
 * [Hacks](#hacks)
   * [Using the REPL](#using-the-repl)
-     * [Display built-in modules / libraries](#display-built-in-modules--libraries)
-     * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
-     * [Turn off built-in display to speed up REPL](#turn-off-built-in-display-to-speed-up-repl-printing)
+      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
+      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
+      * [Turn off built-in display to speed up REPL printing](#turn-off-built-in-display-to-speed-up-repl-printing)
 * [Python tricks](#python-tricks)
   * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
   * [Storing multiple values per list entry](#storing-multiple-values-per-list-entry)
@@ -91,20 +96,21 @@ Table of Contents
   * [Display the running CircuitPython release](#display-the-running-circuitpython-release)
 * [Host-side tasks](#host-side-tasks)
   * [Installing CircuitPython libraries](#installing-circuitpython-libraries)
-     * [Installing libraries with circup](#installing-libraries-with-circup)
-     * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
+      * [Installing libraries with circup](#installing-libraries-with-circup)
+      * [Copying libraries by hand with cp](#copying-libraries-by-hand-with-cp)
   * [Preparing images for CircuitPython](#preparing-images-for-circuitpython)
-     * [Command-line: using ImageMagick](#command-line-using-imagemagick)
-     * [Command-line: using GraphicsMagick](#command-line-using-graphicsmagick)
-     * [Making images smaller or for E-Ink displays](#making-images-smaller-or-for-e-ink-displays)
-     * [NodeJs: using gm](#nodejs-using-gm)
-     * [Python: using PIL / pillow](#python-using-pil--pillow)
+      * [Online](#online)
+      * [Command-line: using ImageMagick](#command-line-using-imagemagick)
+      * [Command-line: using GraphicsMagick](#command-line-using-graphicsmagick)
+      * [Making images smaller or for E-Ink displays](#making-images-smaller-or-for-e-ink-displays)
+      * [NodeJs: using gm](#nodejs-using-gm)
+      * [Python: using PIL / pillow](#python-using-pil--pillow)
   * [Preparing audio files for CircuitPython](#preparing-audio-files-for-circuitpython)
 * [About this guide](#about-this-guide)
 
 ## Inputs
 
-### Read an digital input as a Button
+### Read a digital input as a Button
 
 ```py
 import board
@@ -117,8 +123,12 @@ print(button.value)  # False == pressed
 Can also do:
 
 ```py
-button = DigitalInOut(board.D3)
-button.switch_to_input(Pull.UP)
+import time, board, digitalio
+button = digitalio.DigitalInOut(board.D3)
+button.switch_to_input(digitalio.Pull.UP)
+while True:
+    print("button pressed:", button.value == False) # False == pressed
+    time.sleep(0.1)
 ```
 
 ### Read a Potentiometer
@@ -367,7 +377,7 @@ In CircuitPython, there are three different techniques to output audio:
 CircuitPython's support on particular microcontroller may include support for more than one of the above:
 - e.g. SAMD51 (Feather M4) supports DAC and I2S, RP2040 (Pico) supports PWM and I2S
 
-CircuitPython can play WAV files well, but they must be formatted correctly.
+CircuitPython can play WAV and MP3 files, but they must be formatted correctly.
 
 See [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuitpython)
 
@@ -376,7 +386,7 @@ See [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuit
 This uses the `audiopwmio` library, only available for Raspberry Pi Pico
 (or other RP2040-based boards) and NRF52840-based boards like Adafruit Feather nRF52840 Express.
 On RP2040-based boards, any pin can be PWM Audio pin.
-See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiopwmio) for details.
+See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiopwmio) for which boards support `audiopwmio`.
 
 ```py
 import time, board
@@ -401,8 +411,9 @@ Use an RC circuit to accomplish this, see [this twitter thread for details](http
 
 ### Audio out using DAC
 
-Some CircuitPython boards have one or more built-in DACs. These are on specific pins.
+Some CircuitPython boards (SAMD51 "M4" & SAMD21 "M0") have built-in DACs that are supported.
 The code is the the same as above, with just the import line changing.
+See the [audioio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audioio) for which boards support `audioio`.
 
 ```py
 import time, board
@@ -420,7 +431,9 @@ while True:
 
 ### Audio out using I2S
 
-Once you get an `audio` object from `audiobusio.I2SOut`, it's the same as above.
+Unlike PWM or DAC, most CircuitPython boards support driving an external I2S audio board.
+This will also give you higher-quality sound output than DAC or PWM.
+See the [audioio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audioio) for which boards support `audiobusio`.
 
 ```py
 # for e.g. Pico RP2040 pins bit_clock & word_select pins must be adjacent
@@ -428,7 +441,6 @@ import board, audiobusio, audiocore
 audio = audiobusio.I2SOut(bit_clock=board.GP0, word_select=board.GP1, data=board.GP2)
 audio.play( audiocore.WaveFile("laser2.wav"), "rb")
 ```
-
 
 ### Play multiple sounds with audiomixer
 
@@ -453,6 +465,42 @@ while True:
 ```
 
 Also see the many examples in [larger-tricks](./larger-tricks/).
+
+### Playing MP3 files
+
+Once you have set up audio output (either directly or via AudioMixer), you can play WAVs or
+MP3s through it, or play both simultaneously.
+
+For instance, here's an example that uses an I2SOut to a PCM5102 on a Raspberry Pi Pico RP2040
+to simultaneously play both a WAV and an MP3:
+
+```py
+import board, audiobusio, audiocore, audiomp3
+num_voices = 2
+
+i2s_bclk, i2s_wsel, i2s_data = board.GP9, board.GP10, board.GP11 # BCLK, LCLK, DIN on PCM5102
+
+audio = audiobusio.I2SOut(bit_clock=i2s_bclk, word_select=i2s_wsel, data=i2s_data)
+mixer = audiomixer.Mixer(voice_count=num_voices, sample_rate=22050, channel_count=1,
+                         bits_per_sample=16, samples_signed=True)
+audio.play(mixer) # attach mixer to audio playback
+
+wav_file = "/amen1_22k_s16.wav" # in 'circuitpython-tricks/larger-tricks/breakbeat_wavs'
+mp3_file = "/vocalchops476663_22k_128k.mp3" # in 'circuitpython-tricks/larger-tricks/wav'
+# https://freesound.org/people/f-r-a-g-i-l-e/sounds/476663/
+
+wave = audiocore.WaveFile(open(wav_file, "rb"))
+mp3 = audiomp3.MP3Decoder(open(mp3_file, "rb"))
+mixer.voice[0].play( wave )
+mixer.voice[1].play( mp3 )
+
+while True:
+    pass   # both audio files play
+
+```
+
+Note: For MP3 files and setting `loop=True` when playing, there is a small delay when looping.
+WAV files loop seemlessly
 
 
 ### Making simple tones
@@ -1123,7 +1171,7 @@ supervisor.set_next_code_file('code_awesome.py')
 supervisor.reload()
 ```
 
-## More Esoteric Tasks
+## Coding Techniques
 
 ### Map an input range to an output range
 
@@ -1150,6 +1198,46 @@ outval = int(min(max(val, 0), 255))
 # constrain a value to be -1 to +1
 outval = min(max(val, -1), 1)
 ```
+
+### Turn a momentary value into a toggle
+
+```py
+import touchio
+import board
+
+touch_pin = touchio.TouchIn(board.GP6)
+last_touch_val = False  # holds last measurement
+toggle_value = False  # holds state of toggle switch
+
+while True:
+  touch_val = touch_pin.value
+  if touch_val != last_touch_val:
+    if touch_val:
+      toggle_value = not toggle_value   # flip toggle
+      print("toggle!", toggle_value)
+  last_touch_val = touch_val
+  ```
+  
+### Do something every N seconds without `sleep()`
+
+Also known as "blink-without-delay"
+
+```py
+import time
+last_time1 = time.monotonic()  # holds when we did something #1
+last_time2 = time.monotonic()  # holds when we did something #2
+while True:
+  if time.monotonic() - last_time1 > 2.0:  # every 2 seconds
+    last_time1 = time.monotonic() # save when we do the thing
+    print("hello!")  # do thing #1
+  if time.monotonic() - last_time2 > 5.0:  # every 5 seconds
+    last_time2 = time.monotonic() # save when we do the thing
+    print("world!")  # do thing #2
+
+```
+
+
+## System error handling
 
 ### Preventing Ctrl-C from stopping the program
 
@@ -1482,7 +1570,7 @@ gm('myimage.jpg')
     .colors(64)
     .type("palette")
     .compress("None")
-    .write('myimage_for_cirpy.bmp', function (err) {
+    .write('BMP3:myimage_for_cirpy.bmp', function (err) {
         if (!err) console.log('done1');
     });
 ```
