@@ -16,18 +16,19 @@ if usb_connected():  # only attempt keyboard creation if USB
     keyboard = Keyboard(usb_hid.devices)
     keyboard_layout = KeyboardLayoutUS(keyboard)
 
+# make up some buttons. This is for a FunHouse, but could be any keys
 buttons = []
 for pin in (board.BUTTON_UP, board.BUTTON_SELECT, board.BUTTON_DOWN):
     switch = digitalio.DigitalInOut(pin)
     switch.pull = digitalio.Pull.DOWN # defaults to input
     buttons.append(switch)
 
+# what keycodes to send for each button
 keys = [Keycode.A, Keycode.B, Keycode.C]
 
 while True:
     print("usb:", usb_connected(), "buttons:", [b.value for b in buttons] )
     for i in range(len(buttons)):
-        #print(buttons[i].value)
         if buttons[i].value:
             if usb_connected():
                 try:
