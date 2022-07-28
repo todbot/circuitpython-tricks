@@ -1188,7 +1188,7 @@ outval = map_range( val, 0,1023, 0.0,1.0 )
 
 ### Constrain an input to a min/max
 The Python built-in `min()` and `max()` functions can be used together
-to make something like Arduino's `constrain()`.
+to make something like Arduino's `constrain()` to clamp an input between two values.
 
 ```py
 # constrain a value to be 0-255
@@ -1389,6 +1389,20 @@ These are general Python tips that may be useful in CircuitPython.
 
 ```py
 blank_array = [0] * 50   # creats 50-element list of zeros
+```
+
+### Convert RGB tuples to int and back again
+
+Thanks to @Neradoc for this tip:
+
+```py
+rgb_tuple = (255, 0, 128)
+rgb_int = int.from_bytes(rgb_tuple, byteorder='big')
+
+rgb_int = 0xFF0080
+rgb_tuple2 = tuple((rgb_int).to_bytes(3,"big"))
+
+rgb_tuple2 == rgb_tuple
 ```
 
 ### Storing multiple values per list entry
