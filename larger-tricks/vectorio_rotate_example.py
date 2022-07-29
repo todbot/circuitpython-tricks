@@ -7,7 +7,6 @@ import board
 import displayio
 import vectorio
 import math
-import ulab.numpy as np
 
 display = board.DISPLAY  # assume we have built-in display
 
@@ -86,85 +85,4 @@ while True:
         yvel = -yvel
 
     time.sleep(0.05)
-
-
-
-
-
-
-# vectorio_rotate_example.py
-# 21 Jul 2022 - @todbot / Tod Kurt
-# Rotation of a vectorio polygon
-
-import time
-import board
-import displayio
-import vectorio
-import math
-import ulab.numpy as np
-
-display = board.DISPLAY  # assume we have built-in display
-
-path0 = [(-20.0,-20.0), (-20.0,20.0), (20.0,20.0), (20.0,-20.0)]
-
-shape0_w = 40  # not necessarily min/max of path
-shape0_h = 40
-shape0_color = 0xff00ff   # preferred color
-
-
-def rotate_points(pts, a):
-    """Rotate a list of points pts by angle a around origin"""
-    sa, ca = math.sin(a), math.cos(a)  # do this computation only once
-    return [ (p[0]*ca - p[1]*sa, p[1]*ca + p[0]*sa) for p in pts ] # p[0]=x,p[1]=y
-
-def int_points(pts):
-    """Convert array of flooat points to int, for vectorio"""
-    return [(int(p[0]),int(p[1])) for p in pts]
-
-
-maingroup = displayio.Group()
-display.show(maingroup) # put main group on display, everything goes in maingroup
-
-# create vectorio shape, put in a group, put that on maingroup
-pal = displayio.Palette(1)
-pal[0] = shape0_color
-shape0 = vectorio.Polygon(pixel_shader=pal, points=int_points(path0))
-shapeg = displayio.Group()  #scale=1, x = 0, y=0)
-shapeg.append(shape0)
-maingroup.append(shapeg)
-
-x,y = 80, 80  # starting location for our shape
-theta = 0
-xvel, yvel = 1.8, 1.0  # xy velocity
-theta_vel = 0.04
-
-last_time = 0
-while True:
-
-    elapsed_time = time.monotonic()
-    
-    # rotate about shape origin
-    shape0.points = int_points( rotate_points(path0, theta) )
-
-    elapsed_time = time.monotonic() - elapsed_time
-
-    if time.monotonic() - last_time > 0.5:
-        last_time = time.monotonic()
-        print("elapsed millis %d" % (elapsed_time * 1000))
-        
-    # update position
-    x,y = x + xvel, y + yvel
-    theta = theta + theta_vel
-    shapeg.x = int(x)
-    shapeg.y = int(y)
-
-    # bounce on screen edge hit
-    if x < shape0_w//2 or x > (display.width - shape0_w//2):
-        xvel = -xvel
-    if y < shape0_h//2 or y > (display.height - shape0_h//2):
-        yvel = -yvel
-
-    time.sleep(0.01)
-
-
 
