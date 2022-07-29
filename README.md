@@ -5,9 +5,12 @@ A small list of tips & tricks I find myself needing when working with CircuitPyt
 
 This is now a [Learn Guide on Adafruit](https://learn.adafruit.com/todbot-circuitpython-tricks?view=all) too!
 
+Also see the [larger-tricks](larger-tricks) directory for additional ideas.
 
 Table of Contents
 =================
+
+But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
 
 * [Inputs](#inputs)
   * [Read a digital input as a Button](#read-a-digital-input-as-a-button)
@@ -89,6 +92,7 @@ Table of Contents
       * [Turn off built-in display to speed up REPL printing](#turn-off-built-in-display-to-speed-up-repl-printing)
 * [Python tricks](#python-tricks)
   * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
+  * [Convert RGB tuples to int and back again](#convert-rgb-tuples-to-int-and-back-again)
   * [Storing multiple values per list entry](#storing-multiple-values-per-list-entry)
 * [Python info](#python-info)
   * [Display which (not built-in) libraries have been imported](#display-which-not-built-in-libraries-have-been-imported)
