@@ -15,7 +15,7 @@ This directory contains a fairly un-ordered list, but here are the main tricks.
 
 * **dvdlogo_vectorio** - demonstrate `vectorio` to display bouncing DVD logo 
 
-* **vectorio_rotate** - some `vectorio` tools to rotate & scale vectorio point sets
+* **vectorio_rotate_example** - some `vectorio` tools to rotate & scale vectorio point sets
 
 
 ## Audio playing
