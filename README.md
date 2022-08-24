@@ -197,9 +197,9 @@ while True:
 import board
 from digitalio import DigitalInOut, Pull
 from adafruit_debouncer import Debouncer
-pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
+button_pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
 buttons = []   # will hold list of Debouncer objects
-for pin in pins:   # set up each pin
+for pin in button_pins:   # set up each pin
     tmp_pin = DigitalInOut(pin) # defaults to input
     tmp_pin.pull = Pull.UP      # turn on internal pull-up resistor
     buttons.append( Debouncer(tmp_pin) )
@@ -211,6 +211,26 @@ while True:
         if buttons[i].rose:
             print("button",i,"released!")
 ```
+
+If your board's CircuitPython has the `keypad` library (most do),
+then I recommend using it. It's not just for key matrixes! And it's more efficient
+and, since it's built-in, reduces a library dependency.
+
+```py
+import board
+import keypad
+button_pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
+buttons = keypad.Keys(button_pins, value_when_pressed=False, pull=True)
+
+while True:
+    key = keys.events.get()  # see if there are any key events
+    if key:                  # there are events!
+      if key.pressed:
+        print("button", key.key_number, "pressed!")
+      if key.released:
+        print("button", key.key_number, "released!")
+```
+
 
 ## Outputs
 
