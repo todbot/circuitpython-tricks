@@ -223,12 +223,12 @@ button_pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
 buttons = keypad.Keys(button_pins, value_when_pressed=False, pull=True)
 
 while True:
-    key = keys.events.get()  # see if there are any key events
-    if key:                  # there are events!
-      if key.pressed:
-        print("button", key.key_number, "pressed!")
-      if key.released:
-        print("button", key.key_number, "released!")
+    button = buttons.events.get()  # see if there are any key events
+    if button:                      # there are events!
+      if button.pressed:
+        print("button", button.key_number, "pressed!")
+      if button.released:
+        print("button", button.key_number, "released!")
 ```
 
 
