@@ -713,12 +713,12 @@ while True:
 import wifi, socketpool, ssl
 from secrets import secrets
 wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
-pool = socketpool.SocketPool(wifi.radio)
 
 print("my IP addr:", wifi.radio.ipv4_address)
 
 hostname = "todbot.com"
 
+pool = socketpool.SocketPool(wifi.radio)
 addrinfo = pool.getaddrinfo(host=hostname, port=443) # port is required
 print("addrinfo", addrinfo)
 
