@@ -710,7 +710,7 @@ while True:
 ### Get IP address of remote host
 
 ```py
-import wifi, socketpool, ssl
+import wifi, socketpool
 from secrets import secrets
 wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
 print("my IP addr:", wifi.radio.ipv4_address)
