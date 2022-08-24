@@ -3,6 +3,8 @@
 
 A small list of tips & tricks I find myself needing when working with CircuitPython.
 
+I find these examples useful when picking up a new project and I just want some boilerplate to get started.
+
 This is now a [Learn Guide on Adafruit](https://learn.adafruit.com/todbot-circuitpython-tricks?view=all) too!
 
 Also see the [larger-tricks](larger-tricks) directory for additional ideas.
@@ -50,6 +52,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
 * [WiFi / Networking](#wifi--networking)
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
   * [Ping an IP address](#ping-an-ip-address)
+  * [Get IP address of remote host](#get-ip-address-of-remote-host)
   * [Fetch a JSON file](#fetch-a-json-file)
   * [Set RTC time from NTP](#set-rtc-time-from-ntp)
   * [Set RTC time from time service](#set-rtc-time-from-time-service)
@@ -448,7 +451,7 @@ audio.play( audiocore.WaveFile("laser2.wav"), "rb")
 
 ### Play multiple sounds with audiomixer
 
-This example assumes mono 22050 Hz sample rate, w/ signed 16-bit samples.
+This example assumes WAVs that are mono 22050 Hz sample rate, w/ signed 16-bit samples.
 
 ```py
 import time, board, audiocore, audiomixer
@@ -703,6 +706,28 @@ while True:
     print("ping:", wifi.radio.ping(ip1))
     time.sleep(1)
 ```
+
+### Get IP address of remote host
+
+```py
+import wifi, socketpool, ssl
+from secrets import secrets
+wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+pool = socketpool.SocketPool(wifi.radio)
+
+print("my IP addr:", wifi.radio.ipv4_address)
+
+hostname = "todbot.com"
+
+addrinfo = pool.getaddrinfo(host=hostname, port=443) # port is required
+print("addrinfo", addrinfo)
+
+ipaddress = addrinfo[0][4][0]
+
+print(f"'{hostname}' ip address is '{ipaddress}'")
+```
+
+
 
 ### Fetch a JSON file
 
