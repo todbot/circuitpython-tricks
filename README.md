@@ -713,7 +713,6 @@ while True:
 import wifi, socketpool, ssl
 from secrets import secrets
 wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
-
 print("my IP addr:", wifi.radio.ipv4_address)
 
 hostname = "todbot.com"
