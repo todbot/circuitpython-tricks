@@ -23,7 +23,7 @@ class MIDI_Forward:
         self.midiusb_out = usb_midi.ports[1]
         self.midiser_in  = uart
         self.midiser_out = uart
-        
+
     def forward(self):
         bytes_usb = self.midiusb_in.read(30)  # 30 from adafruit_midi
         if bytes_usb:
@@ -36,6 +36,4 @@ class MIDI_Forward:
 midi_forward = MIDI_Forward()
 
 while True:
-    print(time.monotonic(),"yep")
     midi_forward.forward()
-    time.sleep(0.5)

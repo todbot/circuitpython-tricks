@@ -448,11 +448,14 @@ audio.play( audiocore.WaveFile("laser2.wav"), "rb")
 
 ### Play multiple sounds with audiomixer
 
+This example assumes mono 22050 Hz sample rate, w/ signed 16-bit samples.
+
 ```py
 import time, board, audiocore, audiomixer
 from audiopwmio import PWMAudioOut as AudioOut
 
-wav_files = ('loop1.wav', 'loop2.wav', 'loop3.wav')
+wav_files = ("loop1.wav", "loop2.wav", "loop3.wav")
+wavs = [None] * len(wav_files)  # holds the loaded WAVs
 
 audio = AudioOut(board.GP1)  # RP2040 example
 mixer = audiomixer.Mixer(voice_count=len(wav_files), sample_rate=22050, channel_count=1,
@@ -460,12 +463,13 @@ mixer = audiomixer.Mixer(voice_count=len(wav_files), sample_rate=22050, channel_
 audio.play(mixer)  # attach mixer to audio playback
 
 for i in range(len(wav_files)):
-  mixer.voice[i].play( wav_files[i], loop=True) # start each one playing
+    print("i:",i)
+    wavs[i] = audiocore.WaveFile(open(wav_files[i], "rb"))
+    mixer.voice[i].play( wavs[i], loop=True) # start each one playing
 
 while True:
-   print("doing something else while all loops play")
-   time.sleep(1)
-
+    print("doing something else while all loops play")
+    time.sleep(1)
 ```
 
 Also see the many examples in [larger-tricks](./larger-tricks/).
@@ -637,7 +641,7 @@ while True:
 class USBSerialReader:
     """ Read a line from USB Serial (up to end_char), non-blocking, with optional echo """
     def __init__(self):
-        self.s = ''  
+        self.s = ''
     def read(self,end_char='\n', echo=True):
         import sys, supervisor
         n = supervisor.runtime.serial_bytes_available
@@ -1221,7 +1225,7 @@ while True:
       print("toggle!", toggle_value)
   last_touch_val = touch_val
   ```
-  
+
 ### Do something every N seconds without `sleep()`
 
 Also known as "blink-without-delay"
