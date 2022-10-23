@@ -42,7 +42,7 @@ class Eye:
         display.show(main)
         self.display = display
         self.eyeball = displayio.TileGrid(eyeball_bitmap, pixel_shader=eyeball_pal)
-        self.iris = displayio.TileGrid(iris_bitmap, pixel_shader=iris_pal, x = iris_cx, y = iris_cy )
+        self.iris = displayio.TileGrid(iris_bitmap, pixel_shader=iris_pal, x=iris_cx,y=iris_cy)
         main.append(self.eyeball)
         main.append(self.iris)
         self.x, self.y = iris_cx, iris_cy
@@ -61,7 +61,6 @@ class Eye:
             self.next_time = time.monotonic() + t
             self.tx = iris_cx + random.uniform(-r,r)
             self.ty = iris_cy + random.uniform(-r,r)
-            print("change!",t )
         self.display.refresh()
 
 # a list of all the eyes, in this case, only one
