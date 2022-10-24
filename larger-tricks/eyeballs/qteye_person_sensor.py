@@ -72,30 +72,6 @@ class Eye:
 
 the_eye =  Eye( spi0, tft_L0_dc, tft_L0_cs,  tft_L0_rst, rot=0)
 
-# The person sensor has the I2C ID of hex 62, or decimal 98.
-PERSON_SENSOR_I2C_ADDRESS = 0x62
-
-# We will be reading raw bytes over I2C, and we'll need to decode them into
-# data structures. These strings define the format used for the decoding, and
-# are derived from the layouts defined in the developer guide.
-PERSON_SENSOR_I2C_HEADER_FORMAT = "BBH"
-PERSON_SENSOR_I2C_HEADER_BYTE_COUNT = struct.calcsize(
-    PERSON_SENSOR_I2C_HEADER_FORMAT)
-
-PERSON_SENSOR_FACE_FORMAT = "BBBBBBbB"
-PERSON_SENSOR_FACE_BYTE_COUNT = struct.calcsize(PERSON_SENSOR_FACE_FORMAT)
-
-PERSON_SENSOR_FACE_MAX = 4
-PERSON_SENSOR_RESULT_FORMAT = PERSON_SENSOR_I2C_HEADER_FORMAT + \
-    "B" + PERSON_SENSOR_FACE_FORMAT * PERSON_SENSOR_FACE_MAX + "H"
-PERSON_SENSOR_RESULT_BYTE_COUNT = struct.calcsize(PERSON_SENSOR_RESULT_FORMAT)
-
-# How long to pause between sensor polls.
-PERSON_SENSOR_DELAY = 0.3
-
-# How large a face needs to be to count.
-MAIN_FACE_MIN_WIDTH = 16  # was 32
-MAIN_FACE_MIN_HEIGHT = 16
 
 i2c = board.STEMMA_I2C()
 
@@ -107,6 +83,31 @@ last_person_sensor_time = 0
 # Keep looping and reading the person sensor results.
 def get_faces():
     global last_person_sensor_time
+
+    # The person sensor has the I2C ID of hex 62, or decimal 98.
+    PERSON_SENSOR_I2C_ADDRESS = 0x62
+
+    # We will be reading raw bytes over I2C, and we'll need to decode them into
+    # data structures. These strings define the format used for the decoding, and
+    # are derived from the layouts defined in the developer guide.
+    PERSON_SENSOR_I2C_HEADER_FORMAT = "BBH"
+    PERSON_SENSOR_I2C_HEADER_BYTE_COUNT = struct.calcsize(
+        PERSON_SENSOR_I2C_HEADER_FORMAT)
+
+    PERSON_SENSOR_FACE_FORMAT = "BBBBBBbB"
+    PERSON_SENSOR_FACE_BYTE_COUNT = struct.calcsize(PERSON_SENSOR_FACE_FORMAT)
+
+    PERSON_SENSOR_FACE_MAX = 4
+    PERSON_SENSOR_RESULT_FORMAT = PERSON_SENSOR_I2C_HEADER_FORMAT + \
+        "B" + PERSON_SENSOR_FACE_FORMAT * PERSON_SENSOR_FACE_MAX + "H"
+    PERSON_SENSOR_RESULT_BYTE_COUNT = struct.calcsize(PERSON_SENSOR_RESULT_FORMAT)
+
+    # How long to pause between sensor polls.
+    PERSON_SENSOR_DELAY = 0.3
+
+    # How large a face needs to be to count.
+    MAIN_FACE_MIN_WIDTH = 16  # was 32
+    MAIN_FACE_MIN_HEIGHT = 16
 
     if time.monotonic() - last_person_sensor_time < PERSON_SENSOR_DELAY:
         return []
