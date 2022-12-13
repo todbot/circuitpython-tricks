@@ -13,7 +13,7 @@ This directory contains a fairly un-ordered list, but here are the main tricks.
 
 * **fireworks_sprites** - demonstrate using `displayio` spritesheets to do animation and simple phyics engine
 
-* **dvdlogo_vectorio** - demonstrate `vectorio` to display bouncing DVD logo 
+* **dvdlogo_vectorio** - demonstrate `vectorio` to display bouncing DVD logo
 
 * **vectorio_rotate_example** - some `vectorio` tools to rotate & scale vectorio point sets
 
@@ -26,6 +26,8 @@ This directory contains a fairly un-ordered list, but here are the main tricks.
 
 * **beatfader** - using `audiomixer` to fade between different WAVs
 
+* **beatfader_i2s** - using I2S DAC and `audiomixer` to fade between different WAVs
+
 * **i2s_sdcard_pico** - how to set up I2S audio out and SD card reading on Raspberry Pi Pico RP2040
 
 
@@ -34,6 +36,6 @@ This directory contains a fairly un-ordered list, but here are the main tricks.
 * **midi_forward** - simple USB MIDI to Serial MIDI forwarder using `adafruit_midi` and `usb_midi`
 
 
-## USB 
+## USB
 
 * **robost_keyboard** - demonstrate how to deal with USB disconnect for battery-powered USB HID keyboard devices
