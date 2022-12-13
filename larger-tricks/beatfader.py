@@ -1,10 +1,10 @@
 # beatfader.py -- fade between different drum loops
 # 18 Feb 2022 - @todbot / Tod Kurt
 #
-# Tested on Raspberry Pi Pico
+# Tested on Raspberry Pi Pico, uses PWM Audio
 #
 # Copy this file to CIRCUITPY/code.py
-# Copy the beatfader_wavs files to CIRCUITPY/wav
+# Copy the "beatfader_wavs" directory to CIRCUITPY
 #
 # Note: CircuitPython will hang or freeze sometimes with audiopwmio
 #       especially if USB access is happening (e.g. saving files)
@@ -23,10 +23,10 @@ from audiopwmio import PWMAudioOut as AudioOut
 
 wav_files = (
     # filename,           loop?
-    ('wav/amen_22k16b_160bpm.wav', True), 
-    ('wav/dnb21580_22k16b_160bpm.wav', True), 
-    ('wav/drumloopA_22k16b_160bpm.wav', True),
-    ('wav/amen_22k16b_160bpm.wav', True), 
+    ('beatfader_wavs/amen_22k16b_160bpm.wav', True),
+    ('beatfader_wavs/dnb21580_22k16b_160bpm.wav', True),
+    ('beatfader_wavs/drumloopA_22k16b_160bpm.wav', True),
+    ('beatfader_wavs/amen_22k16b_160bpm.wav', True),
 )
 
 potknob = analogio.AnalogIn(board.A2)
@@ -46,7 +46,7 @@ for i in range(len(wav_files)):
 
 cnt = len(wav_files)
 n = cnt * 0.8  # amount of overlap
-m  = 1/(cnt-1) # size of slice 
+m  = 1/(cnt-1) # size of slice
 
 while True:
     potval = potknob.value

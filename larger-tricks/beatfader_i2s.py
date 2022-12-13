@@ -4,7 +4,7 @@
 # Tested on Lolin S2 Mini ESP32-S2 https://circuitpython.org/board/lolin_s2_mini/
 #
 # Copy this file to CIRCUITPY/code.py
-# Copy the beatfader_wav dir to CIRCUITPY/beatfader_wav
+# Copy the "beatfader_wavs" dir to CIRCUITPY
 #
 # Wiring is:
 # - Hook a PCM5102 I2S DAC to S2 Mini like:
