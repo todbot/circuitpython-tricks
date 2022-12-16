@@ -724,14 +724,15 @@ musical timing differences very easily, we can gain back some overhead by using 
 This code is equivalent to the above, without `adafruit_midi`
 ```py
 import usb_midi
+midi_out = usb_midi.ports[1]
 midi_out_channel = 3
 note_on_status = (0x90 | (midi_out_channel-1))
 note_off_status = (0x80 | (midi_out_channel-1))
 
 def play_note(note,velocity=127):
-    usb_out.write( bytearray([note_on_status, note, velocity]) )
+    midi_out.write( bytearray([note_on_status, note, velocity]) )
     time.sleep(0.1)
-    usb_out.write( bytearray([note_off_status, note, 0]) )
+    midi_out.write( bytearray([note_off_status, note, 0]) )
 ```
 
 ### MIDI over Serial UART
