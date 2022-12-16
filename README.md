@@ -49,6 +49,11 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
   * [Read keys from USB Serial](#read-keys-from-usb-serial)
   * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
+* [USB MIDI](#usb-midi)
+  * [Sending MIDI with adafruit_midi](#sending-midi-with-adafruit_midi)
+  * [Sending MIDI with bytearray](#sending-midi-with-bytearray)
+  * [MIDI over Serial UART](#midi-over-serial-uart)
+  * [Enable USB MIDI in boot.py (for ESP32S2 and STM32F4)](#enable-usb-midi-in-bootpy-for-esp32s2-and-stm32f4)
 * [WiFi / Networking](#wifi--networking)
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
   * [Ping an IP address](#ping-an-ip-address)
@@ -686,6 +691,84 @@ while True:
     if mystr:
         print("got:",mystr)
     time.sleep(0.01)  # do something time critical
+```
+
+## USB MIDI
+
+CircuitPython can be a MIDI controller, or respond to MIDI!
+Adafruit provides an [`adafruit_midi`](https://github.com/adafruit/Adafruit_CircuitPython_MIDI)
+class to make things easier, but it's rather complex for how simple MIDI actually is.
+So for outputting MIDI, you can opt to just do raw `bytearray`s.  For reading MIDI,
+I recommend [Winterbloom's SmolMIDI](https://github.com/wntrblm/Winterbloom_SmolMIDI).
+
+### Sending MIDI with adafruit_midi
+
+```py
+import usb_midi
+from adafruit_midi.note_on import NoteOn
+from adafruit_midi.note_off import NoteOff
+midi_out_channel = 3 # human version of MIDI out channel (1-16)
+midi = adafruit_midi.MIDI( midi_out=usb_midi.ports[1], out_channel=midi_out_channel-1)
+
+def play_note(note,velocity=127):
+    midi.send(NoteOn(note, velocity))  # 127 = highest velocity
+    time.sleep(0.1)
+    midi.send(NoteOff(note, 0))  # 0 = lowest velocity
+```
+
+### Sending MIDI with bytearray
+
+Since we're often battling timing issues in CircuitPython and humans can detect
+musical timing differences very easily, we can gain back some overhead by using `usb_midi` directly.
+
+This code is equivalent to the above, without `adafruit_midi`
+```py
+import usb_midi
+midi_out_channel = 3
+note_on_status = (0x90 | (midi_out_channel-1))
+note_off_status = (0x80 | (midi_out_channel-1))
+
+def play_note(note,velocity=127):
+    usb_out.write( bytearray([note_on_status, note, velocity]) )
+    time.sleep(0.1)
+    usb_out.write( bytearray([note_off_status, note, 0]) )
+```
+
+### MIDI over Serial UART
+
+Not exactly USB, but it is MIDI!
+Both `adafruit_midi` and the bytearray technique works for Serial MIDI too.
+With a [simple MIDI out circuit](https://learn.adafruit.com/qt-py-rp2040-usb-to-serial-midi-friends/circuit-diagram)
+you can control old hardware synths.
+
+```py
+import busio
+midi_out_channel = 3 # human version of MIDI out channel (1-16)
+note_on_status = (0x90 | (midi_out_channel-1))
+note_off_status = (0x80 | (midi_out_channel-1))
+midi_uart = busio.UART(tx=board.GP16, rx=board.GP17, baudrate=31250)
+
+def play_note(note,velocity=127):
+    midi_uart.write( bytearray([note_on_status, note, velocity]) )
+    time.sleep(0.1)
+    midi_uart.write( bytearray([note_off_status, note, 0]) )
+```
+
+
+### Enable USB MIDI in boot.py (for ESP32S2 and STM32F4)
+
+Some CircuitPython devices like ESP32-S2 based ones, do not have enough
+[USB endpoints to enable all USB functions](https://learn.adafruit.com/customizing-usb-devices-in-circuitpython/how-many-usb-devices-can-i-have), so USB MIDI is disabled by default.
+To enable it, the easiest is to disable USB HID (keyboard/mouse) support.
+This must be done in `boot.py` and the the board power cycled.
+
+```py
+# boot.py
+import usb_hid
+import usb_midi
+usb_hid.disable()
+usb_midi.enable()
+print("enabled USB MIDI, disabled USB HID")
 ```
 
 
