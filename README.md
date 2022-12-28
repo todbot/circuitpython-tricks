@@ -59,6 +59,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Ping an IP address](#ping-an-ip-address)
   * [Get IP address of remote host](#get-ip-address-of-remote-host)
   * [Fetch a JSON file](#fetch-a-json-file)
+  * [Serve a webpage via HTTP](#serve-a-webpage-via-http)
   * [Set RTC time from NTP](#set-rtc-time-from-ntp)
   * [Set RTC time from time service](#set-rtc-time-from-time-service)
   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
@@ -831,7 +832,6 @@ print(f"'{hostname}' ip address is '{ipaddress}'")
 ```
 
 
-
 ### Fetch a JSON file
 
 Note: this is for boards with native WiFi (ESP32)
@@ -853,6 +853,39 @@ while True:
     print("data:",data)
     time.sleep(5)
 ```
+
+
+### Serve a webpage via HTTP
+
+Note: this is for boards with native WiFi (ESP32)
+
+The [`adafruit_httpserver`](https://github.com/adafruit/Adafruit_CircuitPython_HTTPServer) library
+makes this pretty easy, and has good examples. You can tell it to either `server.serve_forver()`
+and do all your computation in your `@server.route()` functions, or use `server.poll()` inside a while-loop.
+There is also the [Ampule library](https://github.com/deckerego/ampule).
+
+```py
+import time, wifi, socketpool
+from adafruit_httpserver.server import HTTPServer
+from adafruit_httpserver.response import HTTPResponse
+from secrets import secrets  # contains your WiFi credentials
+
+my_port = 1234  # set this to your liking
+wifi.radio.connect(secrets["ssid"], secrets["password"]) # connect to your wifi
+server = HTTPServer(socketpool.SocketPool(wifi.radio))
+
+@server.route("/")  # magic that attaches this function to "server" object
+def base(request):
+    my_str = f"<html><body><h1> Hello! Current time.monotonic is {time.monotonic()}</h1></body></html>"
+    return HTTPResponse(body=my_str, content_type="text/html")
+    # or for static content: return HTTPResponse(filename="/index.html")
+
+print(f"Listening on http://{wifi.radio.ipv4_address}:{my_port}")
+server.serve_forever(str(wifi.radio.ipv4_address), port=my_port) # never returns
+
+```
+
+
 ### Set RTC time from NTP
 
 Note: this is for boards with native WiFi (ESP32)
