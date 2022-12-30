@@ -2,12 +2,10 @@
 # circuitpython-tricks
 
 A small list of tips & tricks I find myself needing when working with CircuitPython.
-
 I find these examples useful when picking up a new project and I just want some boilerplate to get started.
+Also see the [circuitpython-tricks/larger-tricks](larger-tricks) directory for additional ideas.
 
 An older version of this page is a [Learn Guide on Adafruit](https://learn.adafruit.com/todbot-circuitpython-tricks?view=all) too!
-
-Also see the [larger-tricks](larger-tricks) directory for additional ideas.
 
 If you're new to CircuitPython overall, there's no single reference, but:
 - [The Python Tutorial](https://docs.python.org/3/tutorial/) on Python.org,
