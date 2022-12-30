@@ -12,7 +12,7 @@ If you're new to CircuitPython overall, there's no single reference, but:
    since "CircuitPython is Python" mostly. (approx. Python 3.4)
 - [CircuitPython API reference](https://docs.circuitpython.org/en/latest/docs/), particularly the ["Core Modules > Modules" section](https://docs.circuitpython.org/en/latest/shared-bindings/index.html#modules) in the left sidebar
     - for compiled-in libraries like `displayio`, `usb`, `audioio`, `ulab.numpy`
-- [Pure-Python libraries in Adafruit Library Bundle](https://github.com/adafruit/Adafruit_CircuitPython_Bundle) for [drivers](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/tree/main/libraries/drivers) & [helpers](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/tree/main/libraries/helpers) libraries like `neopixel` & `ble`
+- [Pure-Python libraries in Adafruit Library Bundle](https://github.com/adafruit/Adafruit_CircuitPython_Bundle) for [drivers](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/tree/main/libraries/drivers) & [helpers](https://github.com/adafruit/Adafruit_CircuitPython_Bundle/tree/main/libraries/helpers) libraries like `board`, `neopixel` & `ble`
 - and [CircuitPython Essentials Learn Guide](https://learn.adafruit.com/circuitpython-essentials) of course
 
 
