@@ -1789,6 +1789,13 @@ in a specific format. I've found the best trade-off in quality / flash-space / c
 - Mono (but stereo will work if using I2S or SAMD51)
 - 22050 Hz sample rate
 
+And remember that these settings must match how you're setting up the `audiomixer` object.
+So for the above settings, you'd create an `audiomixer.Mixer` like:
+
+```py
+mixer = audiomixer.Mixer(voice_count=1, sample_rate=22050, channel_count=1,
+                         bits_per_sample=16, samples_signed=True)
+```
 
 To convert WAVs for CircuitPython, I like to use Audacity or the `sox` command-line tool.
 Sox can convert just about any audio to the correct WAV format:
