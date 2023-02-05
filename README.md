@@ -246,39 +246,6 @@ while True:
       if button.released:
         print("button", button.key_number, "released!")
 ```
-## Matrix Keypad
-
-### Using I2C Port Expander With Matrix Keypad
-```py
-import adafruit_matrixkeypad
-import adafruit_pcf8574
-from digitalio import DigitalInOut
-import board
-import time
-# Using default i2c with board.SDA e board.SCL
-i2c = board.I2C()
-pcf = adafruit_pcf8574.PCF8574(i2c, 0x20)
-
-# Classic 3x4 matrix keypad
-# I directly soldered the pcf8574 module on the keypad
-# with pinout C2 R1 C1 R4 C3 R3 R2
-cols = [pcf.get_pin(4), pcf.get_pin(6), pcf.get_pin(2)]
-rows = [pcf.get_pin(5), pcf.get_pin(0), pcf.get_pin(1), pcf.get_pin(3)]
-
-keys = ((1, 2, 3),
-        (4, 5, 6),
-        (7, 8, 9),
-        ('*', 0, '#'))
-
-keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
-
-while True:
-    keys = keypad.pressed_keys
-    if keys:
-        print("Pressed: ", keys)
-    time.sleep(0.1)
-```  
-
 ## Outputs
 
 ### Output HIGH / LOW on a pin (like an LED)
@@ -1293,6 +1260,36 @@ i2c = busio.I2C( board.SCL, board.SDA, frequency=200_000)
 # then do something with 'i2c' object as before, like:
 oled = adafruit_ssd1306.SSD1306_I2C(width=128, height=32, i2c=i2c)
 ```
+### Using I2C Port Expander With Matrix Keypad
+```py
+import adafruit_matrixkeypad
+import adafruit_pcf8574
+from digitalio import DigitalInOut
+import board
+import time
+# Using default i2c with board.SDA e board.SCL
+i2c = board.I2C()
+pcf = adafruit_pcf8574.PCF8574(i2c, 0x20)
+
+# Classic 3x4 matrix keypad
+# I directly soldered the pcf8574 module on the keypad
+# with pinout C2 R1 C1 R4 C3 R3 R2
+cols = [pcf.get_pin(4), pcf.get_pin(6), pcf.get_pin(2)]
+rows = [pcf.get_pin(5), pcf.get_pin(0), pcf.get_pin(1), pcf.get_pin(3)]
+
+keys = ((1, 2, 3),
+        (4, 5, 6),
+        (7, 8, 9),
+        ('*', 0, '#'))
+
+keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
+
+while True:
+    keys = keypad.pressed_keys
+    if keys:
+        print("Pressed: ", keys)
+    time.sleep(0.1)
+```  
 
 ## Timing
 
