@@ -81,8 +81,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
 * [I2C](#i2c)
   * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
   * [Speed up I2C bus](#speed-up-i2c-bus)
-*[Matrix Keypad I2C] (#matrix-keypad)
-
+  * [Using Matrix Keypad with I2C Port Expander] (#using-i2c-port-expander-with-matrix-keypad)
 * [Timing](#timing)
   * [Measure how long something takes](#measure-how-long-something-takes)
   * [More accurate timing with ticks_ms(), like Arduino millis()](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
