@@ -34,7 +34,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
   * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
   * [Control a servo, with animation list](#control-a-servo-with-animation-list)
-*[Matrix Keypad I2C] (#matrix-keypad)
+
 * [Neopixels / Dotstars](#neopixels--dotstars)
   * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
   * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
@@ -81,6 +81,8 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
 * [I2C](#i2c)
   * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
   * [Speed up I2C bus](#speed-up-i2c-bus)
+*[Matrix Keypad I2C] (#matrix-keypad)
+
 * [Timing](#timing)
   * [Measure how long something takes](#measure-how-long-something-takes)
   * [More accurate timing with ticks_ms(), like Arduino millis()](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
