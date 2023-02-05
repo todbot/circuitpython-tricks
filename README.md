@@ -39,6 +39,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
   * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
   * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
+  * [Dictionary for HTML Color Names](#dictionary-for-html-color-names)
   
 * [Audio](#audio)
   * [Audio out using PWM](#audio-out-using-pwm)
@@ -81,7 +82,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
 * [I2C](#i2c)
   * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
   * [Speed up I2C bus](#speed-up-i2c-bus)
-  * [Using Matrix Keypad with I2C Port Expander] (#using-i2c-port-expander-with-matrix-keypad)
+  * [Using Matrix Keypad with I2C Port Expander](#using-i2c-port-expander-with-matrix-keypad)
 * [Timing](#timing)
   * [Measure how long something takes](#measure-how-long-something-takes)
   * [More accurate timing with ticks_ms(), like Arduino millis()](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
