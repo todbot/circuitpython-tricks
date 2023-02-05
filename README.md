@@ -34,6 +34,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Output a "Analog" value on a PWM pin](#output-a-analog-value-on-a-pwm-pin)
   * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
   * [Control a servo, with animation list](#control-a-servo-with-animation-list)
+*[Matrix Keypad I2C] (#matrix-keypad)
 * [Neopixels / Dotstars](#neopixels--dotstars)
   * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
   * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
