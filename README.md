@@ -1454,7 +1454,8 @@ and you want to control exactly when a restart happens.
 
 ```py
 import supervisor
-supervisor.disable_autoreload()
+supervisor.runtime.auto_reload = False  # CirPy 8 and above
+supervisor.disable_autoreload()  # CirPy 7 and below
 ```
 
 To trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
