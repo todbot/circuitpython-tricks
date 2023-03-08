@@ -90,6 +90,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
 * [Computery Tasks](#computery-tasks)
   * [Formatting strings](#formatting-strings)
   * [Formatting strings with f-strings](#formatting-strings-with-f-strings)
+  * [Using regular expressions to "findall" strings](#using-regular-expressions-to-findall-strings)
   * [Make and use a config file](#make-and-use-a-config-file)
   * [Run different code.py on startup](#run-different-codepy-on-startup)
 * [Coding Techniques](#coding-techniques)
@@ -1298,7 +1299,32 @@ print(f"name:{name} color:{color:06x} temp:{body_temp:2.1f} num:{fav_number:%d}"
 # 'name:John color:ff3366 temp:98.6 num:123'
 ```
 
+### Using regular expressions to "findall" strings
+
+Regular expressions are a really powerful way to match information in and parse data
+from strings.  While CircuitPython has a version of the `re` regex module you may know
+from desktop Python, it is very limited. Specifcally it doesn't have the very useful
+`re.findall()` function.  Below is a semi-replacement for `findall()`.
+
+```py
+import re
+def find_all(regex, some_str):
+    matches = []
+    while m := regex.search(some_str):
+        matches.append( m.groups() )
+        some_str = some_str[ m.end(): ] # get past match
+    return matches
+
+my_str = "<thing>thing1 I want</thing> <thing>thing2 I want</thing>  <thing>thing3 I want</thing>"
+regex1 = re.compile('<thing.*?>(.*?)<\/thing>')
+my_matches = find_all( regex1, my_str )
+print("matches:", my_matches)
+
+```
+
+
 ### Make and use a config file
+
 ```py
 # my_config.py
 config = {
