@@ -1558,7 +1558,7 @@ import supervisor; supervisor.runtime.auto_reload = False
 
 # test neopixel strip, make them all purple
 import board, neopixel; leds = neopixel.NeoPixel(board.GP3, 8, brightness=0.2); leds.fill(0xff00ff)
-leds.deinit()  # releaes pin
+leds.deinit()  # releases pin
 
 # scan I2C bus
 import board; i2c=board.I2C(); i2c.try_lock(); [hex(a) for a in i2c.scan()]; i2c.unlock()
