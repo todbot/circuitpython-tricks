@@ -1481,7 +1481,7 @@ and you want to control exactly when a restart happens.
 ```py
 import supervisor
 supervisor.runtime.auto_reload = False  # CirPy 8 and above
-supervisor.disable_autoreload()  # CirPy 7 and below
+#supervisor.disable_autoreload()  # CirPy 7 and below
 ```
 
 To trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
@@ -1554,7 +1554,7 @@ import microcontroller; dir(microcontroller.pin)
 import displayio; displayio.release_displays()
 
 # turn off auto-reload when CIRCUITPY drive is touched
-import supervisor; supervisor.disable_autoreload()
+import supervisor; supervisor.runtime.auto_reload = False
 
 # make all neopixels purple
 import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=0.2); leds.fill(0xff00ff)
