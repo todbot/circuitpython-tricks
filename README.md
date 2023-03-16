@@ -1556,8 +1556,9 @@ import displayio; displayio.release_displays()
 # turn off auto-reload when CIRCUITPY drive is touched
 import supervisor; supervisor.runtime.auto_reload = False
 
-# make all neopixels purple
-import board; import neopixel; leds = neopixel.NeoPixel(board.D3, 8, brightness=0.2); leds.fill(0xff00ff)
+# test neopixel strip, make them all purple
+import board, neopixel; leds = neopixel.NeoPixel(board.GP3, 8, brightness=0.2); leds.fill(0xff00ff)
+leds.deinit()  # releaes pin
 
 # scan I2C bus
 import board; i2c=board.I2C(); i2c.try_lock(); [hex(a) for a in i2c.scan()]; i2c.unlock()
