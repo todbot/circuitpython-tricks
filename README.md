@@ -1541,10 +1541,13 @@ for x in range(16):
 (yes, semicolons are legal in Python)
 
 ```py
-# load most common libraries
+# load common libraries (for later REPL experiments)
 import time, board, analogio, touchio; from digitalio import DigitalInOut,Pull
 
-# print out board pins and objects (like 'I2C' and 'display')
+# create a pin and set a pin LOW (if you've done the above)
+pin = DigitalInOut(board.GP0); pin.switch_to_output(value=False)
+
+# print out board pins and objects (like `I2C`, `STEMMA_I2C`, `DISPLAY`, if present)
 import board; dir(board)
 
 # print out microcontroller pins (chip pins, not the same as board pins)
