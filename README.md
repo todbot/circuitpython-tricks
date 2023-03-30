@@ -714,6 +714,7 @@ I recommend [Winterbloom's SmolMIDI](https://github.com/wntrblm/Winterbloom_Smol
 
 ```py
 import usb_midi
+import adafruit_midi
 from adafruit_midi.note_on import NoteOn
 from adafruit_midi.note_off import NoteOff
 midi_out_channel = 3 # human version of MIDI out channel (1-16)
