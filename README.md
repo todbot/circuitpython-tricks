@@ -60,6 +60,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Sending MIDI with adafruit_midi](#sending-midi-with-adafruit_midi)
   * [Sending MIDI with bytearray](#sending-midi-with-bytearray)
   * [MIDI over Serial UART](#midi-over-serial-uart)
+  * [Receving MIDI USB and MIDI Serial UART together](#receving-midi-usb-and-midi-serial-uart-together)
   * [Enable USB MIDI in boot.py (for ESP32S2 and STM32F4)](#enable-usb-midi-in-bootpy-for-esp32s2-and-stm32f4)
 * [WiFi / Networking](#wifi--networking)
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
@@ -763,6 +764,39 @@ def play_note(note,velocity=127):
     midi_uart.write( bytearray([note_on_status, note, velocity]) )
     time.sleep(0.1)
     midi_uart.write( bytearray([note_off_status, note, 0]) )
+```
+
+### Receving MIDI USB and MIDI Serial UART together
+
+MIDI is MIDI, so you can use either the `midi_uart` or the `usb_midi.ports[]` created above with `adafruit_midi`.
+Here's an example receiving MIDI from both USB and Serial on a QTPy RP2040.
+Note for receiving serial MIDI, you need an appropriate optoisolator input circuit,
+like [this one for QTPys](https://denki-oto.weebly.com/store/p74/MICROMIDITRS-USB.html#/)
+or [this one for MacroPad RP2040](https://www.tindie.com/products/todbot/macropadsynthplug-turn-rp2040-into-a-synth/).
+
+```py
+import usb_midi        # built-in library
+import adafruit_midi   # install with 'circup install adafruit_midi'
+from adafruit_midi.note_on import NoteOn
+from adafruit_midi.note_off import NoteOff
+
+uart = busio.UART(tx=board.TX, rx=board.RX, baudrate=31250, timeout=0.001)
+midi_usb = adafruit_midi.MIDI( midi_in=usb_midi.ports[0],  midi_out=usb_midi.ports[1] )
+midi_serial = adafruit_midi.MIDI( midi_in=uart, midi_out=uart )
+
+while True:
+    msg = midi_usb.receive()
+    if msg is not None:
+        if isinstance(msg, NoteOn):
+            print("usb noteOn:",msg.note, msg.velocity)
+        elif isinstance(msg, NoteOff):
+            print("usb noteOff:",msg.note, msg.velocity)
+    msg = midi_serial.receive()
+    if msg is not None:
+        if isinstance(msg, NoteOn):
+            print("serial noteOn:",msg.note, msg.velocity)
+        elif isinstance(msg, NoteOff):
+            print("serial noteOff:",msg.note, msg.velocity)
 ```
 
 
