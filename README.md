@@ -775,6 +775,7 @@ like [this one for QTPys](https://denki-oto.weebly.com/store/p74/MICROMIDITRS-US
 or [this one for MacroPad RP2040](https://www.tindie.com/products/todbot/macropadsynthplug-turn-rp2040-into-a-synth/).
 
 ```py
+import board, busio
 import usb_midi        # built-in library
 import adafruit_midi   # install with 'circup install adafruit_midi'
 from adafruit_midi.note_on import NoteOn
