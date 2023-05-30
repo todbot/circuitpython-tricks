@@ -20,10 +20,14 @@ Synthio Tricks
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
    * [Advanced Techniques](#advanced-techniques)
+      * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
+      * [Using LFO values in your own code](#using-lfo-values-in-your-own-code)
+      * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
       * [Wavetable mixing](#wavetable-mixing)
+      * [Loading WAV files into synthio](#loading-wav-files-into-synthio)
 
-<!-- Added by: tod, at: Mon May 29 17:41:12 PDT 2023 -->
+<!-- Added by: tod, at: Mon May 29 18:01:47 PDT 2023 -->
 
 <!--te-->
 
