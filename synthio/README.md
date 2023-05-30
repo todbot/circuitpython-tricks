@@ -29,7 +29,7 @@ Synthio Tricks
 
 ## What is `synthio`?
 
-- CircuitPython core library
+- CircuitPython core library available since 8.2.0-beta0 and still in development!
 - Features:
   - Polyphonic (11 to 24? oscillator) & stereo, 16-bit, with adjustable sample rate
   - Oscillators are wavetable-based, wtih real-time adjustable wavetables
@@ -44,7 +44,7 @@ Synthio Tricks
   - LFOs have customized wavetables and can be applied to your own code
   - Math blocks to adjust LFO ranges, offsets, scales
   - Utility functions to easily convert from MIDI or V/Oct modular to frequency
-  - Plugs into existing `AudioMixer`
+  - Plugs into existing `AudioMixer` system for use alongside `audiocore.WaveFile` sample playing
 
 ## Getting started
 
@@ -296,13 +296,15 @@ And since each note can get their own LFO, you can make little "songs" with just
 ```py
 lfo_trema1 = synthio.LFO(rate=3)  # 3 Hz for fastest note
 lfo_trema2 = synthio.LFO(rate=2)  # 2 Hz for middle note
-lfo_trema3 = synthio.LFO(rate=1)  # 1 Hz for lowest (bass) note
+lfo_trema3 = synthio.LFO(rate=1)  # 1 Hz for lower note
+lfo_trema4 = synthio.LFO(rate=0.75) # 0.75 Hz for lowest bass note
 
 midi_note = 65
 note1 = synthio.Note( synthio.midi_to_hz(midi_note), amplitude=lfo_trema1)
 note2 = synthio.Note( synthio.midi_to_hz(midi_note-7), amplitude=lfo_trema2)
 note3 = synthio.Note( synthio.midi_to_hz(midi_note-12), amplitude=lfo_trema3)
-synth.press( (note1, note2, note3) )
+note4 = synthio.Note( synthio.midi_to_hz(midi_note-24), amplitude=lfo_trema4)
+synth.press( (note1, note2, note3, note4) )
 
 while True:
     print("hi, we're just groovin")
