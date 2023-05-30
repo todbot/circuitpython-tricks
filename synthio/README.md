@@ -15,12 +15,15 @@ Synthio Tricks
    * [Basic Synth Techniques](#basic-synth-techniques)
       * [Amplitude envelopes](#amplitude-envelopes)
          * [Envelope for entire synth](#envelope-for-entire-synth)
-         * [Per-note envelopes](#per-note-envelopes)
+         * [Per-note velocity envelopes with synthio.Note](#per-note-velocity-envelopes-with-synthionote)
       * [LFOs: vibrato, tremolo, and more](#lfos-vibrato-tremolo-and-more)
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
+   * [Advanced Techniques](#advanced-techniques)
+      * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
+      * [Wavetable mixing](#wavetable-mixing)
 
-<!-- Added by: tod, at: Mon May 29 16:12:16 PDT 2023 -->
+<!-- Added by: tod, at: Mon May 29 17:41:12 PDT 2023 -->
 
 <!--te-->
 
@@ -32,7 +35,12 @@ Synthio Tricks
   - Oscillators are wavetable-based, wtih real-time adjustable wavetables
   - ADSR amplitude envelope per oscillator
   - Oscillator ring modulation w/ customizable ring oscillator wavetable
-  - Multiple LFOs per oscillator for amplitude, panning, pitch bend or ring mod
+  - Extensive LFO system
+    - multiple LFOs per oscillator (amplitude, panning, pitch bend, ring mod)
+    - LFOs can repeat or run once (becoming a kind of envelope)
+    - Each LFO can have a custom wavetable with linear interpolation
+    - LFO outputs can be used by user code
+    - LFOs can plug into one another
   - LFOs have customized wavetables and can be applied to your own code
   - Math blocks to adjust LFO ranges, offsets, scales
   - Utility functions to easily convert from MIDI or V/Oct modular to frequency
@@ -43,9 +51,11 @@ Synthio Tricks
 ###  Get Audio out working
   - Example circuits:
     - Pico w/ RC filter and `audiopwmio.PWMAudioOut`
+    (R1=1k, C1=100n, C2=47uF,
+    [Sparkfun TRRS](https://www.sparkfun.com/products/11570))
     <img src="./imgs/synthio_pico_pwm_bb.jpg" width=500>
 
-    - Pico w/ I2S PCM5102 and `audiobusio.I2SOut`
+    - Pico w/ [I2S PCM5102](https://amzn.to/3MGOTJH) and `audiobusio.I2SOut`
     <img src="./imgs/synthio_pico_i2s_bb.jpg" width=500>
 
 ### Play a note every second
@@ -187,13 +197,13 @@ To create your own envelope with a slower attack and release time, and apply it 
 
 ```py
 import board, time, audiopwmio, synthio
-
 audio = audiopwmio.PWMAudioOut(board.GP10)
 synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
+
 amp_env_slow = synthio.Envelope(attack_time=0.2, release_time=0.8, sustain_level=1.0)
 amp_env_fast = synthio.Envelope(attack_time=0.01, release_time=0.2, sustain_level=0.5)
-synth.envelope = amp_env_slow  # could also do set in synth constructor
+synth.envelope = amp_env_slow  # could also set in synth constructor
 
 while True:
   synth.press(65) # midi note 65 = F4
@@ -208,21 +218,100 @@ while True:
   synth.envelope = amp_env_slow
 ```
 
-#### Per-note envelopes
+#### Per-note velocity envelopes with `synthio.Note`
+
+To give you more control over each oscillator, `synthio.Note` lets you override
+the default envelope and waveform of your `synth` with per-note versions.
+For instance, you can create a new envelope based on incoming MIDI note velocity to
+make a more expressive instrument. You will have to convert MIDI notes to frequency by hand,
+but synthio provides a helper for that.
+
+```py
+import board, time, audiopwmio, synthio, random
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+
+while True:
+    midi_note = 65
+    velocity = random.choice( (1, 0.1, 0.5) )  # 3 different fake velocity values 0.0-1.0
+    print("vel:",velocity)
+    amp_env = synthio.Envelope( attack_time=0.1 + 0.6*(1-velocity),  # high velocity, short attack
+                                release_time=0.1 + 0.9*(1-velocity) ) # low velocity, long release
+    note = synthio.Note( synthio.midi_to_hz(midi_note), envelope=amp_env )
+    synth.press(note) # press with note object
+    time.sleep(0.5)
+    synth.release(note) # must release with same note object
+    time.sleep(2.0)
+```
+
+The choice of how you scale velocity to attack times, sustain levels and so on,
+is dependent on your application.
+
+For an example of how to use this with MIDI velocity,
+see [synthio_midi_synth.py](https://gist.github.com/todbot/96a654c5fa27625147d65c45c8bfd47b)
 
 
 ### LFOs: vibrato, tremolo, and more
 
+LFOs (Low-Frequency Oscillators) were named back when it was very different
+to build an audio-rate oscillator vs an oscillator that changed over a few seconds.
+In synthesis, LFOs are often used to "automate" the knob twiddling one would do to perform an instrument.
+`synthio.LFO` is a flexible LFO system that can perform just about any kind of
+automated twiddling you can imagine.
+
+The waveforms for `synthio.LFO` can be any waveform (even the same waveforms used for oscillators),
+and the default waveform is a sine wave.
+
 #### Vibrato: pitch bend with LFO
 
+Here we create an LFO with a rate of 5 Hz and amplitude of 0.5% max.
+For each note, we apply that LFO to the note's `bend` property to create vibrato.
+
+If you'd like the LFO to start over on each note on, do `lfo_vibra.retrigger()`.
+
 ```py
-lfo_vibra = synthio.LFO()
+import board, time, audiopwmio, synthio, random
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+
+lfo_vibra = synthio.LFO(rate=5, scale=0.05)  # 5 Hz lfo at 0.5%
+
+while True:
+    midi_note = 65
+    note = synthio.Note( synthio.midi_to_hz(midi_note), bend=lfo_vibra )
+    synth.press(note)
+    time.sleep(1.0)
+    synth.release(note)
+    time.sleep(1.0)
 
 ```
 
 #### Tremolo: volume change with LFO
 
-```py
-lfo_trema = synthio.LFO()
+Similarly, we can create rhythmic changes in loudness with an LFO attached to `note.amplitude`.
+And since each note can get their own LFO, you can make little "songs" with just a few notes
 
+```py
+lfo_trema1 = synthio.LFO(rate=3)  # 3 Hz for fastest note
+lfo_trema2 = synthio.LFO(rate=2)  # 2 Hz for middle note
+lfo_trema3 = synthio.LFO(rate=1)  # 1 Hz for lowest (bass) note
+
+midi_note = 65
+note1 = synthio.Note( synthio.midi_to_hz(midi_note), amplitude=lfo_trema1)
+note2 = synthio.Note( synthio.midi_to_hz(midi_note-7), amplitude=lfo_trema2)
+note3 = synthio.Note( synthio.midi_to_hz(midi_note-12), amplitude=lfo_trema3)
+synth.press( (note1, note2, note3) )
+
+while True:
+    print("hi, we're just groovin")
+    time.sleep(1)
 ```
+
+
+## Advanced Techniques
+
+### Detuning oscillators for fatter sound
+
+### Wavetable mixing
