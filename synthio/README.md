@@ -54,19 +54,33 @@ Synthio Tricks
 
 ## Getting started
 
-###  Get Audio out working
-  - Example circuits:
-    - Pico w/ RC filter and `audiopwmio.PWMAudioOut`
-    (R1=1k, C1=100n, [Sparkfun TRRS](https://www.sparkfun.com/products/11570))
-    <img src="./imgs/synthio_pico_pwm_bb.jpg" width=500>
+###  Audio out circuits
 
-    - Pico w/ [I2S PCM5102](https://amzn.to/3MGOTJH) and `audiobusio.I2SOut`
-    <img src="./imgs/synthio_pico_i2s_bb.jpg" width=500>
+
+* Pico w/ RC filter and `audiopwmio.PWMAudioOut`
+
+  THe Pico can output a mono sound using PWM (~10-bit resolution) with an RC-filter.
+  (R1=1k, C1=100nF, [Sparkfun TRRS](https://www.sparkfun.com/products/11570))
+
+  <img src="./imgs/synthio_pico_pwm_bb.jpg" width=500>
+
+  Note: this is a very minimal RC filter stage that doesn't do DC-blocking
+  and proper line driving, but is strong enough to power many headphones.
+  See [here for a more complete RC filter circuit](https://www.youtube.com/watch?v=rwPTpMuvSXg).
+
+
+*  Pico w/ [I2S PCM5102](https://amzn.to/3MGOTJH) and `audiobusio.I2SOut`
+
+   An I2S DAC board is capable of stereo CD-quality sound and they're very affordable.
+   Their line out is also strong enough to drive many headphones too, but I usually feed
+   the output into a portable bluetooth speaker with line in.
+
+      <img src="./imgs/synthio_pico_i2s_bb.jpg" width=500>
+
 
 ### Play a note every second
 
-Use this to test that you can actually hear what `synthio` is doing.
-This a single mono PWM (~10-bit resolution) audio out with an RC-filter
+Use one of the above circuits, we can now hear what `synthio` is doing.
 
 ```py
 import board, time
@@ -89,14 +103,16 @@ while True:
     time.sleep(0.5)
 ```
 
-Note we'll be assuming PWMAudioOut in the examples below, but if you're using an I2S DAC instead,
+We'll be assuming PWMAudioOut in the examples below, but if you're using an I2S DAC instead,
 the `audio` line would look like the commented out part above. The particular choices for the three
-signals depends on the chip, on RP2040-based boards like the Pico,
-[many pin combos are available](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/circuitpython-wiring-test#wheres-my-i2s-2995476))
+signals depends on the chip, and CircuitPython will tell you in the REPL is a particular pin combination
+isn't supported. On RP2040-based boards like the Pico,
+[many pin combos are available](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/circuitpython-wiring-test#wheres-my-i2s-2995476).
 
 ### Play a chord
 
-We can send a list of [MIDI note numbers]() to be "pressed" and "released" to turn a note on and off
+We can send a list of [MIDI note numbers](https://soundprogramming.net/file-formats/midi-note-frequencies/)
+to be "pressed" and "released" to turn a note on and off
 
 ```py
 import board, time
@@ -325,8 +341,10 @@ while True:
 ### Custom wavetables for oscillators
 
 The default waveform in `synthio` is a 50% square-wave, it will accept any single-cycle waveform you give it.
-One of the easiest ways to make the waveform buffers is to use [`ulab.numpy`](). The numpy functions also
-have useful tools like `np.linspace()` to generate a line through a number space and trig functions like `np.sin()`. Once you have a waveform, set it with either `synth.waveform` or creating a new `synthio.Note(waveform=...)`
+One of the easiest ways to make the waveform buffers is to use [`ulab.numpy`](https://learn.adafruit.com/ulab-crunch-numbers-fast-with-circuitpython/ulab-numpy-phrasebook).
+The numpy functions also have useful tools like `np.linspace()` to generate a line through a number space
+and trig functions like `np.sin()`. Once you have a waveform, set it with either `synth.waveform`
+or creating a new `synthio.Note(waveform=...)`
 
 Here's an example playing two notes, first with sine waves, then with sawtooth waves.
 
