@@ -314,6 +314,14 @@ while True:
 
 ## Advanced Techniques
 
+### Keeping track of pressed notes
+
 ### Detuning oscillators for fatter sound
 
+### Using LFO values in your own code
+
+### Using `synthio.Math` with `synthio.LFO`
+
 ### Wavetable mixing
+
+### Loading WAV files into synthio
