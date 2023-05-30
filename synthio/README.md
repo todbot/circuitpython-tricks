@@ -15,10 +15,11 @@ Synthio Tricks
    * [Basic Synth Techniques](#basic-synth-techniques)
       * [Amplitude envelopes](#amplitude-envelopes)
          * [Envelope for entire synth](#envelope-for-entire-synth)
-         * [Per-note velocity envelopes with synthio.Note](#per-note-velocity-envelopes-with-synthionote)
+         * [Using synthio.Note for per-note velocity envelopes](#using-synthionote-for-per-note-velocity-envelopes)
       * [LFOs: vibrato, tremolo, and more](#lfos-vibrato-tremolo-and-more)
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
+      * [Custom wavetables for oscillators](#custom-wavetables-for-oscillators)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
@@ -26,8 +27,9 @@ Synthio Tricks
       * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
       * [Wavetable mixing](#wavetable-mixing)
       * [Loading WAV files into synthio](#loading-wav-files-into-synthio)
+      * [Drum synthesis](#drum-synthesis)
 
-<!-- Added by: tod, at: Mon May 29 18:01:47 PDT 2023 -->
+<!-- Added by: tod, at: Tue May 30 16:05:22 PDT 2023 -->
 
 <!--te-->
 
@@ -221,7 +223,7 @@ while True:
   synth.envelope = amp_env_slow
 ```
 
-#### Per-note velocity envelopes with `synthio.Note`
+#### Using `synthio.Note` for per-note velocity envelopes
 
 To give you more control over each oscillator, `synthio.Note` lets you override
 the default envelope and waveform of your `synth` with per-note versions.
@@ -274,7 +276,7 @@ For each note, we apply that LFO to the note's `bend` property to create vibrato
 If you'd like the LFO to start over on each note on, do `lfo_vibra.retrigger()`.
 
 ```py
-import board, time, audiopwmio, synthio, random
+import board, time, audiopwmio, synthio
 audio = audiopwmio.PWMAudioOut(board.GP10)
 synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
@@ -297,21 +299,62 @@ Similarly, we can create rhythmic changes in loudness with an LFO attached to `n
 And since each note can get their own LFO, you can make little "songs" with just a few notes
 
 ```py
-lfo_trema1 = synthio.LFO(rate=3)  # 3 Hz for fastest note
-lfo_trema2 = synthio.LFO(rate=2)  # 2 Hz for middle note
-lfo_trema3 = synthio.LFO(rate=1)  # 1 Hz for lower note
-lfo_trema4 = synthio.LFO(rate=0.75) # 0.75 Hz for lowest bass note
+import board, time, audiopwmio, synthio
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+
+lfo_tremo1 = synthio.LFO(rate=3)  # 3 Hz for fastest note
+lfo_tremo2 = synthio.LFO(rate=2)  # 2 Hz for middle note
+lfo_tremo3 = synthio.LFO(rate=1)  # 1 Hz for lower note
+lfo_tremo4 = synthio.LFO(rate=0.75) # 0.75 Hz for lowest bass note
 
 midi_note = 65
-note1 = synthio.Note( synthio.midi_to_hz(midi_note), amplitude=lfo_trema1)
-note2 = synthio.Note( synthio.midi_to_hz(midi_note-7), amplitude=lfo_trema2)
-note3 = synthio.Note( synthio.midi_to_hz(midi_note-12), amplitude=lfo_trema3)
-note4 = synthio.Note( synthio.midi_to_hz(midi_note-24), amplitude=lfo_trema4)
+note1 = synthio.Note( synthio.midi_to_hz(midi_note), amplitude=lfo_tremo1)
+note2 = synthio.Note( synthio.midi_to_hz(midi_note-7), amplitude=lfo_tremo2)
+note3 = synthio.Note( synthio.midi_to_hz(midi_note-12), amplitude=lfo_tremo3)
+note4 = synthio.Note( synthio.midi_to_hz(midi_note-24), amplitude=lfo_tremo4)
 synth.press( (note1, note2, note3, note4) )
 
 while True:
     print("hi, we're just groovin")
+    time.sleep(10)
+```
+
+
+### Custom wavetables for oscillators
+
+The default waveform in `synthio` is a 50% square-wave, it will accept any single-cycle waveform you give it.
+One of the easiest ways to make the waveform buffers is to use [`ulab.numpy`](). The numpy functions also
+have useful tools like `np.linspace()` to generate a line through a number space and trig functions like `np.sin()`. Once you have a waveform, set it with either `synth.waveform` or creating a new `synthio.Note(waveform=...)`
+
+Here's an example playing two notes, first with sine waves, then with sawtooth waves.
+
+```py
+import board, time, audiopwmio, synthio
+import ulab.numpy as np
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+# create sine & sawtooth single-cycle waveforms to act as oscillators
+SAMPLE_SIZE = 512
+SAMPLE_VOLUME = 32000  # 0-32767
+wave_sine = np.array(np.sin(np.linspace(0, 2*np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME, dtype=np.int16)
+wave_saw = np.linspace(SAMPLE_VOLUME, -SAMPLE_VOLUME, num=SAMPLE_SIZE, dtype=np.int16)
+
+midi_note = 65
+my_wave = wave_saw
+while True:
+    # create notes using those waveforms
+    note1 = synthio.Note( synthio.midi_to_hz(midi_note), waveform=my_wave)
+    note2 = synthio.Note( synthio.midi_to_hz(midi_note-7), waveform=my_wave)
+    synth.press(note1)
+    time.sleep(0.5)
+    synth.press(note2)
     time.sleep(1)
+    synth.release( (note1,note2) )
+    time.sleep(0.1)
+    my_wave = wave_sine if my_wave is wave_saw else wave_saw  # toggle waveform
 ```
 
 
@@ -328,3 +371,5 @@ while True:
 ### Wavetable mixing
 
 ### Loading WAV files into synthio
+
+### Drum synthesis
