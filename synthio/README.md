@@ -55,8 +55,7 @@ Synthio Tricks
 ###  Get Audio out working
   - Example circuits:
     - Pico w/ RC filter and `audiopwmio.PWMAudioOut`
-    (R1=1k, C1=100n, C2=47uF,
-    [Sparkfun TRRS](https://www.sparkfun.com/products/11570))
+    (R1=1k, C1=100n, [Sparkfun TRRS](https://www.sparkfun.com/products/11570))
     <img src="./imgs/synthio_pico_pwm_bb.jpg" width=500>
 
     - Pico w/ [I2S PCM5102](https://amzn.to/3MGOTJH) and `audiobusio.I2SOut`
