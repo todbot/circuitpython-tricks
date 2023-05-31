@@ -6,7 +6,7 @@ Synthio Tricks
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
    * [Getting started](#getting-started)
-      * [Get Audio out working](#get-audio-out-working)
+      * [Audio out circuits](#audio-out-circuits)
       * [Play a note every second](#play-a-note-every-second)
       * [Play a chord](#play-a-chord)
       * [USB MIDI Input](#usb-midi-input)
@@ -22,14 +22,18 @@ Synthio Tricks
       * [Custom wavetables for oscillators](#custom-wavetables-for-oscillators)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
+      * [Wavetable morphing](#wavetable-morphing)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
       * [Using LFO values in your own code](#using-lfo-values-in-your-own-code)
       * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
-      * [Wavetable mixing](#wavetable-mixing)
       * [Loading WAV files into synthio](#loading-wav-files-into-synthio)
       * [Drum synthesis](#drum-synthesis)
+   * [Example "Patches"](#example-patches)
+      * [Arcade sounds](#arcade-sounds)
+      * [Drone synth with 8 oscillators](#drone-synth-with-8-oscillators)
+      * [THX "Deep Note"](#thx-deep-note)
 
-<!-- Added by: tod, at: Tue May 30 16:05:22 PDT 2023 -->
+<!-- Added by: tod, at: Wed May 31 13:40:41 PDT 2023 -->
 
 <!--te-->
 
@@ -111,7 +115,7 @@ isn't supported. On RP2040-based boards like the Pico,
 
 ### Play a chord
 
-We can send a list of [MIDI note numbers](https://soundprogramming.net/file-formats/midi-note-frequencies/)
+We can send a list of [MIDI note numbers](http://notebook.zoeblade.com/Pitches.html)
 to be "pressed" and "released" to turn a note on and off
 
 ```py
@@ -284,6 +288,8 @@ automated twiddling you can imagine.
 The waveforms for `synthio.LFO` can be any waveform (even the same waveforms used for oscillators),
 and the default waveform is a sine wave.
 
+
+
 #### Vibrato: pitch bend with LFO
 
 Here we create an LFO with a rate of 5 Hz and amplitude of 0.5% max.
@@ -380,14 +386,48 @@ while True:
 
 ### Keeping track of pressed notes
 
+When passing in `synthio.Note` objects instead of MIDI note numbers to `synth.press()`,  your code
+must remmeber that object so it can pass it into `synth.release()` to properly stop it playing.
+One way to do this is with a Python dict where the key is whatever your unique identifier is
+(e.g. MIDI note number here for simplicity) and the value is the note object.
+
+```py
+
+# setup as before to get a `synth` & `midi`
+notes_pressed = {}  # which notes currently being pressed, key=midi note, val=note object
+
+while True:
+    msg = midi.receive()
+    if isinstance(msg, NoteOn) and msg.velocity != 0:  # NoteOn
+        note = synthio.Note(frequency=synthio.midi_to_hz(msg.note), waveform=wave_saw, #..etc )
+        synthio.press(note)
+        notes_pressed[msg.note] = note
+    elif isinstance(msg,NoteOff) or isinstance(msg,NoteOn) and msg.velocity==0:  # NoteOff
+        note = notse_pressed.get(msg.note, None) # let's us get back None w/o try/except
+
+```
+
+
+### Wavetable morphing
+
 ### Detuning oscillators for fatter sound
 
 ### Using LFO values in your own code
 
 ### Using `synthio.Math` with `synthio.LFO`
 
-### Wavetable mixing
 
 ### Loading WAV files into synthio
 
 ### Drum synthesis
+
+
+## Example "Patches"
+
+### Arcade sounds
+
+### Drone synth with 8 oscillators
+
+### THX "Deep Note"
+
+###
