@@ -17,6 +17,7 @@ Synthio Tricks
          * [Envelope for entire synth](#envelope-for-entire-synth)
          * [Using synthio.Note for per-note velocity envelopes](#using-synthionote-for-per-note-velocity-envelopes)
       * [LFOs: vibrato, tremolo, and more](#lfos-vibrato-tremolo-and-more)
+         * [LFO example](#lfo-example)
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
       * [Custom wavetables for oscillators](#custom-wavetables-for-oscillators)
@@ -30,10 +31,11 @@ Synthio Tricks
       * [Drum synthesis](#drum-synthesis)
    * [Example "Patches"](#example-patches)
       * [Arcade sounds](#arcade-sounds)
+      * [Bass synth arpeggiator](#bass-synth-arpeggiator)
       * [Drone synth with 8 oscillators](#drone-synth-with-8-oscillators)
       * [THX "Deep Note"](#thx-deep-note)
 
-<!-- Added by: tod, at: Wed May 31 13:40:41 PDT 2023 -->
+<!-- Added by: tod, at: Wed May 31 13:58:52 PDT 2023 -->
 
 <!--te-->
 
@@ -288,6 +290,42 @@ automated twiddling you can imagine.
 The waveforms for `synthio.LFO` can be any waveform (even the same waveforms used for oscillators),
 and the default waveform is a sine wave.
 
+#### LFO example
+
+Don't worry too much about what's going on here just yet, but it's an example of the flexibility of LFOs.
+
+```py
+# orig from 15 May 2023 11:23a @ jepler in #circuitpython-dev/synthio_feedback
+import board, time, audiopwmio, synthio
+import ulab.numpy as np
+
+SAMPLE_SIZE = 1024
+SAMPLE_VOLUME = 32767
+ramp = np.linspace(-SAMPLE_VOLUME, SAMPLE_VOLUME, SAMPLE_SIZE, endpoint=False, dtype=np.int16)
+sine = np.array(
+    np.sin(np.linspace(0, 2 * np.pi, SAMPLE_SIZE, endpoint=False)) * SAMPLE_VOLUME,
+    dtype=np.int16,
+)
+
+l = synthio.LFO(ramp, rate=4, offset=1)
+m = synthio.LFO(sine, rate=2, offset=l, scale=8)
+n = synthio.LFO(sine, rate=m, offset=-2, scale=l)
+lfos = [l, m, n]
+
+audio = audiopwmio.PWMAudioOut(board.GP10)
+synth = synthio.Synthesizer(sample_rate=22050)  # not outputting sound, just its LFO ticking
+audio.play(synth)
+synth.blocks[:] = lfos  # attach LFOs to synth so they get ticked
+
+while True:
+    print("(", ",".join(str(lfo.value) for lfo in lfos), ")" )
+    time.sleep(0.01)
+```
+
+If you run this with the [Mu plotter](https://codewith.mu/en/tutorials/1.2/plotter)
+you'll see all three LFOs, and you can see how the "n" LFO's rate is being changed by the "m" LFO.
+
+<img src="./imgs/syntho_lfo_demo1.png" width=500>
 
 
 #### Vibrato: pitch bend with LFO
@@ -393,9 +431,8 @@ One way to do this is with a Python dict where the key is whatever your unique i
 
 ```py
 
-# setup as before to get a `synth` & `midi`
+# setup as before to get `synth` & `midi` objects
 notes_pressed = {}  # which notes currently being pressed, key=midi note, val=note object
-
 while True:
     msg = midi.receive()
     if isinstance(msg, NoteOn) and msg.velocity != 0:  # NoteOn
@@ -403,8 +440,9 @@ while True:
         synthio.press(note)
         notes_pressed[msg.note] = note
     elif isinstance(msg,NoteOff) or isinstance(msg,NoteOn) and msg.velocity==0:  # NoteOff
-        note = notse_pressed.get(msg.note, None) # let's us get back None w/o try/except
-
+        note = notes_pressed.get(msg.note, None) # let's us get back None w/o try/except
+        if note:
+            syntho.release(note)
 ```
 
 
@@ -426,8 +464,11 @@ while True:
 
 ### Arcade sounds
 
+### Bass synth arpeggiator
+
 ### Drone synth with 8 oscillators
 
 ### THX "Deep Note"
+
 
 ###
