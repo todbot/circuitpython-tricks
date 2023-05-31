@@ -41,22 +41,24 @@ Synthio Tricks
 
 ## What is `synthio`?
 
-- CircuitPython core library available since 8.2.0-beta0 and still in development!
+- CircuitPython [core library](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html)
+   available since 8.2.0-beta0 and still in development!
 - Features:
   - Polyphonic (11 to 24? oscillator) & stereo, 16-bit, with adjustable sample rate
   - Oscillators are wavetable-based, wtih real-time adjustable wavetables
-  - ADSR amplitude envelope per oscillator
-  - Oscillator ring modulation w/ customizable ring oscillator wavetable
-  - Extensive LFO system
+  - ADSR [amplitude envelope](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Envelope) per oscillator
+  - Oscillator [ring modulation](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Note.ring_frequency) w/ customizable ring oscillator wavetable
+  - Extensive [LFO system](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.LFO)
     - multiple LFOs per oscillator (amplitude, panning, pitch bend, ring mod)
     - LFOs can repeat or run once (becoming a kind of envelope)
     - Each LFO can have a custom wavetable with linear interpolation
     - LFO outputs can be used by user code
     - LFOs can plug into one another
-  - LFOs have customized wavetables and can be applied to your own code
-  - Math blocks to adjust LFO ranges, offsets, scales
-  - Utility functions to easily convert from MIDI or V/Oct modular to frequency
-  - Plugs into existing `AudioMixer` system for use alongside `audiocore.WaveFile` sample playing
+    - Customizable LFO wavetables and can be applied to your own code
+  - [Math blocks](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Math)
+     with [14 three-term Math operations](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.Math) to adjust LFO ranges, offsets, scales
+  - Utility functions to easily convert from [MIDI note to frequency](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.midi_to_hz) or [V/Oct modular to frequency](https://docs.circuitpython.org/en/latest/shared-bindings/synthio/index.html#synthio.voct_to_hz)
+  - Plugs into existing the [`AudioMixer`](https://docs.circuitpython.org/en/latest/shared-bindings/audiomixer/index.html) system for use alongside `audiocore.WaveFile` sample playing
 
 ## Getting started
 
