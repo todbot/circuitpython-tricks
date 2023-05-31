@@ -16,14 +16,14 @@ Synthio Tricks
       * [Amplitude envelopes](#amplitude-envelopes)
          * [Envelope for entire synth](#envelope-for-entire-synth)
          * [Using synthio.Note for per-note velocity envelopes](#using-synthionote-for-per-note-velocity-envelopes)
-      * [LFOs: vibrato, tremolo, and more](#lfos-vibrato-tremolo-and-more)
-         * [LFO example](#lfo-example)
+      * [LFOs](#lfos)
          * [Vibrato: pitch bend with LFO](#vibrato-pitch-bend-with-lfo)
          * [Tremolo: volume change with LFO](#tremolo-volume-change-with-lfo)
-      * [Custom wavetables for oscillators](#custom-wavetables-for-oscillators)
+      * [Waveforms](#waveforms)
+         * [Making your own waves](#making-your-own-waves)
+         * [Wavetable morphing](#wavetable-morphing)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
-      * [Wavetable morphing](#wavetable-morphing)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
       * [Using LFO values in your own code](#using-lfo-values-in-your-own-code)
       * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
@@ -35,7 +35,7 @@ Synthio Tricks
       * [Drone synth with 8 oscillators](#drone-synth-with-8-oscillators)
       * [THX "Deep Note"](#thx-deep-note)
 
-<!-- Added by: tod, at: Wed May 31 13:58:52 PDT 2023 -->
+<!-- Added by: tod, at: Wed May 31 14:29:03 PDT 2023 -->
 
 <!--te-->
 
@@ -279,7 +279,7 @@ For an example of how to use this with MIDI velocity,
 see [synthio_midi_synth.py](https://gist.github.com/todbot/96a654c5fa27625147d65c45c8bfd47b)
 
 
-### LFOs: vibrato, tremolo, and more
+### LFOs
 
 LFOs (Low-Frequency Oscillators) were named back when it was very different
 to build an audio-rate oscillator vs an oscillator that changed over a few seconds.
@@ -290,9 +290,7 @@ automated twiddling you can imagine.
 The waveforms for `synthio.LFO` can be any waveform (even the same waveforms used for oscillators),
 and the default waveform is a sine wave.
 
-#### LFO example
-
-Don't worry too much about what's going on here just yet, but it's an example of the flexibility of LFOs.
+To show the flexibilty of LFOs, here's a quick non-sound exmaple that prints out three different LFOs.
 
 ```py
 # orig from 15 May 2023 11:23a @ jepler in #circuitpython-dev/synthio_feedback
@@ -330,10 +328,11 @@ you'll see all three LFOs, and you can see how the "n" LFO's rate is being chang
 
 #### Vibrato: pitch bend with LFO
 
-Here we create an LFO with a rate of 5 Hz and amplitude of 0.5% max.
+Some instruments like voice and violin can vary their pitch while sounding a note.
+To emulate that, we can use an LFO.  Here we create an LFO with a rate of 5 Hz and amplitude of 0.5% max.
 For each note, we apply that LFO to the note's `bend` property to create vibrato.
 
-If you'd like the LFO to start over on each note on, do `lfo_vibra.retrigger()`.
+If you'd like the LFO to start over on each note on, do `lfo.retrigger()`.
 
 ```py
 import board, time, audiopwmio, synthio
@@ -341,11 +340,11 @@ audio = audiopwmio.PWMAudioOut(board.GP10)
 synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
 
-lfo_vibra = synthio.LFO(rate=5, scale=0.05)  # 5 Hz lfo at 0.5%
+lfo = synthio.LFO(rate=5, scale=0.05)  # 5 Hz lfo at 0.5%
 
 while True:
     midi_note = 65
-    note = synthio.Note( synthio.midi_to_hz(midi_note), bend=lfo_vibra )
+    note = synthio.Note( synthio.midi_to_hz(midi_note), bend=lfo )
     synth.press(note)
     time.sleep(1.0)
     synth.release(note)
@@ -356,7 +355,9 @@ while True:
 #### Tremolo: volume change with LFO
 
 Similarly, we can create rhythmic changes in loudness with an LFO attached to `note.amplitude`.
-And since each note can get their own LFO, you can make little "songs" with just a few notes
+And since each note can get their own LFO, you can make little "songs" with just a few notes.
+Here's a [demo video of this "LFO song"](https://www.youtube.com/watch?v=m_ALNCWXor0).
+
 
 ```py
 import board, time, audiopwmio, synthio
@@ -378,19 +379,25 @@ synth.press( (note1, note2, note3, note4) )
 
 while True:
     print("hi, we're just groovin")
-    time.sleep(10)
+    time.sleep(1)
 ```
 
 
-### Custom wavetables for oscillators
 
-The default waveform in `synthio` is a 50% square-wave, it will accept any single-cycle waveform you give it.
-One of the easiest ways to make the waveform buffers is to use [`ulab.numpy`](https://learn.adafruit.com/ulab-crunch-numbers-fast-with-circuitpython/ulab-numpy-phrasebook).
+### Waveforms
+
+The default oscillator waveform in `synthio.Synthesizer` is a square-wave with 50% duty-cycle.
+But synthio will accept any buffer of data and treat it as a single-cycle waveform.
+One of the easiest ways to make the waveform buffers that synthio expects is to use
+[`ulab.numpy`](https://learn.adafruit.com/ulab-crunch-numbers-fast-with-circuitpython/ulab-numpy-phrasebook).
 The numpy functions also have useful tools like `np.linspace()` to generate a line through a number space
 and trig functions like `np.sin()`. Once you have a waveform, set it with either `synth.waveform`
 or creating a new `synthio.Note(waveform=...)`
 
-Here's an example playing two notes, first with sine waves, then with sawtooth waves.
+#### Making your own waves
+
+Here's an example that creates two new waveforms: a sine way and a sawtooth wave, and then plays
+them a two-note chord, first with sine waves, then with sawtooth waves.
 
 ```py
 import board, time, audiopwmio, synthio
@@ -419,6 +426,7 @@ while True:
     my_wave = wave_sine if my_wave is wave_saw else wave_saw  # toggle waveform
 ```
 
+#### Wavetable morphing
 
 ## Advanced Techniques
 
@@ -446,7 +454,6 @@ while True:
 ```
 
 
-### Wavetable morphing
 
 ### Detuning oscillators for fatter sound
 
