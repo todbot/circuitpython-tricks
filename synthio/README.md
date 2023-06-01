@@ -295,7 +295,7 @@ and the default waveform is a sine wave.
 To show the flexibilty of LFOs, here's a quick non-sound exmaple that prints out three different LFOs.
 
 ```py
-# orig from 15 May 2023 11:23a @ jepler in #circuitpython-dev/synthio_feedback
+# orig from @jepler 15 May 2023 11:23a in #circuitpython-dev/synthio
 import board, time, audiopwmio, synthio
 import ulab.numpy as np
 
@@ -385,7 +385,6 @@ while True:
 ```
 
 
-
 ### Waveforms
 
 The default oscillator waveform in `synthio.Synthesizer` is a square-wave with 50% duty-cycle.
@@ -430,7 +429,9 @@ while True:
 
 #### Wavetable morphing
 
+
 ## Advanced Techniques
+
 
 ### Keeping track of pressed notes
 
@@ -456,15 +457,65 @@ while True:
 ```
 
 
+### Turn WAV files info oscillators
+
+
+
+```py
+# orig from @jepler 31 May 2023 1:34p #circuitpython-dev/synthio
+import adafruit_wave
+
+# reads in entire wave
+def read_waveform(filename):
+    with adafruit_wave.open(filename) as w:
+        if w.getsampwidth() != 2 or w.getnchannels() != 1:
+            raise ValueError("unsupported format")
+        return memoryview(w.readframes(w.getnframes())).cast('h')
+
+# this verion lets you lerp() it to mix w/ another wave
+def read_waveform_ulab(filename):
+    with adafruit_wave.open(filename) as w:
+        if w.getsampwidth() != 2 or w.getnchannels() != 1:
+            raise ValueError("unsupported format")
+        return np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
+
+
+my_wave = read_waveform("AKWF_granular_0001.wav")
+
+```
 
 ### Detuning oscillators for fatter sound
+
+Since we have fine-grained control over a note's frequency with `note.frequency`, this means we can do a
+common technique for getting a "fatter" sound.
+
+```py
+import board, time, audiopwmio, synthio
+audio = audiopwmio.PWMAudioOut(board.TX)
+synth = synthio.Synthesizer(sample_rate=22050)
+audio.play(synth)
+
+detune = 0.005  # how much to detune, 0.7% here
+num_oscs = 1
+midi_note = 45
+while True:
+    print("num_oscs:", num_oscs)
+    notes = []  # holds note objs being pressed
+    # simple detune, always detunes up
+    for i in range(num_oscs):
+        f = synthio.midi_to_hz(midi_note) * (1 + i*detune)
+        notes.append( synthio.Note(frequency=f) )
+    synth.press(notes)
+    time.sleep(1)
+    synth.release(notes)
+    time.sleep(0.1)
+    # increment number of detuned oscillators
+    num_oscs = num_oscs+1 if num_oscs < 5 else 1
+```
 
 ### Using LFO values in your own code
 
 ### Using `synthio.Math` with `synthio.LFO`
-
-
-### Loading WAV files into synthio
 
 ### Drum synthesis
 
