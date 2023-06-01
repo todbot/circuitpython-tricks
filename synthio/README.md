@@ -6,6 +6,7 @@ Synthio Tricks
 <!--ts-->
    * [What is synthio?](#what-is-synthio)
    * [Getting started](#getting-started)
+      * [Which boards does synthio work on?](#which-boards-does-synthio-work-on)
       * [Audio out circuits](#audio-out-circuits)
       * [Play a note every second](#play-a-note-every-second)
       * [Play a chord](#play-a-chord)
@@ -24,10 +25,10 @@ Synthio Tricks
          * [Wavetable morphing](#wavetable-morphing)
    * [Advanced Techniques](#advanced-techniques)
       * [Keeping track of pressed notes](#keeping-track-of-pressed-notes)
+      * [Turn WAV files info oscillators](#turn-wav-files-info-oscillators)
       * [Detuning oscillators for fatter sound](#detuning-oscillators-for-fatter-sound)
       * [Using LFO values in your own code](#using-lfo-values-in-your-own-code)
       * [Using synthio.Math with synthio.LFO](#using-synthiomath-with-synthiolfo)
-      * [Loading WAV files into synthio](#loading-wav-files-into-synthio)
       * [Drum synthesis](#drum-synthesis)
    * [Example "Patches"](#example-patches)
       * [Arcade sounds](#arcade-sounds)
@@ -35,7 +36,7 @@ Synthio Tricks
       * [Drone synth with 8 oscillators](#drone-synth-with-8-oscillators)
       * [THX "Deep Note"](#thx-deep-note)
 
-<!-- Added by: tod, at: Wed May 31 14:29:03 PDT 2023 -->
+<!-- Added by: tod, at: Thu Jun  1 10:59:15 PDT 2023 -->
 
 <!--te-->
 
@@ -62,6 +63,30 @@ Synthio Tricks
 
 ## Getting started
 
+### Which boards does `synthio` work on?
+
+Since `synthio` is built in to CircuitPython and CirPy has varying support on different boards,
+you will need to check your board's "Built-in modules avialble" section on
+[circuitpython.org/downloads](https://circuitpython.org/downloads).
+Here's what that section looks like for the QTPy RP2040:
+
+<img src="./imgs/circuitpython_download_qtpyrp2040.jpg">
+
+Note that `synthio` is there, and two audio output methods. CircuitPython supports three
+different audio output techniques, with varying availability:
+
+- [`audioio.AudioOut`](https://docs.circuitpython.org/en/latest/shared-bindings/audioio/index.html)
+   -- output to built-in DAC (usually SAMD51 "M4" boards)
+- [`audiobusio.I2SOut`](https://docs.circuitpython.org/en/latest/shared-bindings/audiobusio/index.html)
+   -- output to external I2S DAC board (RP2040, ESP32S2/3, SAMD51 "M4", nRF52)
+- [`audiopwmio.PWMAudioOut`](https://docs.circuitpython.org/en/latest/shared-bindings/audiopwmio/index.html)
+   -- output PWM that needs external RC filter to convert to audio (RP2040, nRF52)
+
+Notice that not all audio output techniques are supported everywhere.
+An I2S DAC board is the most widely supported, and highest quality.
+Even so, this guide will focus mostly on PWMAudioOut on Pico RP2040 because it's quick and simple,
+but any of the above will work.
+
 ###  Audio out circuits
 
 
@@ -80,7 +105,7 @@ Synthio Tricks
 *  Pico w/ [I2S PCM5102](https://amzn.to/3MGOTJH) and `audiobusio.I2SOut`
 
    An I2S DAC board is capable of stereo CD-quality sound and they're very affordable.
-   Their line out is also strong enough to drive many headphones too, but I usually feed
+   The line out is also strong enough to drive many headphones too, but I usually feed
    the output into a portable bluetooth speaker with line in.
 
       <img src="./imgs/synthio_pico_i2s_bb.jpg" width=500>
