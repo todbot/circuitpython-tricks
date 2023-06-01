@@ -144,8 +144,9 @@ isn't supported. On RP2040-based boards like the Pico,
 
 ### Play a chord
 
-We can send a list of [MIDI note numbers](http://notebook.zoeblade.com/Pitches.html)
-to be "pressed" and "released" to turn a note on and off
+To play notes simultaneously, send a list of notes to `synth.press()`.
+Here we send a 3-note list of [MIDI note numbers](http://notebook.zoeblade.com/Pitches.html)
+that represent musical notes (F4, A4, C5), an F-major chord.
 
 ```py
 import board, time
@@ -157,9 +158,9 @@ synth = synthio.Synthesizer(sample_rate=22050)
 audio.play(synth)
 
 while True:
-  synth.press( (65,70,72) ) # midi notes 65,70,72  = F4, A4#, C5
+  synth.press( (65,69,72) ) # midi notes 65,69,72  = F4, A4, C5
   time.sleep(0.5)
-  synth.release( (65,70,72) )
+  synth.release( (65,69,72) )
   time.sleep(0.5)
 ```
 
@@ -235,7 +236,8 @@ but it does increase latency.
 
 ## Basic Synth Techniques
 
-Assuming the setup above where we have a `synth` object and we can hear the output on
+There are a handful of common techniques used to make a raw electronic waveform sound more like musical
+instruments or sounds in the real world. Here are some of them.
 
 ### Amplitude envelopes
 
