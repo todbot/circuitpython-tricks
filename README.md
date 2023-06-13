@@ -475,7 +475,7 @@ while True:
 
 Unlike PWM or DAC, most CircuitPython boards support driving an external I2S audio board.
 This will also give you higher-quality sound output than DAC or PWM.
-See the [audioio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audioio) for which boards support `audiobusio`.
+See the [audiobusio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiobusio) for which boards support `audiobusio`.
 
 ```py
 # for e.g. Pico RP2040 pins bit_clock & word_select pins must be adjacent
