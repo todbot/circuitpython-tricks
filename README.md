@@ -545,8 +545,13 @@ while True:
 
 ```
 
-Note: For MP3 files and setting `loop=True` when playing, there is a small delay when looping.
-WAV files loop seemlessly
+__Note:__ For MP3 files, be aware that since this is doing software MP3 decoding,
+you will likely need to re-encode the MP3s to lower bitrate and sample rate
+(max 128 kbps and 22,050 Hz) to be playable the lower-end CircuitPython devices
+like the Pico / RP2040.
+
+__Note:__ For MP3 files and setting `loop=True` when playing, there is a small delay
+when looping.  WAV files loop seemlessly.
 
 
 ### Making simple tones
