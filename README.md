@@ -1014,6 +1014,8 @@ while True:
   time.sleep(5)
 ```
 
+Also see [this more concise version from @deilers78](https://github.com/todbot/circuitpython-tricks/issues/14#issuecomment-1489181920).
+
 ### What the heck is `secrets.py`?
 It's a config file that lives next to your `code.py` and is used
 (invisibly) by many Adafruit WiFi libraries.
