@@ -998,8 +998,13 @@ request = adafruit_requests.Session(pool, ssl.create_default_context())
 print("Getting current time:")
 response = request.get("http://worldtimeapi.org/api/ip")
 time_data = response.json()
-unixtime = int(time_data['unixtime']) + int(time_data['raw_offset'])
+tz_hour_offset = int(time_data['utc_offset'][0:3])
+tz_min_offset = int(time_data['utc_offset'][4:6])
+if (tz_hour_offset < 0):
+    tz_min_offset *= -1
+unixtime = int(time_data['unixtime'] + (tz_hour_offset * 60 * 60)) + (tz_min_offset * 60)
 
+print(time_data)
 print("URL time: ", response.headers['date'])
 
 rtc.RTC().datetime = time.localtime( unixtime ) # create time struct and set RTC with it
