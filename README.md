@@ -556,10 +556,22 @@ when looping.  WAV files loop seemlessly.
 
 ### Making simple tones
 
-[tbd]
+For devices that only have `pwmio` capability, you can make simple tones.
+The [`simpleio`](https://docs.circuitpython.org/projects/simpleio/en/latest/examples.html#id1) library can be used for this:
 
-On ESP32-S2-based boards like FunHouse, you cannot yet play WAV files, but you can make beeps.
-An example is this gist: https://gist.github.com/todbot/f35bb5ceed013a277688b2ca333244d5
+```py
+# a short piezo song using tone()
+import time, board, simpleio
+while True:
+    for f in (262, 294, 330, 349, 392, 440, 494, 523):
+        simpleio.tone(board.A0, f, 0.25)
+    time.sleep(1)
+```
+
+An example of boards with `pwmio` but no audio are ESP32-S2-based boards like
+[FunHouse](https://www.adafruit.com/product/4985),
+where you cannot play WAV files, but you can make beeps.
+A larger example is this gist: https://gist.github.com/todbot/f35bb5ceed013a277688b2ca333244d5
 
 
 ## USB
