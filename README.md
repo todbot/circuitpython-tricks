@@ -70,6 +70,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Serve a webpage via HTTP](#serve-a-webpage-via-http)
   * [Set RTC time from NTP](#set-rtc-time-from-ntp)
   * [Set RTC time from time service](#set-rtc-time-from-time-service)
+  * [What the heck is settings.toml?](#what-the-heck-is-settingstoml)
   * [What the heck is secrets.py?](#what-the-heck-is-secretspy)
 * [Displays (LCD / OLED / E-Ink) and displayio](#displays-lcd--oled--e-ink-and-displayio)
   * [Get default display and change display rotation](#get-default-display-and-change-display-rotation)
@@ -857,13 +858,15 @@ for network in networks:
 Note: this is for boards with native WiFi (ESP32)
 
 ```py
+import os
 import time
 import wifi
 import ipaddress
-from secrets import secrets
+
 ip_to_ping = "1.1.1.1"
 
-wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
 
 print("my IP addr:", wifi.radio.ipv4_address)
 print("pinging ",ip_to_ping)
@@ -876,9 +879,10 @@ while True:
 ### Get IP address of remote host
 
 ```py
-import wifi, socketpool
-from secrets import secrets
-wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+import os, wifi, socketpool
+
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
 print("my IP addr:", wifi.radio.ipv4_address)
 
 hostname = "todbot.com"
@@ -887,9 +891,9 @@ pool = socketpool.SocketPool(wifi.radio)
 addrinfo = pool.getaddrinfo(host=hostname, port=443) # port is required
 print("addrinfo", addrinfo)
 
-ipaddress = addrinfo[0][4][0]
+ipaddr = addrinfo[0][4][0]
 
-print(f"'{hostname}' ip address is '{ipaddress}'")
+print(f"'{hostname}' ip address is '{ipaddr}'")
 ```
 
 
@@ -898,13 +902,15 @@ print(f"'{hostname}' ip address is '{ipaddress}'")
 Note: this is for boards with native WiFi (ESP32)
 
 ```py
+import os
 import time
 import wifi
 import socketpool
 import ssl
 import adafruit_requests
-from secrets import secrets
-wifi.radio.connect(ssid=secrets['ssid'],password=secrets['password'])
+
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
 print("my IP addr:", wifi.radio.ipv4_address)
 pool = socketpool.SocketPool(wifi.radio)
 session = adafruit_requests.Session(pool, ssl.create_default_context())
@@ -926,13 +932,13 @@ and do all your computation in your `@server.route()` functions, or use `server.
 There is also the [Ampule library](https://github.com/deckerego/ampule).
 
 ```py
-import time, wifi, socketpool
+import time, os, wifi, socketpool
 from adafruit_httpserver.server import HTTPServer
 from adafruit_httpserver.response import HTTPResponse
-from secrets import secrets  # contains your WiFi credentials
 
 my_port = 1234  # set this to your liking
-wifi.radio.connect(secrets["ssid"], secrets["password"]) # connect to your wifi
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
 server = HTTPServer(socketpool.SocketPool(wifi.radio))
 
 @server.route("/")  # magic that attaches this function to "server" object
@@ -956,15 +962,14 @@ Note: You need to set `my_tz_offset` to match your region
 ```py
 # copied from:
 # https://docs.circuitpython.org/projects/ntp/en/latest/examples.html
-import time, rtc
+import time, os, rtc
 import socketpool, wifi
 import adafruit_ntp
 
-from secrets import secrets
+my_tz_offset = -7  # PDT
 
-my_tz_offset = -7 # PDT
-
-wifi.radio.connect(secrets["ssid"], secrets["password"])
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
 print("Connected, getting NTP time")
 pool = socketpool.SocketPool(wifi.radio)
 ntp = adafruit_ntp.NTP(pool, tz_offset=my_tz_offset)
@@ -985,12 +990,12 @@ and this example will fetch the current local time (including timezone and UTC o
 based on the geolocated IP address of your device.
 
 ```py
-import time, rtc
+import time, os, rtc
 import wifi, ssl, socketpool
 import adafruit_requests
-from secrets import secrets
 
-wifi.radio.connect(secrets["ssid"], secrets["password"])
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
 print("Connected, getting WorldTimeAPI time")
 pool = socketpool.SocketPool(wifi.radio)
 request = adafruit_requests.Session(pool, ssl.create_default_context())
@@ -1016,23 +1021,36 @@ while True:
 
 Also see [this more concise version from @deilers78](https://github.com/todbot/circuitpython-tricks/issues/14#issuecomment-1489181920).
 
-### What the heck is `secrets.py`?
-It's a config file that lives next to your `code.py` and is used
-(invisibly) by many Adafruit WiFi libraries.
-You can use it too (as in the examples above) without those libraries
 
-It looks like this for basic WiFi connectivity:
+### What the heck is `settings.toml`?
+
+It's a config file that lives next to your `code.py` and is used to store
+WiFi credentials and other global settings.  It is also used (invisibly)
+by many Adafruit libraries that do WiFi.
+You can use it (as in the examples above) without those libraries.
+The settings names used by CircuitPython are documented in
+[CircuitPython Web Workflow](https://docs.circuitpython.org/en/latest/docs/workflows.html#web).
+
+You use it like this for basic WiFi connectivity:
 
 ```py
-# secrets.py
-secrets = {
-  "ssid": "Pretty Fly for a WiFi",
-  "password": "donthackme123"
-}
+# settings.toml
+CIRCUITPY_WIFI_SSID = "PrettyFlyForAWiFi"
+CIRCUITPY_WIFI_PASSWORD = "mysecretpassword"
+
 # code.py
-from secrets import secrets
-print("your WiFi password is:", secrets['password'])
+import os, wifi
+print("connecting...")
+wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
+                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
+print("my IP addr:", wifi.radio.ipv4_address)
+
 ```
+
+### What the heck is `secrets.py`?
+It's an older version of the `settings.toml` idea.
+You may see older code that uses it.
+
 
 ## Displays (LCD / OLED / E-Ink) and displayio
 
