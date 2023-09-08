@@ -1351,7 +1351,7 @@ print(os.uname().sysname)
     tft_mosi= board.GP11 # must be a SPI TX
     spi = busio.SPI(clock=tft_clk, MOSI=tft_mosi)
   else:
-    print("supported board", board_type)
+    print("unsupported board", board_type)
   ```
 
 ## Computery Tasks
