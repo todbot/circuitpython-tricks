@@ -1085,7 +1085,7 @@ import board, displayio
 display = board.DISPLAY
 
 maingroup = displayio.Group() # everything goes in maingroup
-display.show(maingroup) # show main group (clears the screen)
+display.root_group = maingroup # show our maingroup (clears the screen)
 
 bitmap = displayio.OnDiskBitmap(open("my_image.bmp", "rb"))
 image = displayio.TileGrid(bitmap, pixel_shader=bitmap.pixel_shader)
@@ -1107,7 +1107,7 @@ import board, displayio
 import adafruit_imageload
 display = board.DISPLAY
 maingroup = displayio.Group() # everything goes in maingroup
-display.show(maingroup) # show main group (clears the screen)
+display.root_group = maingroup # set the root group to display
 bitmap, palette = adafruit_imageload.load("my_image.png")
 image = displayio.TileGrid(img, pixel_shader=palette))
 maingroup.append(image) # shows the image
@@ -1128,9 +1128,9 @@ Useful for display a solid background color that can be quickly changed.
 
 ```py
 import time, board, displayio
-display = board.DISPLAY       # get default display (FunHouse,Pygamer,etc)
-maingroup = displayio.Group() # Create a main group to hold everything
-display.show(maingroup)       # put it on the display
+display = board.DISPLAY         # get default display (FunHouse,Pygamer,etc)
+maingroup = displayio.Group()   # Create a main group to hold everything
+display.root_group = maingroup  # put it on the display
 
 # make bitmap that spans entire display, with 3 colors
 background = displayio.Bitmap(display.width, display.height, 3)
@@ -1157,8 +1157,8 @@ Another way is to use
 import board, displayio, vectorio
 
 display = board.DISPLAY  # built-in display
-maingroup = displayio.Group()  # a main group that holds everything
-display.show(maingroup)
+maingroup = displayio.Group()   # a main group that holds everything
+display.root_group = maingroup  # put maingroup on the display
 
 mypal = displayio.Palette(1)
 mypal[0] = 0x999900
@@ -1174,8 +1174,8 @@ import board, displayio
 from adafruit_display_shapes.rect import Rect
 
 display = board.DISPLAY
-maingroup = displayio.Group()  # a main group that holds everything
-display.show(maingroup)        # add main group to display
+maingroup = displayio.Group()   # a main group that holds everything
+display.root_group = maingroup  # add it to display
 
 background = Rect(0,0, display.width, display.height, fill=0x000000 ) # background color
 maingroup.append(background)
@@ -1187,9 +1187,9 @@ maingroup.append(background)
 import time, board, displayio
 import adafruit_imageload
 
-display = board.DISPLAY # get display object (built-in on some boards)
-screen = displayio.Group() # main group that holds all on-screen content
-display.show(screen)       # add it to display
+display = board.DISPLAY      # get display object (built-in on some boards)
+screen = displayio.Group()   # main group that holds all on-screen content
+display.root_group = screen  # add it to display
 
 file_names = [ '/images/cat1.bmp', '/images/cat2.bmp' ]  # list of filenames
 
@@ -1219,7 +1219,7 @@ from adafruit_display_text import label
 mylabel = label.Label(terminalio.FONT, text="demo", x=20,y=20,
                       background_color=0x000000, color=0xffffff )
 display = board.DISPLAY  # e.g. for MagTag
-display.show(mylabel)
+display.root_group = mylabel
 while True:
     if display.time_to_refresh == 0:
         display.refresh()
@@ -1669,7 +1669,7 @@ display.root_group.hidden = False
 You can also turn back on the REPL after using the display for your own graphics with:
 
 ```py
-display.show(None)
+display.root_group = None
 ```
 
 ## Python tricks
