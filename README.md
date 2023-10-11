@@ -1078,6 +1078,7 @@ __Using `displayio.OnDiskBitmap`__
 
 CircuitPython has a built-in BMP parser called `displayio.OnDiskBitmap`:
 The images should be in non-compressed, paletized BMP3 format.
+([how to make BMP3 images](#preparing-images-for-circuitpython))
 
 ```py
 import board, displayio
@@ -1093,8 +1094,13 @@ maingroup.append(image) # shows the image
 
 __Using `adafruit_imageload`__
 
-You can also use the `adafruit_imageload` library that supports slightly more kinds of BMP files
-The images should be in paletized BMP3 format.
+You can also use the `adafruit_imageload` library that supports slightly more kinds of BMP files,
+(but should still be [paletized BMP3 format](#preparing-images-for-circuitpython)
+as well as paletized PNG and GIF files. Which file format to choose?
+* BMP images are larger but faster to load
+* PNG images are about 2x smaller than BMP and almost as fast to load
+* GIF images are a little bigger than PNG but *much* slower to load
+
 
 ```py
 import board, displayio
@@ -1102,7 +1108,7 @@ import adafruit_imageload
 display = board.DISPLAY
 maingroup = displayio.Group() # everything goes in maingroup
 display.show(maingroup) # show main group (clears the screen)
-bitmap, palette = adafruit_imageload.load("my_image.bmp")
+bitmap, palette = adafruit_imageload.load("my_image.png")
 image = displayio.TileGrid(img, pixel_shader=palette))
 maingroup.append(image) # shows the image
 ```
@@ -1806,11 +1812,22 @@ to save space. You may also need to omit unused parts of some libraries (e.g. `a
 
 ### Preparing images for CircuitPython
 
-CircuitPython requires "indexed" (aka "palette") BMP3 images.
-If using `adafruit_imageload` the images can have RLE compression, but if using
-`displayio.OnDiskBitmap()`, then make sure no compression is used.
+There's two ways to load images for use with `displayio`:
+* The built-in [`displayio.OnDiskBitmap()`](https://docs.circuitpython.org/en/latest/shared-bindings/displayio/#displayio.OnDiskBitmap)
+* The library [`adafruit_imageload`](https://docs.circuitpython.org/projects/imageload/en/latest/index.html)
 
-To make images load faster, you can reduce the number of colors in the image.
+`displayio.OnDisBitmap()`:
+* can load "indexed" (aka "palette") non-compressed BMP3 images
+* doesn't load image into RAM (great for TileGrids)
+
+`adafruit_imageload`
+* can load BMP3 images with RLE compression
+* loads entire image into RAM (thus you may run out of memory)
+* an load palette PNG images and GIF images
+* PNG image loading is almost as fast as BMP and uses 1/2 the disk space
+* GIF loading is very slow
+
+To make images load faster generally, you can reduce the number of colors in the image.
 The maximum number of colors is 256, but try reducing colors to 64 or even 2 if
 it's a black-n-white image.
 
@@ -1834,7 +1851,13 @@ However @Neradoc pointed out that https://online-converting.com/image/convert2bm
 you can convert any image format to BMP3 format. The main ImageMagick CLI command is `convert`.
 
 ```sh
-convert myimage.jpg -resize 240x240 -colors 64 -type palette -compress None BMP3:myimage_for_cirpy.bmp
+convert myimage.jpg -resize 240x240 -type palette -colors 64 -compress None BMP3:myimage_for_cirpy.bmp
+```
+
+You can also use this technique to create reduced-color palette PNGs:
+
+```sh
+convert myimage.jpg -resize 240x240 -type palette -colors 64 myimage.png
 ```
 
 #### Command-line: using GraphicsMagick
