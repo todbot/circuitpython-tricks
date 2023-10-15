@@ -129,6 +129,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
       * [NodeJs: using gm](#nodejs-using-gm)
       * [Python: using PIL / pillow](#python-using-pil--pillow)
   * [Preparing audio files for CircuitPython](#preparing-audio-files-for-circuitpython)
+  * [Circup hacks](#circup-hacks)
 * [About this guide](#about-this-guide)
 
 ## Inputs
@@ -1840,9 +1841,16 @@ And here's some ways to do the conversions.
 
 #### Online
 
-Most online image to BMP converters do not create BMPs in the proper format: BMP3, non-compressed, up to 256 colors in an 8-bit palette.
+Most online image converters do not create BMPs in the proper format:
+BMP3, non-compressed, up to 256 colors in an 8-bit palette.
 
-However @Neradoc pointed out that https://online-converting.com/image/convert2bmp/ will work when set to "Color:" mode is set to "8 (Indexed)". Some initial tests show this works! But since I don't entirely trust this, so I'd recommend also trying out one of the following techniques too.
+However @Neradoc found the site [convert2bmp](https://online-converting.com/image/convert2bmp/)
+will work when you set "Color:" mode to "8 (Indexed)". Some initial tests show this works!
+I'd recommend also trying out one of the following techniques too to have finer control.
+
+The site https://cancerberosgx.github.io/magic/playground/ lets you
+use any of the ImageMagick commands below to convert images. It's really handy if you can't
+install ImageMagick locally.
 
 
 #### Command-line: using ImageMagick
@@ -1946,15 +1954,32 @@ Some audio Learn Guide links:
 - https://learn.adafruit.com/adafruit-wave-shield-audio-shield-for-arduino/convert-files
 
 
+### Circup hacks
+
+[`circup`](https://learn.adafruit.com/keep-your-circuitpython-libraries-on-devices-up-to-date-with-circup?view=all)
+is a great tool to help you install CircuitPython libraries. Think of it like `pip` or `npm` for CircuitPython.
+
+#### Finding where `circup` stores its files
+
+Instead of downloading the bundles by hand, `circup` has it already downloaded an unzipped.
+Here's how to find that directory:
+
+```sh
+circup_dir=`python3 -c 'import appdirs; print(appdirs.user_data_dir(appname="circup", appauthor="adafruit"))'`
+ls $circup_dir
+```
+
+
 ## About this guide
 
 * Many of the code snippets are not considered "well-formatted"
-by some Python linters. This guide favors brevity over strict style adherence.
+by Python linters. This guide favors brevity over strict style adherence.
 
 * The precursor to this guide is [QTPy Tricks](https://github.com/todbot/qtpy-tricks),
 which has similar but different (and still valid) fun things to do in CircuitPython.
 
 * This guide is the result of trying to learn Python via CircuitPython and
 from very enlightening discussions with John Edgar Park.  I have a good background in
-other languages, but mostly C/C++, and have [taught classes in Arduino](https://todbot.com/blog/bionicarduino/) for several years.
+other languages, but mostly C/C++, and have
+[taught classes in Arduino](https://todbot.com/blog/bionicarduino/) for several years.
 This informs how I've been thinking about things in this guide.
