@@ -50,7 +50,7 @@ def eye_init(spi, dc, cs, rst, rot):
     display_bus = displayio.FourWire(spi, command=dc, chip_select=cs, reset=rst)
     display = gc9a01.GC9A01(display_bus, width=dw, height=dh, rotation=rot)
     main = displayio.Group()
-    display.show(main)
+    display.root_group = main
     eyeball = displayio.TileGrid(eyeball_bitmap, pixel_shader=eyeball_pal)
     iris = displayio.TileGrid(iris_bitmap, pixel_shader=iris_pal, x = iris_cx, y = iris_cy )
     main.append(eyeball)

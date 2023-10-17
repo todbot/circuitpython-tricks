@@ -23,7 +23,7 @@ class DVDLogo:
             dy = int(dy * height)
             points0.append( (dx,dy) )
         dvdlogo0 = vectorio.Polygon(pixel_shader=pal, points=points0, x=x, y=y)
-        
+
         points1 = []
         for i in range(len(DVDLogo.path1)):
             (dx,dy) = DVDLogo.path1[i]
@@ -31,7 +31,7 @@ class DVDLogo:
             dy = int(dy * height)
             points1.append( (dx,dy) )
         dvdlogo1 = vectorio.Polygon(pixel_shader=pal, points=points1, x=x, y=y)
-        
+
         dvdlogo = displayio.Group()
         dvdlogo.append(dvdlogo0)
         dvdlogo.append(dvdlogo1)
@@ -40,7 +40,7 @@ class DVDLogo:
     def change_color(logogroup, color):
         """ change color of logo, convenience function """
         logogroup[0].pixel_shader[0] = color
-        
+
     # vector paths from SVG at https://upload.wikimedia.org/wikipedia/commons/9/9b/DVD_logo.svg
     # normalized to 1.0 on both x & y, original aspect ratio is 2:1
     path0 = (
@@ -52,12 +52,12 @@ class DVDLogo:
 display = board.DISPLAY
 
 maingroup = displayio.Group()
-display.show(maingroup) # put main group on display, everything goes in maingroup
+display.root_group = maingroup  # put main group on display, everything goes in maingroup
 
 dvdlogo_w = 80
 dvdlogo_h = 40
-x = 0 
-y = 0 
+x = 0
+y = 0
 xvel = 1.9
 yvel = 1.4
 
@@ -74,9 +74,8 @@ while True:
   if y < 0 or y > (display.height - dvdlogo_h):
       yvel = -yvel
       DVDLogo.change_color(dvdlogo, rainbowio.colorwheel(time.monotonic()*50))
-  
+
   dvdlogo.x = int(x)
   dvdlogo.y = int(y)
 
   time.sleep(0.01)
-

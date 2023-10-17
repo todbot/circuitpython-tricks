@@ -41,7 +41,7 @@ def int_points(pts):
 ###
 
 maingroup = displayio.Group()
-display.show(maingroup) # put main group on display, everything goes in maingroup
+display.root_group = maingroup # put main group on display, everything goes in maingroup
 
 path0 = recenter_points(path0, c=(path0_w//2, path0_h//2))
 
@@ -62,7 +62,7 @@ last_time = 0
 while True:
 
     elapsed_time = time.monotonic()
-    
+
     # rotate about shape origin
     shape0.points = int_points( rotate_points(path0, theta) )
 
@@ -71,7 +71,7 @@ while True:
     if time.monotonic() - last_time > 0.5:
         last_time = time.monotonic()
         print("elapsed millis %d" % (elapsed_time * 1000))
-        
+
     # update position
     x,y = x + xvel, y + yvel
     theta = theta + theta_vel
@@ -85,4 +85,3 @@ while True:
         yvel = -yvel
 
     time.sleep(0.05)
-

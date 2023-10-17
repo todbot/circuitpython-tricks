@@ -20,11 +20,10 @@ display = board.DISPLAY  # our board has built-in display
 
 maingroup = displayio.Group(scale=4) # make 4x big
 maingroup.append(sprite)
-display.show(maingroup)
+display..root_group = maingroup
 
 sprite_index = 0 # where in the sprite sheet we currently are
 while True:
-    sprite[0] = sprite_index 
+    sprite[0] = sprite_index
     sprite_index = (sprite_index + 1) % sprite_cnt
     time.sleep(0.1)
-

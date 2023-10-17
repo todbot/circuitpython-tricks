@@ -17,7 +17,7 @@ dw,dh = display.width, display.height  # convenience values
 sprite_sheet, sprite_palette = adafruit_imageload.load(sprite_fname)
 
 maingroup = displayio.Group()  # all fireworks go on 'maingroup'
-display.show(maingroup)
+display.root_group = maingroup
 
 def random_xy():
     return random.randint(0, dw-sprite_w), random.randint(dh//2, dh//2+20)
@@ -27,14 +27,14 @@ def copy_palette(p):  # this is fastest way to copy a palette it seems
     for i in range(len(p)):  new_p[i] = p[i]
     return new_p
 
-def new_colors(p):  # first two colors after bg seem to be the "tails" 
+def new_colors(p):  # first two colors after bg seem to be the "tails"
     p[1] = rainbowio.colorwheel( random.randint(0,255) )
     p[2] = rainbowio.colorwheel( random.randint(0,255) )
-    
-    
+
+
 # holds list of sprites,sprite_index,x,y,launch_time
 fireworks = [(None,0,0,0, 0) ] * fireworks_count
-# make our fireworks    
+# make our fireworks
 for i in range(len(fireworks)):
     pal = copy_palette(sprite_palette)
     pal.make_transparent(0)  # make background color transparent
@@ -53,7 +53,7 @@ while True:
         launching = sprite_index == 0 and random.random() < 0.9
         if launching:
             y = y - 3  # move towards top of screen
-        else: 
+        else:
             sprite_index = sprite_index + 1  # explode!
         # firework finished
         if sprite_index == sprite_count:
