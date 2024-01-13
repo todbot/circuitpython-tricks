@@ -1404,9 +1404,10 @@ print("name:%s color:%06x temp:%2.1f num:%d" % (name,fav_color,body_temp,fav_num
 
 ```py
 name = "John"
-fav_color = 0x003366
+fav_color = 0xff3366
 body_temp = 98.65
-print(f"name:{name} color:{color:06x} temp:{body_temp:2.1f} num:{fav_number:%d}")
+fav_number = 123
+print(f"name:{name} color:{fav_color:06x} temp:{body_temp:2.1f} num:{fav_number}")
 # 'name:John color:ff3366 temp:98.6 num:123'
 ```
 
