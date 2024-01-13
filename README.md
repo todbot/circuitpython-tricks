@@ -27,7 +27,8 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Read a Touch Pin / Capsense](#read-a-touch-pin--capsense)
   * [Read a Rotary Encoder](#read-a-rotary-encoder)
   * [Debounce a pin / button](#debounce-a-pin--button)
-  * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+  * [Detect button double-click](#detect-button-double-click)
+  * [Set up and debounce a list of pins](#Set-up-and-debounce-a-list-of-pins)
 * [Outputs](#outputs)
   * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
   * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
@@ -208,26 +209,30 @@ while True:
       print("release!")
 ```
 
-### Set up and debounce a list of pins
+Note: Most boards have the native `keypad` module that can do keypad debouncing in a much more
+efficient way.  See [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
+
+
+### Detect button double-click
 
 ```py
 import board
 from digitalio import DigitalInOut, Pull
-from adafruit_debouncer import Debouncer
-button_pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
-buttons = []   # will hold list of Debouncer objects
-for pin in button_pins:   # set up each pin
-    tmp_pin = DigitalInOut(pin) # defaults to input
-    tmp_pin.pull = Pull.UP      # turn on internal pull-up resistor
-    buttons.append( Debouncer(tmp_pin) )
+from adafruit_debouncer import Button
+button_in = DigitalInOut(board.D3) # defaults to input
+button_in.switch_to_input(Pull.UP) # turn on internal pull-up resistor
+button = Button(button_in)
 while True:
-    for i in range(len(buttons)):
-        buttons[i].update()
-        if buttons[i].fell:
-            print("button",i,"pressed!")
-        if buttons[i].rose:
-            print("button",i,"released!")
+    button.update()
+    if button.pressed:
+        print("press!")
+    if button.released:
+      print("release!")
+    if button.short_count > 1:  # detect multi-click
+      print("multi-click: click count:", button.short_count)
 ```
+
+### Set up and debounce a list of pins
 
 If your board's CircuitPython has the `keypad` library (most do),
 then I recommend using it. It's not just for key matrixes! And it's more efficient
@@ -246,6 +251,27 @@ while True:
         print("button", button.key_number, "pressed!")
       if button.released:
         print("button", button.key_number, "released!")
+```
+
+Otherwise, you can use `adafruit_debouncer`:
+
+```py
+import board
+from digitalio import DigitalInOut, Pull
+from adafruit_debouncer import Debouncer
+button_pins = (board.GP0, board.GP1, board.GP2, board.GP3, board.GP4)
+buttons = []   # will hold list of Debouncer objects
+for pin in button_pins:   # set up each pin
+    tmp_pin = DigitalInOut(pin) # defaults to input
+    tmp_pin.pull = Pull.UP      # turn on internal pull-up resistor
+    buttons.append( Debouncer(tmp_pin) )
+while True:
+    for i in range(len(buttons)):
+        buttons[i].update()
+        if buttons[i].fell:
+            print("button",i,"pressed!")
+        if buttons[i].rose:
+            print("button",i,"released!")
 ```
 
 
