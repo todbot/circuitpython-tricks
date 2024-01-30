@@ -43,6 +43,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Audio out using PWM](#audio-out-using-pwm)
   * [Audio out using DAC](#audio-out-using-dac)
   * [Audio out using I2S](#audio-out-using-i2s)
+  * [Use audiomixer to prevent audio crackles](#use-audiomixer-to-prevent-audio-crackles)
   * [Play multiple sounds with audiomixer](#play-multiple-sounds-with-audiomixer)
   * [Playing MP3 files](#playing-mp3-files)
   * [Making simple tones](#making-simple-tones)
@@ -512,6 +513,26 @@ audio = audiobusio.I2SOut(bit_clock=board.GP0, word_select=board.GP1, data=board
 audio.play( audiocore.WaveFile("laser2.wav","rb") )
 ```
 
+### Use audiomixer to prevent audio crackles
+
+```py
+import time, board
+from audiocore import WaveFile
+from audioio import AudioOut
+import audiomixer
+wave = WaveFile(open("laser2.wav", "rb"))
+audio = AudioOut(board.A0) # assuming QTPy M0 or Itsy M4
+mixer = audiomixer.Mixer(voice_count=1, sample_rate=22050, channel_count=1,
+                         bits_per_sample=16, samples_signed=True, buffer_size=2048)
+audio.play(mixer)  # never touch "audio" after this, use "mixer"
+while True:
+    print("mixer voice is playing:", mixer.voice[0].playing)
+    if not mixer.voice[0].playing:
+      print("playing again")
+      mixer.voice[0].play(wave)
+    time.sleep(0.1)
+```
+
 ### Play multiple sounds with audiomixer
 
 This example assumes WAVs that are mono 22050 Hz sample rate, w/ signed 16-bit samples.
@@ -523,9 +544,9 @@ from audiopwmio import PWMAudioOut as AudioOut
 wav_files = ("loop1.wav", "loop2.wav", "loop3.wav")
 wavs = [None] * len(wav_files)  # holds the loaded WAVs
 
-audio = AudioOut(board.GP1)  # RP2040 example
+audio = AudioOut(board.GP2)  # RP2040 example
 mixer = audiomixer.Mixer(voice_count=len(wav_files), sample_rate=22050, channel_count=1,
-                         bits_per_sample=16, samples_signed=True)
+                         bits_per_sample=16, samples_signed=True, buffer_size=2048)
 audio.play(mixer)  # attach mixer to audio playback
 
 for i in range(len(wav_files)):
@@ -537,6 +558,14 @@ while True:
     print("doing something else while all loops play")
     time.sleep(1)
 ```
+
+Note: M0 boards do not have `audiomixer`
+
+Note: Number of simultaneous sounds is limited sample rate and flash read speed.
+Rules of thumb:
+- Built-in flash: 10 22kHz sounds simultanously
+- SPI SD cards: 2 22kHz sounds simultaneously
+
 
 Also see the many examples in [larger-tricks](./larger-tricks/).
 
