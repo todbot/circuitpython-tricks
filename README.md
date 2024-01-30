@@ -515,6 +515,12 @@ audio.play( audiocore.WaveFile("laser2.wav","rb") )
 
 ### Use audiomixer to prevent audio crackles
 
+The default buffer used by the audio system is quite small.
+This means you'll hear corrupted audio if CircuitPython is doing anything else
+(having CIRCUITPY written to, updating a display). To get around this, you can
+use `audiomixer` to make the audio buffer larger. Try `buffer_size=2048` to start.
+A larger buffer means a longer lag between when a sound is triggered when its heard.
+
 ```py
 import time, board
 from audiocore import WaveFile
@@ -528,6 +534,7 @@ audio.play(mixer)  # never touch "audio" after this, use "mixer"
 while True:
     print("mixer voice is playing:", mixer.voice[0].playing)
     if not mixer.voice[0].playing:
+      time.sleep(1)
       print("playing again")
       mixer.voice[0].play(wave)
     time.sleep(0.1)
