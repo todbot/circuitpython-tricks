@@ -66,6 +66,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Enable USB MIDI in boot.py (for ESP32S2 and STM32F4)](#enable-usb-midi-in-bootpy-for-esp32s2-and-stm32f4)
 * [WiFi / Networking](#wifi--networking)
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
+  * [Join WiFi network with highest signal strength](#join-wifi-network-with-highest-signal-strength)
   * [Ping an IP address](#ping-an-ip-address)
   * [Get IP address of remote host](#get-ip-address-of-remote-host)
   * [Fetch a JSON file](#fetch-a-json-file)
@@ -914,6 +915,37 @@ wifi.radio.stop_scanning_networks()
 networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
 for network in networks:
     print("ssid:",network.ssid, "rssi:",network.rssi)
+```
+
+### Join WiFi network with highest signal strength
+
+```py
+import wifi
+
+def join_best_network(good_networks, print_info=False):
+    """join best network based on signal strength of scanned nets"""
+    networks = []
+    for network in wifi.radio.start_scanning_networks():
+        networks.append(network)
+    wifi.radio.stop_scanning_networks()
+    networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
+    for network in networks:
+        if print_info: print("network:",network.ssid)
+        if network.ssid in good_networks:
+            if print_info: print("connecting to WiFi:", network.ssid)
+            try:
+                wifi.radio.connect(network.ssid, good_networks[network.ssid])
+                return True
+            except ConnectionError as e:
+                if print_info: print("connect error:",e)
+    return False
+            
+good_networks = {"todbot1":"FiOnTheFly",  # ssid, password
+                 "todbot2":"WhyFlyWiFi",}
+connected = join_best_network(good_networks, print_info=True)
+if connected:
+    print("connected!")
+
 ```
 
 ### Ping an IP address
