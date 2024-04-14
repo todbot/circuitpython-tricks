@@ -1126,6 +1126,12 @@ You can use it (as in the examples above) without those libraries.
 The settings names used by CircuitPython are documented in
 [CircuitPython Web Workflow](https://docs.circuitpython.org/en/latest/docs/workflows.html#web).
 
+Note: You can use any variable names for your WiFI credentials 
+(a common pair is `WIFI_SSID` and `WIFI_PASSWORD`), but if you use the
+`CIRCUITPY_WIFI_*` names that will also start up the 
+[Web Workflow](https://docs.circuitpython.org/en/latest/docs/workflows.html#web)
+
+
 You use it like this for basic WiFi connectivity:
 
 ```py
@@ -1141,6 +1147,7 @@ wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
 print("my IP addr:", wifi.radio.ipv4_address)
 
 ```
+
 
 ### What the heck is `secrets.py`?
 It's an older version of the `settings.toml` idea.
@@ -2017,8 +2024,13 @@ newimg.save('myimage_for_cirpy.bmp')
 
 ### Preparing audio files for CircuitPython
 
-CircuitPython can play WAV files great, but it prefers the WAV files to be
-in a specific format. I've found the best trade-off in quality / flash-space / compatibility to be:
+CircuitPython can play both WAV files and MP3 files, but there are specific
+variants of these files that will work better, as some options require much more 
+processor demand. WAV files are much easier to play but take up more disk space.
+
+#### WAV files
+
+For WAV files, I've found the best trade-off in quality / flash-space / compatibility to be:
 
 - PCM 16-bit signed PCM
 - Mono (but stereo will work if using I2S or SAMD51)
@@ -2038,6 +2050,25 @@ Sox can convert just about any audio to the correct WAV format:
 ```sh
 sox loop.mp3 -b 16 -c 1 -r 22050 loop.wav
 ```
+
+#### MP3 files
+
+MP3 files require a lot more CPU to decode so in general you will want to 
+re-encode MP3s to be a lower bit-rate and lower sample-rate.  These settings
+seem to work okay on an lower-end chip like the Pico  /RP2040:
+
+* 128 kbps data rate CBR or lower
+* 22050 Hz sample rate or lower
+* Mono
+
+In `sox`, you can do this converion with:
+
+```sh
+sox loop.mp3 -c 1 -r 22050 -C 128 loop_22k_128kbps.mp3
+```
+
+
+#### Getting sox
 
 To get `sox` on various platforms:
 - Linux: `sudo apt install sox libsox-fmt-mp3`
