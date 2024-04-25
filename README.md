@@ -478,8 +478,13 @@ while True:
 Note: Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
 so you may have to reset the board to get PWM audio to work again.
 
+Note: if you want *stereo* output on boards that support it (SAMD51 "M4" mostly), 
+then you can pass in two pins, like: 
+`audio = audiopwmio.PWMAudioOut(left_channel=board.GP14, right_channel=board.GP15)`
+
 Note: PWM output must be filtered and converted to line-level to be usable.
 Use an RC circuit to accomplish this, see [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
+
 
 ### Audio out using DAC
 
@@ -500,6 +505,11 @@ while True:
     wave.sample_rate = int(wave.sample_rate * 0.90) # play 10% slower each time
   time.sleep(0.1)
 ```
+
+Note: if you want *stereo* output on boards that support it (SAMD51 "M4" mostly), 
+then you can pass in two pins, like: 
+`audio = audioio.AudioOut(left_channel=board.A0, right_channel=board.A1)`
+
 
 ### Audio out using I2S
 
