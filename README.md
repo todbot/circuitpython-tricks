@@ -182,7 +182,7 @@ import board
 touch_pin = touchio.TouchIn(board.GP6)
 # on Pico / RP2040, need 1M pull-down on each input
 if touch_pin.value:
-print("touched!")
+    print("touched!")
 ```
 
 ### Read a Rotary Encoder
