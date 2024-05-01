@@ -28,7 +28,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Read a Rotary Encoder](#read-a-rotary-encoder)
   * [Debounce a pin / button](#debounce-a-pin--button)
   * [Detect button double-click](#detect-button-double-click)
-  * [Set up and debounce a list of pins](#Set-up-and-debounce-a-list-of-pins)
+  * [Set up and debounce a list of pins](#set-up-and-debounce-a-list-of-pins)
 * [Outputs](#outputs)
   * [Output HIGH / LOW on a pin (like an LED)](#output-high--low-on-a-pin-like-an-led)
   * [Output Analog value on a DAC pin](#output-analog-value-on-a-dac-pin)
@@ -40,13 +40,13 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
   * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
 * [Audio](#audio)
+  * [Making simple tones](#making-simple-tones)
   * [Audio out using PWM](#audio-out-using-pwm)
   * [Audio out using DAC](#audio-out-using-dac)
   * [Audio out using I2S](#audio-out-using-i2s)
   * [Use audiomixer to prevent audio crackles](#use-audiomixer-to-prevent-audio-crackles)
   * [Play multiple sounds with audiomixer](#play-multiple-sounds-with-audiomixer)
   * [Playing MP3 files](#playing-mp3-files)
-  * [Making simple tones](#making-simple-tones)
 * [USB](#usb)
   * [Rename CIRCUITPY drive to something new](#rename-circuitpy-drive-to-something-new)
   * [Detect if USB is connected or not](#detect-if-usb-is-connected-or-not)
@@ -63,7 +63,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Sending MIDI with bytearray](#sending-midi-with-bytearray)
   * [MIDI over Serial UART](#midi-over-serial-uart)
   * [Receving MIDI USB and MIDI Serial UART together](#receving-midi-usb-and-midi-serial-uart-together)
-  * [Enable USB MIDI in boot.py (for ESP32S2 and STM32F4)](#enable-usb-midi-in-bootpy-for-esp32s2-and-stm32f4)
+  * [Enable USB MIDI in boot.py (for ESP32-S2 and STM32F4)](#enable-usb-midi-in-bootpy-for-esp32-s2-and-stm32f4)
 * [WiFi / Networking](#wifi--networking)
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
   * [Join WiFi network with highest signal strength](#join-wifi-network-with-highest-signal-strength)
@@ -276,6 +276,17 @@ while True:
             print("button",i,"released!")
 ```
 
+And you can use `adafruit_debouncer` on touch pins too:
+
+```py
+import board, touchio, adafruit_debouncer
+touchpad = adafruit_debouncer.Debouncer(touchio.TouchIn(board.GP1))
+while True:
+    touchpad.update()
+    if touchpad.rose:  print("touched!")
+    if touchpad.fell:  print("released!")
+```
+
 
 ## Outputs
 
@@ -440,18 +451,42 @@ while True:
 
 ## Audio
 
-In CircuitPython, there are three different techniques to output audio:
+If you're used to Arduino, making sound was mostly constrained to simple beeps
+using the Arduino `tone()` function. You can do that in CircuitPython too with
+`pwmio` and `simpleio`, but CircuitPython can also play WAV and MP3
+files and become a [fully-fledged audio synthesizer with `synthio`](https://github.com/todbot/circuitpython-synthio-tricks).
 
-- `audioio` -- uses built-in DAC
-- `audiopwmio` -- uses PWM like arduino `analogWrite()`, requires RC filter to convert to analog
-- `audiobusio` -- output I2S data stream, requires external I2S decoder hardware
+In CircuitPython, there are multiple core module libraries availble to output audio:
 
-CircuitPython's support on particular microcontroller may include support for more than one of the above:
-- e.g. SAMD51 (Feather M4) supports DAC and I2S, RP2040 (Pico) supports PWM and I2S
+- `pwmio`  -- use almost any GPIO pin to output simple beeps, no WAV/MP3/synthio
+- `audioio` -- uses built-in DAC to output WAV, MP3, synthio
+- `audiopwmio` -- like above, but uses PWM like arduino `analogWrite()`, requires RC filter to convert to analog
+- `audiobusio` -- outputs high-quality I2S audio data stream, requires external I2S decoder hardware
 
-CircuitPython can play WAV and MP3 files, but they must be formatted correctly.
+Different devices will have different audio modules available. Generally, the
+pattern is:
+
+- SAMD51 (e.g. "M4" boards) -- `audioio` (DAC) and `audiobusio` (I2S)
+- RP2040 (e.g. Pico) -- `audiopwmio` (PWM) and `audiobusio` (I2S)
+- ESP32 (e.g. QTPy ESP32) -- `audiobusio` (I2S) only
+
+To play WAV and MP3 files, they usually must be resaved in a format parsable by CircuitPython. 
 
 See [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuitpython)
+
+### Making simple tones
+
+For devices that only have `pwmio` capability, you can make simple tones.
+The [`simpleio`](https://docs.circuitpython.org/projects/simpleio/en/latest/examples.html#id1) library can be used for this:
+
+```py
+# a short piezo song using tone()
+import time, board, simpleio
+while True:
+    for f in (262, 294, 330, 349, 392, 440, 494, 523):
+        simpleio.tone(board.A0, f, 0.25)
+    time.sleep(1)
+```
 
 ### Audio out using PWM
 
@@ -629,19 +664,6 @@ __Note:__ For MP3 files and setting `loop=True` when playing, there is a small d
 when looping.  WAV files loop seemlessly.
 
 
-### Making simple tones
-
-For devices that only have `pwmio` capability, you can make simple tones.
-The [`simpleio`](https://docs.circuitpython.org/projects/simpleio/en/latest/examples.html#id1) library can be used for this:
-
-```py
-# a short piezo song using tone()
-import time, board, simpleio
-while True:
-    for f in (262, 294, 330, 349, 392, 440, 494, 523):
-        simpleio.tone(board.A0, f, 0.25)
-    time.sleep(1)
-```
 
 An example of boards with `pwmio` but no audio are ESP32-S2-based boards like
 [FunHouse](https://www.adafruit.com/product/4985),
@@ -819,16 +841,18 @@ def play_note(note,velocity=127):
     midi.send(NoteOff(note, 0))  # 0 = lowest velocity
 ```
 
+Note: This pattern works for sending serial (5-pin) MIDI too, see below
+
 ### Sending MIDI with bytearray
 
-Since we're often battling timing issues in CircuitPython and humans can detect
-musical timing differences very easily, we can gain back some overhead by using `usb_midi` directly.
-
+Sending MIDI with a lower-level `bytearray` is also pretty easy and 
+could gain some speed for timing-sensitive applications. 
 This code is equivalent to the above, without `adafruit_midi`
+
 ```py
 import usb_midi
 midi_out = usb_midi.ports[1]
-midi_out_channel = 3
+midi_out_channel = 3   # MIDI out channel (1-16)
 note_on_status = (0x90 | (midi_out_channel-1))
 note_off_status = (0x80 | (midi_out_channel-1))
 
@@ -841,15 +865,16 @@ def play_note(note,velocity=127):
 ### MIDI over Serial UART
 
 Not exactly USB, but it is MIDI!
-Both `adafruit_midi` and the bytearray technique works for Serial MIDI too.
+Both `adafruit_midi` and the bytearray technique works for Serial MIDI (aka "5-pin MIDI") too.
 With a [simple MIDI out circuit](https://learn.adafruit.com/qt-py-rp2040-usb-to-serial-midi-friends/circuit-diagram)
 you can control old hardware synths.
 
 ```py
 import busio
-midi_out_channel = 3 # human version of MIDI out channel (1-16)
+midi_out_channel = 3  # MIDI out channel (1-16)
 note_on_status = (0x90 | (midi_out_channel-1))
 note_off_status = (0x80 | (midi_out_channel-1))
+# must pick board pins that are UART TX and RX pins
 midi_uart = busio.UART(tx=board.GP16, rx=board.GP17, baudrate=31250)
 
 def play_note(note,velocity=127):
@@ -863,7 +888,7 @@ def play_note(note,velocity=127):
 MIDI is MIDI, so you can use either the `midi_uart` or the `usb_midi.ports[]` created above with `adafruit_midi`.
 Here's an example receiving MIDI from both USB and Serial on a QTPy RP2040.
 Note for receiving serial MIDI, you need an appropriate optoisolator input circuit,
-like [this one for QTPys](https://denki-oto.weebly.com/store/p74/MICROMIDITRS-USB.html#/)
+like [this one for QTPys](https://www.denki-oto.com/store/p74/MICROMIDITRS-USB.html#/)
 or [this one for MacroPad RP2040](https://www.tindie.com/products/todbot/macropadsynthplug-turn-rp2040-into-a-synth/).
 
 ```py
@@ -892,8 +917,20 @@ while True:
             print("serial noteOff:",msg.note, msg.velocity)
 ```
 
+If you don't care about the source of the MIDI messages, you can combine
+the two if blocks using the "walrus operator" (`:=`) 
 
-### Enable USB MIDI in boot.py (for ESP32S2 and STM32F4)
+```py
+while True:
+    while msg := midi_usb.receive() or midi_uart.receive():
+        if isinstance(msg, NoteOn) and msg.velocity != 0:
+            note_on(msg.note, msg.velocity)
+        elif isinstance(msg,NoteOff) or isinstance(msg,NoteOn) and msg.velocity==0:
+            note_off(msg.note, msg.velocity)
+```
+
+
+### Enable USB MIDI in boot.py (for ESP32-S2 and STM32F4)
 
 Some CircuitPython devices like ESP32-S2 based ones, do not have enough
 [USB endpoints to enable all USB functions](https://learn.adafruit.com/customizing-usb-devices-in-circuitpython/how-many-usb-devices-can-i-have), so USB MIDI is disabled by default.
