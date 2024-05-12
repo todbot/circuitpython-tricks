@@ -456,7 +456,7 @@ using the Arduino `tone()` function. You can do that in CircuitPython too with
 `pwmio` and `simpleio`, but CircuitPython can also play WAV and MP3
 files and become a [fully-fledged audio synthesizer with `synthio`](https://github.com/todbot/circuitpython-synthio-tricks).
 
-In CircuitPython, there are multiple core module libraries availble to output audio:
+In CircuitPython, there are multiple core module libraries available to output audio:
 
 - `pwmio`  -- use almost any GPIO pin to output simple beeps, no WAV/MP3/synthio
 - `audioio` -- uses built-in DAC to output WAV, MP3, synthio
@@ -470,9 +470,8 @@ pattern is:
 - RP2040 (e.g. Pico) -- `audiopwmio` (PWM) and `audiobusio` (I2S)
 - ESP32 (e.g. QTPy ESP32) -- `audiobusio` (I2S) only
 
-To play WAV and MP3 files, they usually must be resaved in a format parsable by CircuitPython. 
-
-See [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuitpython)
+To play WAV and MP3 files, they usually must be resaved in a format parsable by CircuitPython, 
+see [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuitpython)
 
 ### Making simple tones
 
