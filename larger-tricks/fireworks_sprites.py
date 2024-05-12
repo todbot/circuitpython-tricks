@@ -1,5 +1,7 @@
 # fireworks_sprites.py - show a bunch of fireworks
 # the "fireworks_spritesheet.bmp' file can be found in the "bmps" directory
+# more info and video demo at this gist:
+#  https://gist.github.com/todbot/f5a013918c208451424cea9d701f99c5
 # 4 Jul 2022 - @todbot / Tod Kurt
 import time, random
 import board
