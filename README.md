@@ -523,7 +523,7 @@ Use an RC circuit to accomplish this, see [this twitter thread for details](http
 ### Audio out using DAC
 
 Some CircuitPython boards (SAMD51 "M4" & SAMD21 "M0") have built-in DACs that are supported.
-The code is the the same as above, with just the import line changing.
+The code is the same as above, with just the import line changing.
 See the [audioio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audioio) for which boards support `audioio`.
 
 ```py
@@ -903,13 +903,13 @@ midi_serial = adafruit_midi.MIDI( midi_in=uart, midi_out=uart )
 
 while True:
     msg = midi_usb.receive()
-    if msg is not None:
+    if msg:
         if isinstance(msg, NoteOn):
             print("usb noteOn:",msg.note, msg.velocity)
         elif isinstance(msg, NoteOff):
             print("usb noteOff:",msg.note, msg.velocity)
     msg = midi_serial.receive()
-    if msg is not None:
+    if msg:
         if isinstance(msg, NoteOn):
             print("serial noteOn:",msg.note, msg.velocity)
         elif isinstance(msg, NoteOff):
@@ -934,7 +934,7 @@ while True:
 Some CircuitPython devices like ESP32-S2 based ones, do not have enough
 [USB endpoints to enable all USB functions](https://learn.adafruit.com/customizing-usb-devices-in-circuitpython/how-many-usb-devices-can-i-have), so USB MIDI is disabled by default.
 To enable it, the easiest is to disable USB HID (keyboard/mouse) support.
-This must be done in `boot.py` and the the board power cycled.
+This must be done in `boot.py` and the board power cycled.
 
 ```py
 # boot.py
@@ -2107,7 +2107,7 @@ seem to work okay on an lower-end chip like the Pico  /RP2040:
 * 22050 Hz sample rate or lower
 * Mono
 
-In `sox`, you can do this converion with:
+In `sox`, you can do this conversion with:
 
 ```sh
 sox loop.mp3 -c 1 -r 22050 -C 128 loop_22k_128kbps.mp3
