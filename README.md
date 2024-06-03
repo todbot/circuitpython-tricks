@@ -62,7 +62,8 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
   * [Sending MIDI with adafruit_midi](#sending-midi-with-adafruit_midi)
   * [Sending MIDI with bytearray](#sending-midi-with-bytearray)
   * [MIDI over Serial UART](#midi-over-serial-uart)
-  * [Receving MIDI USB and MIDI Serial UART together](#receving-midi-usb-and-midi-serial-uart-together)
+  * [Receiving MIDI](#receiving-midi)
+  * [Receviing MIDI USB and MIDI Serial UART together](#receiving-midi-usb-and-midi-serial-uart-together)
   * [Enable USB MIDI in boot.py (for ESP32-S2 and STM32F4)](#enable-usb-midi-in-bootpy-for-esp32-s2-and-stm32f4)
 * [WiFi / Networking](#wifi--networking)
   * [Scan for WiFi Networks, sorted by signal strength](#scan-for-wifi-networks-sorted-by-signal-strength)
@@ -821,8 +822,11 @@ while True:
 CircuitPython can be a MIDI controller, or respond to MIDI!
 Adafruit provides an [`adafruit_midi`](https://github.com/adafruit/Adafruit_CircuitPython_MIDI)
 class to make things easier, but it's rather complex for how simple MIDI actually is.
-So for outputting MIDI, you can opt to just do raw `bytearray`s.  For reading MIDI,
-I recommend [Winterbloom's SmolMIDI](https://github.com/wntrblm/Winterbloom_SmolMIDI).
+
+For outputting MIDI, you can opt to deal with raw `bytearray`s, since most MIDI messages
+are just 1,2, or 3 bytes long.  For reading MIDI,
+you may find [Winterbloom's SmolMIDI](https://github.com/wntrblm/Winterbloom_SmolMIDI) to be faster
+to parse MIDI messages, since by design it does less.
 
 ### Sending MIDI with adafruit_midi
 
@@ -882,7 +886,25 @@ def play_note(note,velocity=127):
     midi_uart.write( bytearray([note_off_status, note, 0]) )
 ```
 
-### Receving MIDI USB and MIDI Serial UART together
+### Receiving MIDI
+
+```py
+import usb_midi        # built-in library
+import adafruit_midi   # install with 'circup install adafruit_midi'
+from adafruit_midi.note_on import NoteOn
+from adafruit_midi.note_off import NoteOff
+
+midi_usb = adafruit_midi.MIDI(midi_in=usb_midi.ports[0])
+while True:
+    msg = midi_usb.receive()
+    if msg:
+        if isinstance(msg, NoteOn):
+            print("usb noteOn:",msg.note, msg.velocity)
+        elif isinstance(msg, NoteOff):
+            print("usb noteOff:",msg.note, msg.velocity)
+```
+
+### Receiving MIDI USB and MIDI Serial UART together
 
 MIDI is MIDI, so you can use either the `midi_uart` or the `usb_midi.ports[]` created above with `adafruit_midi`.
 Here's an example receiving MIDI from both USB and Serial on a QTPy RP2040.
