@@ -134,6 +134,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
       * [Python: using PIL / pillow](#python-using-pil--pillow)
   * [Preparing audio files for CircuitPython](#preparing-audio-files-for-circuitpython)
   * [Circup hacks](#circup-hacks)
+  * [Building CircuitPython](#building-circuitpython)
 * [About this guide](#about-this-guide)
 
 ## Inputs
@@ -510,15 +511,20 @@ while True:
     time.sleep(0.1)
 ```
 
-Note: Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
+Notes:
+
+- Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
 so you may have to reset the board to get PWM audio to work again.
 
-Note: if you want *stereo* output on boards that support it (SAMD51 "M4" mostly), 
+- If you want *stereo* output on boards that support it (SAMD51 "M4" mostly), 
 then you can pass in two pins, like: 
 `audio = audiopwmio.PWMAudioOut(left_channel=board.GP14, right_channel=board.GP15)`
 
-Note: PWM output must be filtered and converted to line-level to be usable.
-Use an RC circuit to accomplish this, see [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
+- PWM output must be filtered and converted to line-level to be usable.
+Use an RC circuit to accomplish this, see [this simple circuit](https://github.com/todbot/circuitpython-tricks/blob/main/larger-tricks/docs/breakbeat_sampleplayer_wiring.png) or [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
+
+- The `WaveFile()` object can take either a filestream (the output of `open('filewav','rb')`) 
+  or can take a string filename (`wav=WaveFile("laser2.wav")`).
 
 
 ### Audio out using DAC
@@ -556,7 +562,7 @@ See the [audiobusio Support Matrix](https://circuitpython.readthedocs.io/en/late
 # for e.g. Pico RP2040 pins bit_clock & word_select pins must be adjacent
 import board, audiobusio, audiocore
 audio = audiobusio.I2SOut(bit_clock=board.GP0, word_select=board.GP1, data=board.GP2)
-audio.play( audiocore.WaveFile("laser2.wav","rb") )
+audio.play( audiocore.WaveFile("laser2.wav")
 ```
 
 ### Use audiomixer to prevent audio crackles
@@ -572,7 +578,7 @@ import time, board
 from audiocore import WaveFile
 from audioio import AudioOut
 import audiomixer
-wave = WaveFile(open("laser2.wav", "rb"))
+wave = WaveFile("laser2.wav", "rb")
 audio = AudioOut(board.A0) # assuming QTPy M0 or Itsy M4
 mixer = audiomixer.Mixer(voice_count=1, sample_rate=22050, channel_count=1,
                          bits_per_sample=16, samples_signed=True, buffer_size=2048)
@@ -903,6 +909,7 @@ while True:
         elif isinstance(msg, NoteOff):
             print("usb noteOff:",msg.note, msg.velocity)
 ```
+Note with `adafruit_midi` you must `import` each kind of MIDI Message you want to handle.
 
 ### Receiving MIDI USB and MIDI Serial UART together
 
@@ -2163,6 +2170,52 @@ circup_dir=`python3 -c 'import appdirs; print(appdirs.user_data_dir(appname="cir
 ls $circup_dir
 ```
 
+### Building CircuitPython
+
+If you want to build CircuitPython yourself, you can! It's not too bad. 
+There's a very good ["Building CircuitPython" Learn Guide](https://learn.adafruit.com/building-circuitpython/build-circuitpython) that I refer to all the time, since it goes through the main reasons
+why you might want to build your own version of CircuitPython, including:
+- Adding "Frozen" Modules (libraries built-in to the firmware)
+- Setting different SPI flash chips (if your custom board uses a different kind of flash)
+- Adding a new board to CircuitPython
+
+But if you just want a quick list of the commands to use to build, here's what I use
+(as of Jun 2024) to build CircuitPython for rp2040. 
+
+```sh
+git clone https://github.com/todbot/circuitpython circuitpython-todbot
+cd circuitpython-todbot
+pip3 install --upgrade -r requirements-dev.txt  # do occasionally, after 'git pull'
+pip3 install --upgrade -r requirements-doc.txt  # do occasionally, after 'git pull'
+cd ports/raspberrypi
+make fetch-port-submodules     # takes a long time the first time ran, do after 'git pull' too
+make BOARD=raspberry_pi_pico   # or other board name listed in ports/raspberrypi/boards/
+# make -C ../../mpy-cross  # if you need mpy-cross
+```
+
+And for Espressif / ESP32 builds: 
+
+```sh
+git clone https://github.com/todbot/circuitpython circuitpython-todbot
+cd circuitpython-todbot
+pip3 install --upgrade -r requirements-dev.txt  # do occasionally, after 'git pull'
+pip3 install --upgrade -r requirements-doc.txt  # do occasionally, after 'git pull'
+cd ports/espressif
+make fetch-port-submodules     # takes a long time the first time ran, do after 'git pull' too
+./esp-idf/install.sh
+. ./esp-idf/export.sh
+pip3 install --upgrade -r requirements-dev.txt  # because now we're using a new python
+pip3 install --upgrade -r requirements-doc.txt  # because now we're using a new python
+make BOARD=adafruit_qtpy_esp32s3
+```
+
+Note, this assumes you've [already installed the system-level prerequisites](https://learn.adafruit.com/building-circuitpython/introduction). 
+On MacOS, this is what I do to get those:
+
+```sh
+brew install git git-lfs python3 gettext uncrustify cmake
+brew install gcc-arm-embedded   # (the cask, not 'arm-none-eabi-gcc')
+```
 
 ## About this guide
 
