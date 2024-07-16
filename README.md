@@ -1483,7 +1483,7 @@ print("elapsed time = ", (stop_msecs - start_msecs)/1000)
 ### Control garbage collection for reliable timing
 
 The CircuitPython garbage collector makes it so you don't have to deal with
-memory allocations like you do in C.  But when it runs, it can pause your 
+memory allocations like you do in languages like C/C++. But when it runs, it can pause your 
 program for tens of milliseconds in some cases. For timing-sensitive applications,
 you can exhibit some control over the garbage collector so it only runs when 
 you want it (like in the "shadow" after a timing-critical event) 
