@@ -89,6 +89,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Measure how long something takes](#measure-how-long-something-takes)
    * [More accurate timing with ticks_ms(), like Arduino millis()](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
    * [Control garbage collection for reliable timing](#control-garbage-collection-for-reliable-timing)
+   * [Converting milliseconds to seconds: 0.004 * 1000 != 4, sometimes](#converting-milliseconds-to-seconds-0004--1000--4-sometimes)
 * [Board Info](#board-info)
    * [Display amount of free RAM](#display-amount-of-free-ram)
    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
@@ -478,7 +479,7 @@ pattern is:
 - RP2040 (e.g. Pico) -- `audiopwmio` (PWM) and `audiobusio` (I2S)
 - ESP32 (e.g. QTPy ESP32) -- `audiobusio` (I2S) only
 
-To play WAV and MP3 files, they usually must be resaved in a format parsable by CircuitPython, 
+To play WAV and MP3 files, they usually must be resaved in a format parsable by CircuitPython,
 see [Preparing Audio Files for CircuitPython](#preparing-audio-files-for-circuitpython)
 
 ### Making simple tones
@@ -522,14 +523,14 @@ Notes:
 - Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
 so you may have to reset the board to get PWM audio to work again.
 
-- If you want *stereo* output on boards that support it (SAMD51 "M4" mostly), 
-then you can pass in two pins, like: 
+- If you want *stereo* output on boards that support it (SAMD51 "M4" mostly),
+then you can pass in two pins, like:
 `audio = audiopwmio.PWMAudioOut(left_channel=board.GP14, right_channel=board.GP15)`
 
 - PWM output must be filtered and converted to line-level to be usable.
 Use an RC circuit to accomplish this, see [this simple circuit](https://github.com/todbot/circuitpython-tricks/blob/main/larger-tricks/docs/breakbeat_sampleplayer_wiring.png) or [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
 
-- The `WaveFile()` object can take either a filestream (the output of `open('filewav','rb')`) 
+- The `WaveFile()` object can take either a filestream (the output of `open('filewav','rb')`)
   or can take a string filename (`wav=WaveFile("laser2.wav")`).
 
 
@@ -553,8 +554,8 @@ while True:
   time.sleep(0.1)
 ```
 
-Note: if you want *stereo* output on boards that support it (SAMD51 "M4" mostly), 
-then you can pass in two pins, like: 
+Note: if you want *stereo* output on boards that support it (SAMD51 "M4" mostly),
+then you can pass in two pins, like:
 `audio = audioio.AudioOut(left_channel=board.A0, right_channel=board.A1)`
 
 
@@ -860,8 +861,8 @@ Note: This pattern works for sending serial (5-pin) MIDI too, see below
 
 ### Sending MIDI with bytearray
 
-Sending MIDI with a lower-level `bytearray` is also pretty easy and 
-could gain some speed for timing-sensitive applications. 
+Sending MIDI with a lower-level `bytearray` is also pretty easy and
+could gain some speed for timing-sensitive applications.
 This code is equivalent to the above, without `adafruit_midi`
 
 ```py
@@ -952,7 +953,7 @@ while True:
 ```
 
 If you don't care about the source of the MIDI messages, you can combine
-the two if blocks using the "walrus operator" (`:=`) 
+the two if blocks using the "walrus operator" (`:=`)
 
 ```py
 while True:
@@ -1020,7 +1021,7 @@ def join_best_network(good_networks, print_info=False):
             except ConnectionError as e:
                 if print_info: print("connect error:",e)
     return False
-            
+
 good_networks = {"todbot1":"FiOnTheFly",  # ssid, password
                  "todbot2":"WhyFlyWiFi",}
 connected = join_best_network(good_networks, print_info=True)
@@ -1207,9 +1208,9 @@ You can use it (as in the examples above) without those libraries.
 The settings names used by CircuitPython are documented in
 [CircuitPython Web Workflow](https://docs.circuitpython.org/en/latest/docs/workflows.html#web).
 
-Note: You can use any variable names for your WiFI credentials 
+Note: You can use any variable names for your WiFI credentials
 (a common pair is `WIFI_SSID` and `WIFI_PASSWORD`), but if you use the
-`CIRCUITPY_WIFI_*` names that will also start up the 
+`CIRCUITPY_WIFI_*` names that will also start up the
 [Web Workflow](https://docs.circuitpython.org/en/latest/docs/workflows.html#web)
 
 
@@ -1483,15 +1484,15 @@ print("elapsed time = ", (stop_msecs - start_msecs)/1000)
 ### Control garbage collection for reliable timing
 
 The CircuitPython garbage collector makes it so you don't have to deal with
-memory allocations like you do in languages like C/C++. But when it runs, it can pause your 
+memory allocations like you do in languages like C/C++. But when it runs, it can pause your
 program for tens of milliseconds in some cases. For timing-sensitive applications,
-you can exhibit some control over the garbage collector so it only runs when 
-you want it (like in the "shadow" after a timing-critical event) 
+you can exhibit some control over the garbage collector so it only runs when
+you want it (like in the "shadow" after a timing-critical event)
 
-Here's one way to do this. 
+Here's one way to do this.
 ```py
 import gc
-import adafruit_ticks
+from adafruit_ticks import ticks_ms, ticks_add, ticks_less
 gc.collect()  # collect any garbage before we...
 gc.disable()  # disable automatic garbage collection
 dmillis = 10  # how many millis between explicit gc
@@ -1503,6 +1504,27 @@ while True:
         gc.collect()  # explicitly run a garbage collection cycle
     # do timing-sensitive thing here
 ```
+
+### Converting milliseconds to seconds: 0.004 * 1000 != 4, sometimes
+
+When doing timing-sensitive tasks in CircuitPython, you may have code that looks like this (say from the above):
+```py
+from adafruit_ticks import ticks_ms, ticks_add, ticks_less
+
+check_secs = 0.004  # check_secs is seconds between checks
+check_millis = check_secs * 1000  # convert to millis
+deadline = ticks_add(ticks_ms(), check_millis)
+while True:
+  now = ticks_ms()
+  if ticks_less(now,deadline) >= 0:
+    deadline = ticks_add(now, check_millis)
+    do_periodic_task()  # do timing-critical thing every 'check_secs'
+```
+This seems more accurate than using `time.monotonic()` since it's using the millisecond-accurate `supervisor.ticks_ms` property, the timing resolution of CircuitPython.
+This seems to work, until you pass in `check_secs = 0.004`, because the `ticks_*()` functions expect an integer and `int(0.004*1000) = 3`. If you were
+using the above code to output an accurate timing signal, it's now going to be 25% off from what you expect. This is ultimately because [CircuitPython has reduced floating point precision (30-bit instead of 32-bit)](https://learn.adafruit.com/welcome-to-circuitpython/frequently-asked-questions#faq-3129274) ([further discusion here](https://github.com/adafruit/circuitpython/issues/9237)).
+In short: stick to integer milliseconds.
+
 
 ## Board Info
 
@@ -1728,6 +1750,9 @@ while True:
     print("world!")  # do thing #2
 
 ```
+
+Note: a more accurate of this [uses `ticks_ms()`](#more-accurate-timing-with-ticks_ms-like-arduino-millis)
+and maybe turning off gc / garbage collection.
 
 
 ## System error handling
@@ -2129,7 +2154,7 @@ newimg.save('myimage_for_cirpy.bmp')
 ### Preparing audio files for CircuitPython
 
 CircuitPython can play both WAV files and MP3 files, but there are specific
-variants of these files that will work better, as some options require much more 
+variants of these files that will work better, as some options require much more
 processor demand. WAV files are much easier to play but take up more disk space.
 
 #### WAV files
@@ -2157,7 +2182,7 @@ sox loop.mp3 -b 16 -c 1 -r 22050 loop.wav
 
 #### MP3 files
 
-MP3 files require a lot more CPU to decode so in general you will want to 
+MP3 files require a lot more CPU to decode so in general you will want to
 re-encode MP3s to be a lower bit-rate and lower sample-rate.  These settings
 seem to work okay on an lower-end chip like the Pico  /RP2040:
 
@@ -2201,7 +2226,7 @@ ls $circup_dir
 
 ### Building CircuitPython
 
-If you want to build CircuitPython yourself, you can! It's not too bad. 
+If you want to build CircuitPython yourself, you can! It's not too bad.
 There's a very good ["Building CircuitPython" Learn Guide](https://learn.adafruit.com/building-circuitpython/build-circuitpython) that I refer to all the time, since it goes through the main reasons
 why you might want to build your own version of CircuitPython, including:
 - Adding "Frozen" Modules (libraries built-in to the firmware)
@@ -2209,7 +2234,7 @@ why you might want to build your own version of CircuitPython, including:
 - Adding a new board to CircuitPython
 
 But if you just want a quick list of the commands to use to build, here's what I use
-(as of Jun 2024) to build CircuitPython for rp2040. 
+(as of Jun 2024) to build CircuitPython for rp2040.
 
 ```sh
 git clone https://github.com/todbot/circuitpython circuitpython-todbot
@@ -2222,7 +2247,7 @@ make BOARD=raspberry_pi_pico   # or other board name listed in ports/raspberrypi
 # make -C ../../mpy-cross  # if you need mpy-cross
 ```
 
-And for Espressif / ESP32 builds: 
+And for Espressif / ESP32 builds:
 
 ```sh
 git clone https://github.com/todbot/circuitpython circuitpython-todbot
@@ -2238,7 +2263,7 @@ pip3 install --upgrade -r requirements-doc.txt  # because now we're using a new 
 make BOARD=adafruit_qtpy_esp32s3
 ```
 
-Note, this assumes you've [already installed the system-level prerequisites](https://learn.adafruit.com/building-circuitpython/introduction). 
+Note, this assumes you've [already installed the system-level prerequisites](https://learn.adafruit.com/building-circuitpython/introduction).
 On MacOS, this is what I do to get those:
 
 ```sh
