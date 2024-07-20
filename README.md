@@ -194,6 +194,9 @@ if touch_pin.value:
     print("touched!")
 ```
 
+You can also get an "analog" touch value with `touch_pin.raw_value` to do
+basic proximity detection or even [theremin-like behavior](https://gist.github.com/todbot/bb4ec9c509f8c301e4787e5cb26ec870).
+
 ### Read a Rotary Encoder
 
 ```py
