@@ -1296,7 +1296,7 @@ display = board.DISPLAY
 maingroup = displayio.Group() # everything goes in maingroup
 display.root_group = maingroup # set the root group to display
 bitmap, palette = adafruit_imageload.load("my_image.png")
-image = displayio.TileGrid(img, pixel_shader=palette))
+image = displayio.TileGrid(img, pixel_shader=palette)
 maingroup.append(image) # shows the image
 ```
 
