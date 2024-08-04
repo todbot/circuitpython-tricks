@@ -41,6 +41,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
 * [Audio](#audio)
    * [Making simple tones](#making-simple-tones)
+   * [Play a WAV file](#play-a-wav-file)
    * [Audio out using PWM](#audio-out-using-pwm)
    * [Audio out using DAC](#audio-out-using-dac)
    * [Audio out using I2S](#audio-out-using-i2s)
@@ -499,10 +500,24 @@ while True:
     time.sleep(1)
 ```
 
+### Play a WAV file
+
+WAV files are easiest for CircuitPython to play.
+The shortest code to play a WAV file on Pico RP2040 is:
+
+```py
+import time, board, audiocore, audiopwmio
+audio = audiopwmio.PWMAudioOut(board.GP0)
+wave = audiocore.WaveFile("laser2.wav")
+audio.play(wave)
+while True:
+  pass   # wait for audio to finish playing
+```
+Details and other ways below.
+
 ### Audio out using PWM
 
-This uses the `audiopwmio` library, only available for Raspberry Pi Pico
-(or other RP2040-based boards) and NRF52840-based boards like Adafruit Feather nRF52840 Express.
+This uses the `audiopwmio` library, only available for RP2040 boards like Raspberry Pi Pico and NRF52840-based boards like Adafruit Feather nRF52840 Express.
 On RP2040-based boards, any pin can be PWM Audio pin.
 See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/latest/shared-bindings/support_matrix.html?filter=audiopwmio) for which boards support `audiopwmio`.
 
@@ -510,9 +525,8 @@ See the [audiopwomio Support Matrix](https://circuitpython.readthedocs.io/en/lat
 import time, board
 from audiocore import WaveFile
 from audiopwmio import PWMAudioOut as AudioOut
-wave_file = open("laser2.wav", "rb")
-wave = WaveFile(wave_file)
-audio = AudioOut(board.TX) # must be PWM-capable pin
+wave = WaveFile("laser2.wav")  # can also be filehandle from open()
+audio = AudioOut(board.GP0) # must be PWM-capable pin
 while True:
     print("audio is playing:",audio.playing)
     if not audio.playing:
@@ -523,18 +537,21 @@ while True:
 
 Notes:
 
-- Sometimes the `audiopwmio` driver gets confused, particularly if there's other USB access,
-so you may have to reset the board to get PWM audio to work again.
+- There will be a small *pop* when audio starts playing as the PWM driver
+takes the GPIO line from not being driven to being PWM'ed.
+There's currently no way around this. If playing multiple WAVs, consider using
+[`AudioMixer`](#use-audiomixer-to-prevent-audio-crackles) to keep the audio system
+running between WAVs. This way, you'll only have the startup pop.
 
-- If you want *stereo* output on boards that support it (SAMD51 "M4" mostly),
+- If you want *stereo* output on boards that support it
 then you can pass in two pins, like:
 `audio = audiopwmio.PWMAudioOut(left_channel=board.GP14, right_channel=board.GP15)`
 
 - PWM output must be filtered and converted to line-level to be usable.
 Use an RC circuit to accomplish this, see [this simple circuit](https://github.com/todbot/circuitpython-tricks/blob/main/larger-tricks/docs/breakbeat_sampleplayer_wiring.png) or [this twitter thread for details](https://twitter.com/todbot/status/1403451581593374720).
 
-- The `WaveFile()` object can take either a filestream (the output of `open('filewav','rb')`)
-  or can take a string filename (`wav=WaveFile("laser2.wav")`).
+- The `WaveFile()` object can take either a filestream
+(the output of `open('filewav','rb')`) or can take a string filename (`wav=WaveFile("laser2.wav")`).
 
 
 ### Audio out using DAC
@@ -582,6 +599,8 @@ This means you'll hear corrupted audio if CircuitPython is doing anything else
 (having CIRCUITPY written to, updating a display). To get around this, you can
 use `audiomixer` to make the audio buffer larger. Try `buffer_size=2048` to start.
 A larger buffer means a longer lag between when a sound is triggered when its heard.
+
+AudioMixer is also great if you want to play multiple WAV files at the same time.
 
 ```py
 import time, board
