@@ -111,11 +111,10 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Preventing Ctrl-C from stopping the program](#preventing-ctrl-c-from-stopping-the-program)
    * [Prevent auto-reload when CIRCUITPY is touched](#prevent-auto-reload-when-circuitpy-is-touched)
    * [Raspberry Pi Pico boot.py Protection](#raspberry-pi-pico-bootpy-protection)
-* [Hacks](#hacks)
-   * [Using the REPL](#using-the-repl)
-      * [Display built-in modules / libraries](#display-built-in-modules--libraries)
-      * [Use REPL fast with copy-paste multi-one-liners](#use-repl-fast-with-copy-paste-multi-one-liners)
-      * [Turn off built-in display to speed up REPL printing](#turn-off-built-in-display-to-speed-up-repl-printing)
+* [Using the REPL](#using-the-repl)
+   * [Display built-in modules / libraries](#display-built-in-modules--libraries)
+   * [Turn off built-in display to speed up REPL printing](#turn-off-built-in-display-to-speed-up-repl-printing)
+   * [Useful REPL one-liners](#useful-repl-one-liners)
 * [Python tricks](#python-tricks)
    * [Create list with elements all the same value](#create-list-with-elements-all-the-same-value)
    * [Convert RGB tuples to int and back again](#convert-rgb-tuples-to-int-and-back-again)
@@ -1829,6 +1828,8 @@ To trigger a reload, do a Ctrl-C + Ctrl-D in the REPL or reset your board.
 Also works on other RP2040-based boards like QTPy RP2040.
 From https://gist.github.com/Neradoc/8056725be1c209475fd09ffc37c9fad4
 
+Also see [getting into Safe Mode with a REPL one-liner](#useful-repl-one-liners).
+
 ```py
 # Copy this as 'boot.py' in your Pico's CIRCUITPY drive
 # Useful in case Pico locks up (which it's done a few times on me)
@@ -1856,11 +1857,14 @@ for x in range(16):
 
 ```
 
-## Hacks
 
-### Using the REPL
+## Using the REPL
 
-#### Display built-in modules / libraries
+The "serial" REPL is the most useful diagnostic tools in CircuitPython.
+Always have it open when saving your code to see any errors.
+If you use a separate terminal program instead of an IDE, I recommend [`tio`](https://github.com/tio/tio).
+
+### Display built-in modules / libraries
   ```
   Adafruit CircuitPython 6.2.0-beta.2 on 2021-02-11; Adafruit Trinket M0 with samd21e18
   >>> help("modules")
@@ -1874,11 +1878,34 @@ for x in range(16):
   Plus any modules on the filesystem
   ```
 
-#### Use REPL fast with copy-paste multi-one-liners
+### Turn off built-in display to speed up REPL printing
+
+By default CircuitPython will echo the REPL to the display of those boards with built-in displays.
+This can slow down the REPL. So one way to speed the REPL up is to hide the `displayio.Group` that
+contains all the REPL output. (From user @argonblue in the CircuitPython Discord chat)
+
+```py
+import board
+display = board.DISPLAY
+display.root_group.hidden = True
+# and to turn it back on
+display.root_group.hidden = False
+```
+
+You can also turn back on the REPL after using the display for your own graphics with:
+
+```py
+display.root_group = None
+```
+
+### Useful REPL one-liners
 
 (yes, semicolons are legal in Python)
 
 ```py
+# get into Safe Mode if you have REPL access
+import microcontroller; microcontroller.on_next_reset(microcontroller.RunMode.SAFE_MODE); microcontroller.reset()
+
 # load common libraries (for later REPL experiments)
 import time, board, analogio, touchio; from digitalio import DigitalInOut,Pull
 
@@ -1906,25 +1933,6 @@ import board; i2c=board.I2C(); i2c.try_lock(); [hex(a) for a in i2c.scan()]; i2c
 
 ```
 
-#### Turn off built-in display to speed up REPL printing
-
-By default CircuitPython will echo the REPL to the display of those boards with built-in displays.
-This can slow down the REPL. So one way to speed the REPL up is to hide the `displayio.Group` that
-contains all the REPL output. (From user @argonblue in the CircuitPython Discord chat)
-
-```py
-import board
-display = board.DISPLAY
-display.root_group.hidden = True
-# and to turn it back on
-display.root_group.hidden = False
-```
-
-You can also turn back on the REPL after using the display for your own graphics with:
-
-```py
-display.root_group = None
-```
 
 ## Python tricks
 
