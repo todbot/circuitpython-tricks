@@ -588,7 +588,7 @@ See the [audiobusio Support Matrix](https://circuitpython.readthedocs.io/en/late
 # for e.g. Pico RP2040 pins bit_clock & word_select pins must be adjacent
 import board, audiobusio, audiocore
 audio = audiobusio.I2SOut(bit_clock=board.GP0, word_select=board.GP1, data=board.GP2)
-audio.play( audiocore.WaveFile("laser2.wav")
+audio.play( audiocore.WaveFile("laser2.wav") )
 ```
 
 ### Use audiomixer to prevent audio crackles
