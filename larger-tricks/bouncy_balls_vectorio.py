@@ -1,4 +1,4 @@
-# bouncy_balls_vectorio.py - use displayio to make simple bounch balls
+# bouncy_balls_vectorio.py - use displayio to make simple bouncy balls
 # 12 Nov 2024 - @todbot / Tod Kurt.  Based off bouncy_balls1.py
 # video demo at https://gist.github.com/todbot/d216cdfd0c13774c713482395429da16
 import time, random
