@@ -1492,14 +1492,28 @@ the floating point value of seconds will become less accurate as uptime increase
 
 If you want something more like Arduino's `millis()` function, the `supervisor.ticks_ms()`
 function returns an integer, not a floating point value. It is more useful for sub-second
-timing tasks and you can still convert it to floating-point seconds for human consumption.
+timing tasks and you can still convert it to floating-point seconds for human consumption. 
+
+`supervisor.ticks_ms()` does not start from zero, and is **designed to wrap approximately 65
+seconds after boot**. Use [ticks_diff](https://docs.circuitpython.org/en/stable/shared-bindings/supervisor/index.html#supervisor.ticks_ms) 
+and related functions for comparing values to avoid wrapping errors.
 
 ```py
 import supervisor
+
+_TICKS_PERIOD = const(1<<29)
+_TICKS_MAX = const(_TICKS_PERIOD-1)
+_TICKS_HALFPERIOD = const(_TICKS_PERIOD//2)
+
+def ticks_diff(ticks1, ticks2):
+    "Compute the signed difference between two ticks values, assuming that they are within 2**28 ticks"
+    diff = (ticks1 - ticks2) & _TICKS_MAX
+    diff = ((diff + _TICKS_HALFPERIOD) & _TICKS_MAX) - _TICKS_HALFPERIOD
+    return diff
+
 start_msecs = supervisor.ticks_ms()
-import neopixel
 stop_msecs = supervisor.ticks_ms()
-print("elapsed time = ", (stop_msecs - start_msecs)/1000)
+print("elapsed time = ", ticks_diff(stop_msecs,start_msecs)/1000)
 ```
 
 ### Control garbage collection for reliable timing
