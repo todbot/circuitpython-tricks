@@ -1,6 +1,7 @@
 # bouncy_balls_vectorio.py - use displayio to make simple bouncy balls
 # 12 Nov 2024 - @todbot / Tod Kurt.  Based off bouncy_balls1.py
 # video demo at https://gist.github.com/todbot/d216cdfd0c13774c713482395429da16
+# works on any CircuitPython device with a display, just create a 'display'
 import time, random
 import board, busio, displayio, i2cdisplaybus
 import vectorio
@@ -13,7 +14,7 @@ rand_vx, rand_vy = 2.5, 2
 scl_pin, sda_pin = board.GP15, board.GP14    # pins your display is on
 dw,dh = 128,64  # or whatever your display is
 
-# set up the display
+# set up the display (change for your setup)
 displayio.release_displays()
 disp_i2c = busio.I2C(scl=scl_pin, sda=sda_pin, frequency=400_000)
 display_bus = i2cdisplaybus.I2CDisplayBus(disp_i2c, device_address=0x3C)  # or 0x3D 

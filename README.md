@@ -36,6 +36,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Control Neopixel / WS2812 LEDs](#control-neopixel--ws2812-leds)
    * [Control a servo, with animation list](#control-a-servo-with-animation-list)
 * [Neopixels / Dotstars](#neopixels--dotstars)
+   * [Light each LED in order](#light-each-led-in-order)
    * [Moving rainbow on built-in board.NEOPIXEL](#moving-rainbow-on-built-in-boardneopixel)
    * [Make moving rainbow gradient across LED strip](#make-moving-rainbow-gradient-across-led-strip)
    * [Fade all LEDs by amount for chase effects](#fade-all-leds-by-amount-for-chase-effects)
@@ -379,6 +380,30 @@ while True:
 
 
 ## Neopixels / Dotstars
+
+### Light each LED in order
+
+You can access each LED with Python array methods on the `leds` object.
+And you can set the LED color with either an RGB tuple (`(255,0,80)`) or an
+RGB hex color as a 24-bit number (`0xff0050`)
+
+```py
+import time, board, neopixel
+
+led_pin = board.GP5   # which pin the LED strip is on
+num_leds = 10
+colors = ( (255,0,0), (0,255,0), (0,0,255), 0xffffff, 0x000000 )
+
+leds = neopixel.NeoPixel(led_pin, num_leds, brightness=0.1)
+
+i = 0
+while True:
+    print("led:",i)
+    for c in colors:
+        leds[i] = c
+        time.sleep(0.2)
+    i = (i+1) % num_leds
+```
 
 ### Moving rainbow on built-in `board.NEOPIXEL`
 
