@@ -84,6 +84,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Display background bitmap](#display-background-bitmap)
    * [Image slideshow](#image-slideshow)
    * [Dealing with E-Ink "Refresh Too Soon" error](#dealing-with-e-ink-refresh-too-soon-error)
+   * [Turn off REPL on built-in display](#turn-off-repl-on-built-in-display)
 * [I2C](#i2c)
    * [Scan I2C bus for devices](#scan-i2c-bus-for-devices)
    * [Speed up I2C bus](#speed-up-i2c-bus)
@@ -1457,6 +1458,20 @@ while True:
     time.sleep(0.1)
 ```
 
+### Turn off REPL on built-in display 
+
+If you have a board with a built-in display (like Feather TFT, Cardputer, FunHouse, etc),
+CircuitPython will set up the display for you and print the REPL to it.
+But if you want a more polished look for your project, you can turn off the REPL
+from printing on the built-in display by putting this at at the top of both
+your `boot.py` and `code.py`
+
+```py
+# put at top of both boot.py & code.py 
+import board
+board.DISPLAY.root_group = None
+```
+
 
 ## I2C
 
@@ -1907,20 +1922,22 @@ If you use a separate terminal program instead of an IDE, I recommend [`tio`](ht
 
 By default CircuitPython will echo the REPL to the display of those boards with built-in displays.
 This can slow down the REPL. So one way to speed the REPL up is to hide the `displayio.Group` that
-contains all the REPL output. (From user @argonblue in the CircuitPython Discord chat)
+contains all the REPL output.
 
 ```py
 import board
-display = board.DISPLAY
-display.root_group.hidden = True
-# and to turn it back on
-display.root_group.hidden = False
+gsave = board.DISPLAY.root_group
+board.DISPLAY.root_group = None  # turn off REPL printing
+board.DISPLAY.root_group = gsave  # turn back on REPL printing
 ```
 
-You can also turn back on the REPL after using the display for your own graphics with:
+In CircuitPython 8.x, you could do the below. In 9.x, the `root_group` is read-only
+after it's been assigned. 
 
 ```py
-display.root_group = None
+import board
+board.DISPLAY.root_group.hidden = True
+board.DISPLAY.root_group.hidden = False  # to turn it back on
 ```
 
 ### Useful REPL one-liners
