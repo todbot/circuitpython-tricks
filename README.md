@@ -1925,10 +1925,9 @@ This can slow down the REPL. So one way to speed the REPL up is to hide the `dis
 contains all the REPL output.
 
 ```py
-import board
-gsave = board.DISPLAY.root_group
+import board, displayio
 board.DISPLAY.root_group = None  # turn off REPL printing
-board.DISPLAY.root_group = gsave  # turn back on REPL printing
+board.DISPLAY.root_group = displayio.CIRCUITPYTHON_TERMINAL  # turn back on REPL printing
 ```
 
 In CircuitPython 8.x, you could do the below. In 9.x, the `root_group` is read-only
