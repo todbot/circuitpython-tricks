@@ -1592,14 +1592,17 @@ In short: stick to integer milliseconds.
 
 ### Get CPU speed (and set it!)
 
+CircuitPython provides a way to get the microcontroller's CPU frequency with
+[`microcontroller.cpu.frequency`](https://docs.circuitpython.org/en/latest/shared-bindings/microcontroller/index.html#microcontroller.Processor.frequency).
+
 ```py
 import microcontroller
 print("CPU speed:", microcontroller.cpu.frequency)
 ```
 
-On some chips (most notably Pico P2040), you can also set this value. Overclock your Pico!
-It's safe to double the RP2040 speed, Raspberry Pi officially supports up to 200 MHz
-CircuitPython will adjust it's internal timings, but you should
+On some chips (most notably Pico P2040), you can also **set** this value. Overclock your Pico!
+It's safe to double the RP2040 speed, Raspberry Pi officially supports up to 200 MHz.
+CircuitPython will adjust its internal timings, but you should
 do this change before creating any peripheral objects like UARTs or displays.
 
 ```py
