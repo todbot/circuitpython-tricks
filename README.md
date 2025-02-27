@@ -94,6 +94,7 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Control garbage collection for reliable timing](#control-garbage-collection-for-reliable-timing)
    * [Converting milliseconds to seconds: 0.004 * 1000 != 4, sometimes](#converting-milliseconds-to-seconds-0004--1000--4-sometimes)
 * [Board Info](#board-info)
+   * [Get CPU speed (and set it!)](#get-cpu-speed-and-set-it)
    * [Display amount of free RAM](#display-amount-of-free-ram)
    * [Show microcontroller.pin to board mappings](#show-microcontrollerpin-to-board-mappings)
    * [Determine which board you're on](#determine-which-board-youre-on)
@@ -1588,6 +1589,24 @@ In short: stick to integer milliseconds.
 
 
 ## Board Info
+
+### Get CPU speed (and set it!)
+
+```py
+import microcontroller
+print("CPU speed:", microcontroller.cpu.frequency)
+```
+
+On some chips (most notably Pico P2040), you can also set this value. Overclock your Pico!
+It's safe to double the RP2040 speed, Raspberry Pi officially supports up to 200 MHz
+CircuitPython will adjust it's internal timings, but you should
+do this change before creating any peripheral objects like UARTs or displays.
+
+```py
+import microcontroller
+microcontroller.cpu.frequency = 250_000_000  # run at 250 MHz instead of 125 MHz
+```
+
 
 ### Display amount of free RAM
 
