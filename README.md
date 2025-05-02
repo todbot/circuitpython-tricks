@@ -170,6 +170,21 @@ while True:
     time.sleep(0.1)
 ```
 
+But you probably want to use `keypad` to get debouncing and press/release events.
+You can use it for a single button!
+
+```py
+import board, keypad
+keys = keypad.Keys((board.D3,), value_when_pressed=False, pull=True)
+while True:
+  if key := keys.events.get():
+    if key.pressed: 
+      print("pressed key!")
+
+```
+Note: be sure to add the comma when using a single button (e.g. `(board.D3,)`)
+
+
 ### Read a Potentiometer
 
 ```py
@@ -210,6 +225,25 @@ print(encoder.position)  # starts at zero, goes neg or pos
 ```
 
 ### Debounce a pin / button
+
+But you probably want to use `keypad` to get debouncing and press/release events.
+You can use it for a single button!
+
+```py
+import board, keypad
+keys = keypad.Keys((board.D3,), value_when_pressed=False, pull=True)
+while True:
+  if key := keys.events.get():
+    if key.pressed: 
+      print("pressed key!", key.key_number)
+    if key.released:
+      print("released key!", key.key_number)
+
+```
+Note: be sure to add the comma when using a single button (e.g. `(board.D3,)`)
+
+If your board doesn't have `keypad`, you can use `adafruit_debouncer` from 
+the bundle. 
 
 ```py
 import board
