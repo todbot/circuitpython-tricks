@@ -1677,7 +1677,21 @@ print(os.uname().machine)
 'Adafruit ItsyBitsy M4 Express with samd51g19'
 ```
 
-To get the chip family
+Another way is the `board.board_id`.  This is the "port" name used when 
+compiling CircuitPython. To find a list of valid board IDs,
+you can look in the circuitpython core repo inside of: "ports/[some_port]/boards/".
+i.e. for espressif boards find the list of directories in: 
+[ports/espressif/boards/](https://github.com/adafruit/circuitpython/tree/main/ports/espressif/boards)
+The "board_id is used as the argument for 
+`circuitpython_setboard` in [`circuitpython-stubs`](https://pypi.org/project/circuitpython-stubs/)
+
+```py
+import board
+print(board.board_id)
+'raspberry_pi_pico'
+```
+
+To get the chip family:
 
 ```py
 import os
@@ -1704,6 +1718,7 @@ print(os.uname().sysname)
   else:
     print("unsupported board", board_type)
   ```
+
 
 ## Computery Tasks
 
