@@ -30,6 +30,8 @@ This directory contains a fairly un-ordered list, but here are the main tricks.
 
 * **i2s_sdcard_pico** - how to set up I2S audio out and SD card reading on Raspberry Pi Pico RP2040
 
+* **wavmix_s2mini_i2s_sd.py** - play multiple 44.1 kHz WAVs from SD card to I2S DAC on ESP32-S2, like beatfader
+
 
 ## MIDI
 
