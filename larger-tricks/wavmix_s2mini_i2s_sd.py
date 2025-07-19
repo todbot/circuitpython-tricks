@@ -2,6 +2,7 @@
 # 17 Jul 2025 - @todbot / Tod Kurt
 #
 # Tested on Lolin S2 Mini ESP32-S2 https://circuitpython.org/board/lolin_s2_mini/
+# video demo: https://www.youtube.com/watch?v=97OA6L9PLCg
 #
 # Copy this file to CIRCUITPY/code.py
 # Make the directory "/mysd" on CIRCUITPY, but leave it empty
