@@ -1191,24 +1191,29 @@ and do all your computation in your `@server.route()` functions, or use `server.
 There is also the [Ampule library](https://github.com/deckerego/ampule).
 
 ```py
-import time, os, wifi, socketpool
-from adafruit_httpserver.server import HTTPServer
-from adafruit_httpserver.response import HTTPResponse
+# based on https://docs.circuitpython.org/projects/httpserver/en/latest/starting_methods.html
+import socketpool
+import wifi
+from adafruit_httpserver import Request, Response, Server
 
-my_port = 1234  # set this to your liking
-wifi.radio.connect(ssid=os.getenv('CIRCUITPY_WIFI_SSID'),
-                   password=os.getenv('CIRCUITPY_WIFI_PASSWORD'))
-server = HTTPServer(socketpool.SocketPool(wifi.radio))
+WIFI_SSID="..."
+WIFI_PASSWORD="..."
+MY_PORT=8080
 
-@server.route("/")  # magic that attaches this function to "server" object
-def base(request):
-    my_str = f"<html><body><h1> Hello! Current time.monotonic is {time.monotonic()}</h1></body></html>"
-    return HTTPResponse(body=my_str, content_type="text/html")
-    # or for static content: return HTTPResponse(filename="/index.html")
+print(f"Connecting to {WIFI_SSID}...")
+wifi.radio.connect(WIFI_SSID, WIFI_PASSWORD)
+MY_IP_ADDR = str(wifi.radio.ipv4_address)
+print(f"Connected to {WIFI_SSID}")
+print(f"My ip address: {MY_IP_ADDR}")
+pool = socketpool.SocketPool(wifi.radio)
 
-print(f"Listening on http://{wifi.radio.ipv4_address}:{my_port}")
-server.serve_forever(str(wifi.radio.ipv4_address), port=my_port) # never returns
+server = Server(pool, root_path="/static", debug=True)
 
+@server.route("/")
+def base(request: Request):
+    return Response(request, "Hello from the CircuitPython HTTP Server!")
+
+server.serve_forever(host=MY_IP_ADDR, port=MY_PORT)
 ```
 
 
