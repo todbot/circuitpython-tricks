@@ -60,6 +60,8 @@ But it's probably easiest to do a Cmd-F/Ctrl-F find on keyword of idea you want.
    * [Read user input from USB Serial, non-blocking (mostly)](#read-user-input-from-usb-serial-non-blocking-mostly)
    * [Read keys from USB Serial](#read-keys-from-usb-serial)
    * [Read user input from USB serial, non-blocking](#read-user-input-from-usb-serial-non-blocking)
+* [USB Keyboard & Mouse](#usb-keyboard-mouse)
+   * [Sending keystrokes and mouse moves](#sending-keystrokes-and-mouse-moves)
 * [USB MIDI](#usb-midi)
    * [Sending MIDI with adafruit_midi](#sending-midi-with-adafruit_midi)
    * [Sending MIDI with bytearray](#sending-midi-with-bytearray)
@@ -910,6 +912,36 @@ while True:
     if mystr:
         print("got:",mystr)
     time.sleep(0.01)  # do something time critical
+```
+
+## USB Keyboard & Mouse
+
+CircuitPython comes set up to be a USB keyboard and mouse. 
+Many more details in [CircuitPython Essentials](https://learn.adafruit.com/circuitpython-essentials/circuitpython-hid-keyboard-and-mouse) but the basics are below.  The `adafruit_hid` library needs 
+to be installed from the [the bundle](https://circuitpython.org/libraries). 
+I do `circup install adafruit_hid` in a terminal.
+
+### Sending keystrokes and mouse moves
+
+```py
+import time
+import usb_hid
+from adafruit_hid.keyboard import Keyboard
+from adafruit_hid.keycode import Keycode
+from adafruit_hid.mouse import Mouse
+kbd = Keyboard(usb_hid.devices)
+mouse = Mouse(usb_hid.devices)
+
+while True:
+    time.sleep(1)
+    print("moving right")
+    kbd.send(Keycode.A)  # types "a" (sends press() & release_all())
+    mouse.move(x=50, y=0)  # moves mouse slightly right
+    time.sleep(1)
+    print("moving left")
+    kbd.send(Keycode.B)  # types "b" (sends press() & release_all())
+    mouse.move(x=-50, y=0)  # moves mouse slightly left
+    time.sleep(1)
 ```
 
 ## USB MIDI
