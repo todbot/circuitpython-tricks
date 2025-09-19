@@ -180,7 +180,7 @@ import board, keypad
 keys = keypad.Keys((board.D3,), value_when_pressed=False, pull=True)
 while True:
   if key := keys.events.get():
-    if key.pressed: 
+    if key.pressed:
       print("pressed key!")
 
 ```
@@ -236,7 +236,7 @@ import board, keypad
 keys = keypad.Keys((board.D3,), value_when_pressed=False, pull=True)
 while True:
   if key := keys.events.get():
-    if key.pressed: 
+    if key.pressed:
       print("pressed key!", key.key_number)
     if key.released:
       print("released key!", key.key_number)
@@ -244,8 +244,8 @@ while True:
 ```
 Note: be sure to add the comma when using a single button (e.g. `(board.D3,)`)
 
-If your board doesn't have `keypad`, you can use `adafruit_debouncer` from 
-the bundle. 
+If your board doesn't have `keypad`, you can use `adafruit_debouncer` from
+the bundle.
 
 ```py
 import board
@@ -916,9 +916,9 @@ while True:
 
 ## USB Keyboard & Mouse
 
-CircuitPython comes set up to be a USB keyboard and mouse. 
-Many more details in [CircuitPython Essentials](https://learn.adafruit.com/circuitpython-essentials/circuitpython-hid-keyboard-and-mouse) but the basics are below.  The `adafruit_hid` library needs 
-to be installed from the [the bundle](https://circuitpython.org/libraries). 
+CircuitPython comes set up to be a USB keyboard and mouse.
+Many more details in [CircuitPython Essentials](https://learn.adafruit.com/circuitpython-essentials/circuitpython-hid-keyboard-and-mouse) but the basics are below.  The `adafruit_hid` library needs
+to be installed from the [the bundle](https://circuitpython.org/libraries).
 I do `circup install adafruit_hid` in a terminal.
 
 ### Sending keystrokes and mouse moves
@@ -1380,8 +1380,8 @@ display.rotation = 0    # valid values 0,90,180,270
 
 __Using `displayio.OnDiskBitmap`__
 
-CircuitPython has a built-in BMP parser called `displayio.OnDiskBitmap`:
-The images should be in non-compressed, paletized BMP3 format.
+CircuitPython has a built-in BMP parser called [`displayio.OnDiskBitmap`](https://docs.circuitpython.org/en/latest/shared-bindings/displayio/index.html#displayio.OnDiskBitmap):
+The images should be in non-compressed, palettized BMP3 format.
 ([how to make BMP3 images](#preparing-images-for-circuitpython))
 
 ```py
@@ -1399,8 +1399,8 @@ maingroup.append(image) # shows the image
 __Using `adafruit_imageload`__
 
 You can also use the `adafruit_imageload` library that supports slightly more kinds of BMP files,
-(but should still be [paletized BMP3 format](#preparing-images-for-circuitpython)
-as well as paletized PNG and GIF files. Which file format to choose?
+(but should still be [palettized BMP3 format](#preparing-images-for-circuitpython)
+as well as palettized PNG and GIF files. Which file format to choose?
 * BMP images are larger but faster to load
 * PNG images are about 2x smaller than BMP and almost as fast to load
 * GIF images are a little bigger than PNG but *much* slower to load
@@ -1420,10 +1420,15 @@ maingroup.append(image) # shows the image
 __How `displayio` is structured__
 
 CircuitPython's `displayio` library works like:
-- an image `Bitmap` (and its `Palette`) goes inside a `TileGrid`
-- a `TileGrid` goes inside a `Group`
+- an image [`Bitmap`](https://docs.circuitpython.org/en/latest/shared-bindings/displayio/#displayio.Bitmap) and its [`Palette`](https://docs.circuitpython.org/en/latest/shared-bindings/displayio/#displayio.Palette) goes inside a [`TileGrid`](https://docs.circuitpython.org/en/latest/shared-bindings/displayio/#displayio.TileGrid)
+- a `TileGrid` goes inside a [`Group`](https://docs.circuitpython.org/en/latest/shared-bindings/displayio/#displayio.Group)
 - a `Group` is shown on a `Display`.
 
+So if you want to address individual pixels, first create a `Palette` and a `Bitmap`.
+Assign colors to the `Palette` positions. Create a `TileGrid` with that `Bitmap` and `Palette`.
+Then add the `TileGrid` to a `Group`.  Finally the `Group` can be shown on a display.
+When you set `bitmap[ x,y ] = number` you are setting that pixel at `x,y` to the color at palette
+position `number`.
 
 
 ### Display background bitmap
@@ -1531,7 +1536,7 @@ while True:
     time.sleep(0.1)
 ```
 
-### Turn off REPL on built-in display 
+### Turn off REPL on built-in display
 
 If you have a board with a built-in display (like Feather TFT, Cardputer, FunHouse, etc),
 CircuitPython will set up the display for you and print the REPL to it.
@@ -1540,7 +1545,7 @@ from printing on the built-in display by putting this at at the top of both
 your `boot.py` and `code.py`
 
 ```py
-# put at top of both boot.py & code.py 
+# put at top of both boot.py & code.py
 import board
 board.DISPLAY.root_group = None
 ```
@@ -1715,12 +1720,12 @@ print(os.uname().machine)
 'Adafruit ItsyBitsy M4 Express with samd51g19'
 ```
 
-Another way is the `board.board_id`.  This is the "port" name used when 
+Another way is the `board.board_id`.  This is the "port" name used when
 compiling CircuitPython. To find a list of valid board IDs,
 you can look in the circuitpython core repo inside of: "ports/[some_port]/boards/".
-i.e. for espressif boards find the list of directories in: 
+i.e. for espressif boards find the list of directories in:
 [ports/espressif/boards/](https://github.com/adafruit/circuitpython/tree/main/ports/espressif/boards).
-The "board_id is used as the argument for 
+The "board_id is used as the argument for
 `circuitpython_setboard` in [`circuitpython-stubs`](https://pypi.org/project/circuitpython-stubs/)
 
 ```py
@@ -2040,7 +2045,7 @@ board.DISPLAY.root_group = displayio.CIRCUITPYTHON_TERMINAL  # turn back on REPL
 ```
 
 In CircuitPython 8.x, you could do the below. In 9.x, the `root_group` is read-only
-after it's been assigned. 
+after it's been assigned.
 
 ```py
 import board
