@@ -952,7 +952,8 @@ class to make things easier, but it's rather complex for how simple MIDI actuall
 
 For outputting MIDI, you can opt to deal with raw `bytearray`s, since most MIDI messages
 are just 1,2, or 3 bytes long.  For reading MIDI,
-you may find [Winterbloom's SmolMIDI](https://github.com/wntrblm/Winterbloom_SmolMIDI) to be faster
+you may find [TMIDI](https://github.com/todbot/CircuitPython_TMIDI) or
+[SmolMIDI](https://github.com/wntrblm/Winterbloom_SmolMIDI) to be faster
 to parse MIDI messages, since by design it does less.
 
 ### Sending MIDI with adafruit_midi
